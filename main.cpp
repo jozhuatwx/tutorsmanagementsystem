@@ -58,6 +58,15 @@ int compareInsensitive(string s1, string s2) {
   return s1.compare(s2);
 };
 
+size_t findInsensitive(string s1, string s2) {
+  // convert s1 and s2 to lower case
+  transform(s1.begin(), s1.end(), s1.begin(), ::tolower);
+  transform(s2.begin(), s2.end(), s2.begin(), ::tolower);
+
+  // find
+  return s1.find(s2);
+};
+
 // tutor structure
 struct Tutor {
   public:
@@ -210,6 +219,9 @@ void addTutor(Tutor *&tutors, int *tutorSize) {
 
   // increase size
   *tutorSize += 1;
+
+  // free memory
+  delete [] newTutors;
 };
 
 void displayRecord(Tutor tutor) {
@@ -296,7 +308,149 @@ void searchRating(Tutor *tutors, int tutorSize) {
   }
 };
 
-void searchTuitionName(Tutor *tutors, string tuitionCenterName, int tutorSize, Tutor *searchedTutors);
+struct SortCache {
+  string value;
+  int start;
+
+  SortCache() {};
+
+  SortCache(string value, int start) {
+    this->value = value;
+    this->start = start;
+  };
+};
+
+void searchTuitionName(Tutor *tutors, int tutorSize) {
+  // initialise
+  string tuitionCenterName;
+  bool found, secondList;
+  SortCache *tuitionNames1, *tuitionNames2;
+  Tutor *tempTutors = new Tutor[tutorSize];
+  int nameSize = 0, tempSize = 0, select;
+
+  // get user input
+  do {
+    cout << "Tuition Center Name: ";
+    cin >> tuitionCenterName;
+  } while (tuitionCenterName == "");
+
+  // search through the array
+  for (int i = 0; i < tutorSize; i++) {
+    size_t found = findInsensitive(tutors[i].tuitionCenterName, tuitionCenterName);
+    if (found != string::npos) {
+      if (nameSize == 0) {
+        tuitionNames1 = new SortCache[1];
+        secondList = false;
+        // add to tuition name list
+        tuitionNames1[0] = SortCache(tutors[i].tuitionCenterName, 0);
+        // increment name size;
+        nameSize++;
+        // add to temporary array
+        tempTutors[tempSize] = tutors[i];
+        // increment temporary array size
+        tempSize++;
+      } else {
+        if (secondList) {
+          tuitionNames1 = new SortCache[nameSize + 1];
+        } else {
+          tuitionNames2 = new SortCache[nameSize + 1];
+        };
+
+        bool insert = true;
+        // find if center name added
+        for (int x = 0, length = nameSize; x < length; x++) {
+          // before insertion
+          // compare the strings
+          if (insert) {
+            int comp = 0;
+            if (secondList) {
+              comp = compareInsensitive(tuitionNames2[x].value, tutors[i].tuitionCenterName);
+            } else {
+              comp = compareInsensitive(tuitionNames1[x].value, tutors[i].tuitionCenterName);
+            };
+
+            if (comp < 0) {
+              // if existing name is before new name
+              if (secondList) {
+                tuitionNames1[x] = tuitionNames2[i];
+              } else {
+                tuitionNames2[x] = tuitionNames1[i];
+              };
+              // increment name size;
+              nameSize++;
+              insert = false;
+            } else if (comp == 0) {
+              // modify start index
+              // stop iteration
+              break;
+            } else if (comp > 0) {
+              // if existing name is after new name
+              if (secondList) {
+                tuitionNames1[x].value = tutors[i].tuitionCenterName;
+                tuitionNames1[x].start = 0;
+                tuitionNames1[x+1] = tuitionNames2[x];
+              } else {
+                tuitionNames2[x].value = tutors[i].tuitionCenterName;
+                tuitionNames2[x].start = 0;
+                tuitionNames2[x+1] = tuitionNames1[x];
+              };
+              // increment name size;
+              nameSize++;
+              insert = false;
+            };
+          } else {
+            // after insertion
+            if (secondList) {
+              tuitionNames1[x+1] = tuitionNames2[x];
+            } else {
+              tuitionNames2[x+1] = tuitionNames1[x];
+            };
+          };
+
+          if (secondList) {
+            delete [] tuitionNames2;
+            secondList = false;
+          } else {
+            delete [] tuitionNames1;
+            secondList = true;
+          };
+        };
+        // add to sorted temporary array
+        //
+        // increment temporary array size
+        tempSize++;
+      };
+    };
+  };
+
+  // get user input
+  for (int i = 0; i < nameSize; i++) {
+    cout << i+1 << ". ";
+    if (secondList) {
+      cout << tuitionNames2[i].value;
+    } else {
+      cout << tuitionNames1[i].value;
+    };
+    cout << endl;
+  };
+  cout << "Please select: ";
+  cin >> select;
+
+  // search through the a portion of temporary array
+
+
+  // if no results
+  if (!found) {
+    cout << "No results found" << endl;
+  };
+
+  if (secondList) {
+    delete [] tuitionNames2;
+  } else {
+    delete [] tuitionNames1;
+  };
+  delete [] tempTutors;
+};
 
 
 void sortTutorID(Tutor *tutors, int tutorSize, Tutor *sortedTutors);
@@ -318,7 +472,7 @@ int main() {
   // dummy data
   // lower limit for time is 1/1/1970, https://docs.microsoft.com/en-us/cpp/atl-mfc-shared/reference/ctime-class
   tutors[0] = Tutor(4, "John", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0001", "Taman Sini", "S0001", "Science", 4);
-  tutors[1] = Tutor(3, "Susan", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0001", "Taman Sini", "S0001", "Science", 4);
+  tutors[1] = Tutor(3, "Susan", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0001", "Taman Sana", "S0001", "Science", 4);
   
   do {
     cout << "Please select function: ";
@@ -352,6 +506,13 @@ int main() {
         cout << "Search by Rating" << endl;
         cout << "----------------" << endl;
         searchRating(tutors, tutorSize);
+        break;
+
+      // search by tuition center name
+      case 5:
+        cout << "Search by Tuition Center Name" << endl;
+        cout << "_____________________________" << endl;
+        searchTuitionName(tutors, tutorSize);
         break;
 
       default:
