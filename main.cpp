@@ -192,28 +192,32 @@ void addTutor(Tutor *&tutors, int *tutorSize) {
   *tutorSize += 1;
 };
 
+void displayRecord(Tutor tutor) {
+  cout << "ID                 : " << tutor.tutorID << endl;
+  cout << "Name               : " << tutor.name << endl;
+  struct tm * dateJoined = localtime(&tutor.dateJoined);
+  cout << "Date Joined        : " << dateJoined->tm_mday << "/" << dateJoined->tm_mon + 1 << "/" << dateJoined->tm_year + 1900 << endl;
+  cout << "Date Terminated    : ";
+  if (tutor.dateTerminated != -1) {
+    // display date as it is set
+    struct tm * dateTerminated = localtime(&tutor.dateTerminated);
+    cout << dateTerminated->tm_mday << "/" << dateTerminated->tm_mon + 1 << "/" << dateTerminated->tm_year + 1900 << endl;
+  } else {
+    // hide date as it is not set
+    cout << "-" << endl;
+  };
+  cout << "Phone              : " << tutor.phone << endl;
+  cout << "Address            : " << tutor.address << endl;
+  cout << "Tuition Center Code: " << tutor.tuitionCenterCode << endl;
+  cout << "Tuition Center Name: " << tutor.tuitionCenterName << endl;
+  cout << "Subject Code       : " << tutor.subjectCode << endl;
+  cout << "Subject Name       : " << tutor.subjectName << endl;
+  cout << "Rating             : " << tutor.rating << endl << endl;
+};
+
 void displayAllRecords(Tutor *tutors, int tutorSize) {
   for (int i = 0; i < tutorSize; i ++) {
-    cout << "ID                 : " << tutors[i].tutorID << endl;
-    cout << "Name               : " << tutors[i].name << endl;
-    struct tm * dateJoined = localtime(&tutors[i].dateJoined);
-    cout << "Date Joined        : " << dateJoined->tm_mday << "/" << dateJoined->tm_mon + 1 << "/" << dateJoined->tm_year + 1900 << endl;
-    cout << "Date Terminated    : ";
-    if (tutors[i].dateTerminated != -1) {
-      // display date as it is set
-      struct tm * dateTerminated = localtime(&tutors[i].dateTerminated);
-      cout << dateTerminated->tm_mday << "/" << dateTerminated->tm_mon + 1 << "/" << dateTerminated->tm_year + 1900 << endl;
-    } else {
-      // hide date as it is not set
-      cout << "-" << endl;
-    };
-    cout << "Phone              : " << tutors[i].phone << endl;
-    cout << "Address            : " << tutors[i].address << endl;
-    cout << "Tuition Center Code: " << tutors[i].tuitionCenterCode << endl;
-    cout << "Tuition Center Name: " << tutors[i].tuitionCenterName << endl;
-    cout << "Subject Code       : " << tutors[i].subjectCode << endl;
-    cout << "Subject Name       : " << tutors[i].subjectName << endl;
-    cout << "Rating             : " << tutors[i].rating << endl << endl;
+    displayRecord(tutors[i]);
   };
 };
 
