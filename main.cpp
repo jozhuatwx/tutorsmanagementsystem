@@ -239,32 +239,66 @@ void displayAllRecords(Tutor *tutors, int tutorSize) {
 
 
 void searchTutorID(Tutor *tutors, int tutorSize) {
-  int tutorID;
-  Tutor found;
+  int tutorID = 0;
+  bool found;
 
+  // get user input
   cout << "Tutor ID: ";
   cin >> tutorID;
 
+  // search through the array
   for (int i = 0; i < tutorSize; i++) {
+    // find tutor with searched id
     if (tutors[i].tutorID == tutorID) {
-      found = tutors[i];
+      // display result
+      displayRecord(tutors[i]);
+      // set as found
+      found = true;
+      // stop iteration
       break;
     };
   };
 
-  if (found.name != "") {
-    displayRecord(found);
-  } else {
+  // if no results
+  if (!found) {
     cout << "No result found" << endl;
+  };
+};
+
+void searchRating(Tutor *tutors, int tutorSize) {
+  int rating;
+  bool found;
+
+  // get user input
+  do {
+    cout << "Rating: ";
+    cin >> rating;
+  } while (rating < 1 || rating > 5);
+
+  // search through the array
+  for (int i = 0; i < tutorSize; i++) {
+    // find tutors with searched rating
+    if (tutors[i].rating == rating) {
+      // display result
+      displayRecord(tutors[i]);
+      // set as found
+      found = true;
+    };
+  };
+
+  // if no results
+  if (!found) {
+    cout << "No results found" << endl;
   }
 };
 
-void searchRating(Tutor *tutors, int rating, int tutorSize, Tutor *searchedTutors);
 void searchTuitionName(Tutor *tutors, string tuitionCenterName, int tutorSize, Tutor *searchedTutors);
+
 
 void sortTutorID(Tutor *tutors, int tutorSize, Tutor *sortedTutors);
 void sortPayRate(Tutor *tutors, int tutorSize, Tutor *sortedTutors);
 void sortRating(Tutor *tutors, int tutorSize, Tutor *sortedTutors);
+
 
 void modifyTutor(Tutor *&tutors, int tutorSize);
 void deleteTutor(Tutor *&tutors, int *tutorSize);
@@ -307,6 +341,13 @@ int main() {
         cout << "Search by Tutor ID" << endl;
         cout << "------------------" << endl;
         searchTutorID(tutors, tutorSize);
+        break;
+
+      // search by rating
+      case 4:
+        cout << "Search by Rating" << endl;
+        cout << "----------------" << endl;
+        searchRating(tutors, tutorSize);
         break;
 
       default:
