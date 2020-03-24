@@ -165,34 +165,38 @@ void addTutor(Tutor *&tutors, int *tutorSize) {
   bool insert = true;
   Tutor newTutor(tutorID, name, dayJoined, monthJoined, yearJoined, 0, 0, 0, hourlyPayRate, phone, address, tuitionCenterCode, tuitionCenterName, subjectCode, subjectName, rating);
 
-  for (int i = 0; i < *tutorSize; i++) {
-    if (insert) {
-      // before insertion
-      // compare the strings
-      int comp = compareInsensitive(tutors[i].name, newTutor.name);
-      switch (comp) {
-        // if existing name is before new tutor
-        case -1:
-          newTutors[i] = tutors[i];
-          break;
+  if (*tutorSize == 0) {
+    newTutors[0] = newTutor;
+  } else {
+    for (int i = 0; i < *tutorSize; i++) {
+      if (insert) {
+        // before insertion
+        // compare the strings
+        int comp = compareInsensitive(tutors[i].name, newTutor.name);
+        switch (comp) {
+          // if existing name is before new tutor
+          case -1:
+            newTutors[i] = tutors[i];
+            break;
 
-        // if existing name is equal new tutor
-        case 0:
-          newTutors[i] = tutors[i];
-          newTutors[i+1] = newTutor;
-          insert = false;
-          break;
+          // if existing name is equal new tutor
+          case 0:
+            newTutors[i] = tutors[i];
+            newTutors[i+1] = newTutor;
+            insert = false;
+            break;
 
-        // if existing name is after new tutor
-        case 1:
-          newTutors[i] = newTutor;
-          newTutors[i+1] = tutors[i];
-          insert = false;
-          break;
+          // if existing name is after new tutor
+          case 1:
+            newTutors[i] = newTutor;
+            newTutors[i+1] = tutors[i];
+            insert = false;
+            break;
+        };
+      } else {
+        // after insertion
+        newTutors[i+1] = tutors[i];
       };
-    } else {
-      // after insertion
-      newTutors[i+1] = tutors[i];
     };
   };
 
