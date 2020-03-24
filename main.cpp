@@ -221,7 +221,28 @@ void displayAllRecords(Tutor *tutors, int tutorSize) {
   };
 };
 
-Tutor searchTutorID(Tutor *tutors, int tutorID, int tutorSize);
+
+void searchTutorID(Tutor *tutors, int tutorSize) {
+  int tutorID;
+  Tutor found;
+
+  cout << "Tutor ID: ";
+  cin >> tutorID;
+
+  for (int i = 0; i < tutorSize; i++) {
+    if (tutors[i].tutorID == tutorID) {
+      found = tutors[i];
+      break;
+    };
+  };
+
+  if (found.name != "") {
+    displayRecord(found);
+  } else {
+    cout << "No result found" << endl;
+  }
+};
+
 void searchRating(Tutor *tutors, int rating, int tutorSize, Tutor *searchedTutors);
 void searchTuitionName(Tutor *tutors, string tuitionCenterName, int tutorSize, Tutor *searchedTutors);
 
@@ -263,6 +284,16 @@ int main() {
         cout << "All Tutor Records" << endl;
         cout << "-----------------" << endl;
         displayAllRecords(tutors, tutorSize);
+        break;
+      
+      // search by tutor id
+      case 3:
+        cout << "Search by Tutor ID" << endl;
+        cout << "------------------" << endl;
+        searchTutorID(tutors, tutorSize);
+        break;
+
+      default:
         break;
     };
 
