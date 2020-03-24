@@ -112,34 +112,50 @@ void addTutor(Tutor *&tutors, int *tutorSize) {
   };
 
   // get user input
-  cout << "Name               : ";
-  cin >> name;
+  do {
+    cout << "Name               : ";
+    cin >> name;
+  } while (name == "");
 
   do {
     cout << "Date Joined (d/m/y): ";
     cin >> dayJoined >> separator >> monthJoined >> separator >> yearJoined;
   } while (!validateDate(dayJoined, monthJoined, yearJoined));
 
-  cout << "Hourly Pay Rate    : ";
-  cin >> hourlyPayRate;
+  do {
+    cout << "Hourly Pay (40-80) : ";
+    cin >> hourlyPayRate;
+  } while (hourlyPayRate < 40 || hourlyPayRate > 80);
   
-  cout << "Phone              : ";
-  cin >> phone;
+  do {
+    cout << "Phone              : ";
+    cin >> phone;
+  } while (phone == "");
 
-  cout << "Address            : ";
-  cin >> address;
+  do {
+    cout << "Address            : ";
+    cin >> address;
+  } while (address == "");
 
-  cout << "Tuition Center Code: ";
-  cin >> tuitionCenterCode;
+  do {
+    cout << "Tuition Center Code: ";
+    cin >> tuitionCenterCode;
+  } while (tuitionCenterCode == "");
 
-  cout << "Tuition Center Name: ";
-  cin >> tuitionCenterName;
+  do {
+    cout << "Tuition Center Name: ";
+    cin >> tuitionCenterName;
+  } while (tuitionCenterName == "");
 
-  cout << "Subject Code       : ";
-  cin >> subjectCode;
+  do {
+    cout << "Subject Code       : ";
+    cin >> subjectCode;
+  } while (subjectCode == "");
 
-  cout << "Subject Name       : ";
-  cin >> subjectName;
+  do {
+    cout << "Subject Name       : ";
+    cin >> subjectName;
+  } while (subjectName == "");
 
   do {
     cout << "Rating (1-5)       : ";
