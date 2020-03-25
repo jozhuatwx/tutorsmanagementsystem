@@ -1,0 +1,7 @@
+active
+#1: names that starts before the record creates an additional empty record (eg. A)
+#2: names that starts after the record only saves an empty record (eg. Zack)
+#3: search tuition name fails with segmentation fault (eg. Bukit)
+#4: search tuition name displays an empty record (eg. Taman)
+
+fixed
