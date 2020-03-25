@@ -174,7 +174,9 @@ void addTutor(Tutor *&tutors, int *tutorSize) {
   bool insert = true;
   Tutor newTutor(tutorID, name, dayJoined, monthJoined, yearJoined, 0, 0, 0, hourlyPayRate, phone, address, tuitionCenterCode, tuitionCenterName, subjectCode, subjectName, rating);
 
+  // insertion sort
   if (*tutorSize == 0) {
+    // insert new tutor as there are no existing tutors
     newTutors[0] = newTutor;
   } else {
     for (int i = 0; i < *tutorSize; i++) {
@@ -182,29 +184,28 @@ void addTutor(Tutor *&tutors, int *tutorSize) {
         // before insertion
         // compare the strings
         int comp = compareInsensitive(tutors[i].name, newTutor.name);
-        switch (comp) {
+        if (comp < 0) {
           // if existing name is before new tutor
-          case -1:
-            newTutors[i] = tutors[i];
-            break;
-
+          newTutors[i] = tutors[i];
+        } else if (comp == 0) {
           // if existing name is equal new tutor
-          case 0:
-            newTutors[i] = tutors[i];
-            newTutors[i+1] = newTutor;
-            insert = false;
-            break;
-
+          newTutors[i] = tutors[i];
+          newTutors[i + 1] = newTutor;
+          insert = false;
+        } else {
           // if existing name is after new tutor
-          case 1:
-            newTutors[i] = newTutor;
-            newTutors[i+1] = tutors[i];
-            insert = false;
-            break;
+          newTutors[i] = newTutor;
+          newTutors[i + 1] = tutors[i];
+          insert = false;
+        };
+
+        // if new name is after all existing names
+        if (insert && i == *tutorSize - 1) {
+          newTutors[i + 1] = newTutor;
         };
       } else {
         // after insertion
-        newTutors[i+1] = tutors[i];
+        newTutors[i + 1] = tutors[i];
       };
     };
   };
@@ -335,17 +336,15 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
   for (int i = 0; i < tutorSize; i++) {
     size_t found = findInsensitive(tutors[i].tuitionCenterName, tuitionCenterName);
     if (found != string::npos) {
+      // insertion sort
       if (nameSize == 0) {
+        // insert new name as there are no existing names
         tuitionNames1 = new SortCache[1];
         secondList = false;
         // add to tuition name list
         tuitionNames1[0] = SortCache(tutors[i].tuitionCenterName, 0);
         // increment name size;
         nameSize++;
-        // add to temporary array
-        tempTutors[tempSize] = tutors[i];
-        // increment temporary array size
-        tempSize++;
       } else {
         if (secondList) {
           tuitionNames1 = new SortCache[nameSize + 1];
@@ -354,7 +353,7 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
         };
 
         bool insert = true;
-        // find if center name added
+        // find if name added, if not, add it
         for (int x = 0, length = nameSize; x < length; x++) {
           // before insertion
           // compare the strings
@@ -369,28 +368,40 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
             if (comp < 0) {
               // if existing name is before new name
               if (secondList) {
-                tuitionNames1[x] = tuitionNames2[i];
+                tuitionNames1[x] = tuitionNames2[x];
               } else {
-                tuitionNames2[x] = tuitionNames1[i];
+                tuitionNames2[x] = tuitionNames1[x];
               };
-              // increment name size;
-              nameSize++;
-              insert = false;
             } else if (comp == 0) {
-              // modify start index
               // stop iteration
               break;
-            } else if (comp > 0) {
+            } else {
               // if existing name is after new name
               if (secondList) {
                 tuitionNames1[x].value = tutors[i].tuitionCenterName;
                 tuitionNames1[x].start = 0;
-                tuitionNames1[x+1] = tuitionNames2[x];
+                tuitionNames1[x + 1] = tuitionNames2[x];
               } else {
                 tuitionNames2[x].value = tutors[i].tuitionCenterName;
                 tuitionNames2[x].start = 0;
-                tuitionNames2[x+1] = tuitionNames1[x];
+                tuitionNames2[x + 1] = tuitionNames1[x];
               };
+
+              // increment name size;
+              nameSize++;
+              insert = false;
+            };
+
+            // if new name is after all existing names
+            if (insert && x == length - 1) {
+              if (secondList) {
+                tuitionNames1[x + 1].value = tutors[i].tuitionCenterName;
+                tuitionNames1[x + 1].start = 0;
+              } else {
+                tuitionNames2[x + 1].value = tutors[i].tuitionCenterName;
+                tuitionNames2[x + 1].start = 0;
+              };
+
               // increment name size;
               nameSize++;
               insert = false;
@@ -398,13 +409,13 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
           } else {
             // after insertion
             if (secondList) {
-              tuitionNames1[x+1] = tuitionNames2[x];
+              tuitionNames1[x + 1] = tuitionNames2[x];
             } else {
-              tuitionNames2[x+1] = tuitionNames1[x];
+              tuitionNames2[x + 1] = tuitionNames1[x];
             };
           };
 
-          if (secondList) {
+          if (!insert && secondList) {
             delete [] tuitionNames2;
             secondList = false;
           } else {
@@ -412,10 +423,6 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
             secondList = true;
           };
         };
-        // add to sorted temporary array
-        //
-        // increment temporary array size
-        tempSize++;
       };
     };
   };
@@ -446,7 +453,6 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
   } else {
     delete [] tuitionNames1;
   };
-  delete [] tempTutors;
 };
 
 
@@ -464,7 +470,7 @@ int main() {
   int select;
   int tutorSize = 10;
   Tutor *tutors;
-  tutors = new Tutor[10];
+  tutors = new Tutor[tutorSize];
 
   // dummy data
   // lower limit for time is 1/1/1970, https://docs.microsoft.com/en-us/cpp/atl-mfc-shared/reference/ctime-class
