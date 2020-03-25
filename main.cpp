@@ -219,9 +219,6 @@ void addTutor(Tutor *&tutors, int *tutorSize) {
 
   // increase size
   *tutorSize += 1;
-
-  // free memory
-  delete [] newTutors;
 };
 
 void displayRecord(Tutor tutor) {
@@ -465,14 +462,22 @@ void deleteTutor(Tutor *&tutors, int *tutorSize);
 int main() {
   // initialise
   int select;
-  int tutorSize = 2;
+  int tutorSize = 10;
   Tutor *tutors;
   tutors = new Tutor[10];
 
   // dummy data
   // lower limit for time is 1/1/1970, https://docs.microsoft.com/en-us/cpp/atl-mfc-shared/reference/ctime-class
-  tutors[0] = Tutor(4, "John", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0001", "Taman Sini", "S0001", "Science", 4);
-  tutors[1] = Tutor(3, "Susan", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0001", "Taman Sana", "S0001", "Science", 4);
+  tutors[0] = Tutor(2, "Aaron", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
+  tutors[1] = Tutor(1, "Bill", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
+  tutors[2] = Tutor(4, "Charlie", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
+  tutors[3] = Tutor(3, "Edwin", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 4);
+  tutors[4] = Tutor(10, "George", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0001", "Taman Laksamana", "S0001", "Science", 2);
+  tutors[5] = Tutor(8, "Jamal", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 3);
+  tutors[6] = Tutor(5, "Kenny", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 3);
+  tutors[7] = Tutor(9, "Maria", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 3);
+  tutors[8] = Tutor(7, "Patricia", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
+  tutors[9] = Tutor(6, "Shelby", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 1);
   
   do {
     cout << "Please select function: ";
