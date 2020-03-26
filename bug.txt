@@ -1,7 +1,6 @@
 active
 #h5: search tuition names fails when there is more than 3 names
 #m1: tuition names dynamic array is not properly deleted if there is duplicated names (eg. Bukit)
-#m2: date terminated can be before date joined
 #l1: adding the third duplicated name inserts in between, not after the last duplicated name (1,3,2 instead of 1,2,3)
 
 fixed
@@ -9,3 +8,6 @@ fixed
 #h2: names that starts after the record only saves an empty record (eg. Zack)
 #h3: search tuition name fails with segmentation fault (eg. Bukit)
 #h4: search tuition name displays an empty record (eg. Taman)
+#m2: date terminated can be before date joined
+#m3: does not accept lowercase 'y'
+#m4: accepts every letter in confirmation

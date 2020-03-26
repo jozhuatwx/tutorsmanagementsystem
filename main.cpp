@@ -5,7 +5,7 @@ using namespace std;
 
 // supplementary functions
 time_t intToTime(int day, int month, int year) {
-  struct tm * date;
+  struct tm *date;
 
   // set to current time
   time_t currentTime;
@@ -239,12 +239,12 @@ void addTutor(Tutor *&tutors, int *tutorSize) {
 void displayRecord(Tutor tutor) {
   cout << "ID                 : " << tutor.tutorID << endl;
   cout << "Name               : " << tutor.name << endl;
-  struct tm * dateJoined = localtime(&tutor.dateJoined);
+  struct tm *dateJoined = localtime(&tutor.dateJoined);
   cout << "Date Joined        : " << dateJoined->tm_mday << "/" << dateJoined->tm_mon + 1 << "/" << dateJoined->tm_year + 1900 << endl;
   cout << "Date Terminated    : ";
   if (tutor.dateTerminated != -1) {
     // display date as it is set
-    struct tm * dateTerminated = localtime(&tutor.dateTerminated);
+    struct tm *dateTerminated = localtime(&tutor.dateTerminated);
     cout << dateTerminated->tm_mday << "/" << dateTerminated->tm_mon + 1 << "/" << dateTerminated->tm_year + 1900 << endl;
   } else {
     // hide date as it is not set
@@ -477,7 +477,7 @@ void sortRating(Tutor *tutors, int tutorSize) {};
 
 void modifyTutor(Tutor *&tutors, int tutorSize) {
   // initialise
-  int tutorID, index, select;
+  int tutorID, select;
   string phone, address;
   bool found;
 
@@ -489,8 +489,38 @@ void modifyTutor(Tutor *&tutors, int tutorSize) {
   for (int i = 0; i < tutorSize; i++) {
     // find tutor with searched id
     if (tutors[i].tutorID == tutorID) {
-      // save index
-      index = i;
+      // get user input
+      cout << "Results found. Modify: " << endl;
+      cout << "1. Phone" << endl;
+      cout << "2. Address" << endl;
+      cout << "3. Both" << endl;
+      cout << "Please select (1-3): ";
+      cin >> select;
+
+      // modify phone
+      if (select == 1 || select == 3) {
+        cout << "Current Phone: " << tutors[i].phone << endl;
+        do {
+          cout << "New Phone: ";
+          cin >> phone;
+        } while (phone == "");
+      } else {
+        phone = tutors[i].phone;
+      };
+
+      // modify address
+      if (select == 2 || select == 3) {
+        cout << "Current Address: " << tutors[i].address << endl;
+        do {
+          cout << "New Address: ";
+          cin >> address;
+        } while (address == "");
+      } else {
+        address = tutors[i].address;
+      };
+
+      // modify tutor in tutor array
+      tutors[i] = Tutor(tutors[i].tutorID, tutors[i].name, tutors[i].dateJoined, tutors[i].dateTerminated, tutors[i].hourlyPayRate, phone, address, tutors[i].tuitionCenterCode, tutors[i].tuitionCenterName, tutors[i].subjectCode, tutors[i].subjectName, tutors[i].rating);
       // set as found
       found = true;
       // stop iteration
@@ -498,47 +528,15 @@ void modifyTutor(Tutor *&tutors, int tutorSize) {
     };
   };
 
-  if (found) {
-    cout << "Results found. Modify: " << endl;
-    cout << "1. Phone" << endl;
-    cout << "2. Address" << endl;
-    cout << "3. Both" << endl;
-    cout << "Please select (1-3): ";
-    cin >> select;
-
-    // modify phone
-    if (select == 1 || select == 3) {
-      cout << "Current Phone: " << tutors[index].phone << endl;
-      do {
-        cout << "New Phone: ";
-        cin >> phone;
-      } while (phone == "");
-    } else {
-      phone = tutors[index].phone;
-    };
-
-    // modify address
-    if (select == 2 || select == 3) {
-      cout << "Current Address: " << tutors[index].address << endl;
-      do {
-        cout << "New Address: ";
-        cin >> address;
-      } while (address == "");
-    } else {
-      address = tutors[index].address;
-    };
-
-    // modify tutor in tutor array
-    tutors[index] = Tutor(tutors[index].tutorID, tutors[index].name, tutors[index].dateJoined, tutors[index].dateTerminated, tutors[index].hourlyPayRate, phone, address, tutors[index].tuitionCenterCode, tutors[index].tuitionCenterName, tutors[index].subjectCode, tutors[index].subjectName, tutors[index].rating);
-  } else {
-    // if no results
+  // if no results
+  if (!found) {
     cout << "No result found" << endl;
   };
 };
 
 void terminateTutor(Tutor *&tutors, int tutorSize) {
   // initialise
-  int tutorID, index, day, month, year ;
+  int tutorID, day, month, year ;
   time_t dateTerminated;
   char separator, input;
   bool found;
@@ -551,8 +549,30 @@ void terminateTutor(Tutor *&tutors, int tutorSize) {
   for (int i = 0; i < tutorSize; i++) {
     // find tutor with searched id
     if (tutors[i].tutorID == tutorID) {
-      // save index
-      index = i;
+      // ask for termination date
+      do {
+        cout << "Date Terminated (d/m/y): ";
+        cin >> day >> separator >> month >> separator >> year;
+        // convert to time
+        dateTerminated = intToTime(day, month, year);
+      } while (!validateDate(day, month, year) || difftime(dateTerminated, tutors[i].dateJoined) <= 0);
+
+      // ask for confirmation
+      do {
+        cout << "Do you confirmed? (Y/N): ";
+        cin >> input;
+      } while (input != 'y' && input != 'Y' && input != 'n' && input != 'N');
+
+      switch (input) {
+        case 'y':
+        case 'Y':
+          // terminate tutor in tutor array
+          tutors[i] = Tutor(tutors[i].tutorID, tutors[i].name, tutors[i].dateJoined, dateTerminated, tutors[i].hourlyPayRate, tutors[i].phone, tutors[i].address, tutors[i].tuitionCenterCode, tutors[i].tuitionCenterName, tutors[i].subjectCode, tutors[i].subjectName, tutors[i].rating);
+          break;
+
+        default:
+          break;
+      };
       // set as found
       found = true;
       // stop iteration
@@ -560,36 +580,101 @@ void terminateTutor(Tutor *&tutors, int tutorSize) {
     };
   };
 
-  if (found) {
-    // ask for termination date
-    do {
-      cout << "Date Terminated (d/m/y): ";
-      cin >> day >> separator >> month >> separator >> year;
-    } while (!validateDate(day, month, year));
-
-    // convert to time
-    dateTerminated = intToTime(day, month, year);
-
-    // ask for confirmation
-    cout << "Do you confirmed? (Y/N): ";
-    cin >> input;
-
-    switch (input) {
-      case 'Y':
-        // terminate tutor in tutor array
-        tutors[index] = Tutor(tutors[index].tutorID, tutors[index].name, tutors[index].dateJoined, dateTerminated, tutors[index].hourlyPayRate, tutors[index].phone, tutors[index].address, tutors[index].tuitionCenterCode, tutors[index].tuitionCenterName, tutors[index].subjectCode, tutors[index].subjectName, tutors[index].rating);
-        break;
-
-      default:
-        break;
-    };
-  } else {
-    // if no results
+  // if no results
+  if (!found) {
     cout << "No result found" << endl;
   };
 };
 
-void deleteTutor(Tutor *&tutors, int *tutorSize) {};
+void deleteTutor(Tutor *&tutors, int *tutorSize) {
+  // initialise
+  int tutorID;
+  char separated, input;
+  bool found;
+
+  // create new array
+  Tutor newTutors[*tutorSize - 1];
+
+  // get user input
+  cout << "Tutor ID: ";
+  cin >> tutorID;
+
+  // search through the array
+  for (int i = 0; i < *tutorSize; i++) {
+    // find tutor with searched id
+    if (tutors[i].tutorID == tutorID) {
+      // print tutor details
+      displayRecord(tutors[i]);
+
+      if (tutors[i].dateTerminated == -1) {
+        break;
+      };
+
+      // check if tutor is terminated 6 months ago
+      struct tm *dateTerminated = localtime(&tutors[i].dateTerminated);
+
+      if (dateTerminated->tm_mon > 6) {
+        dateTerminated->tm_mon -= 6;
+        dateTerminated->tm_year += 1;
+      } else {
+        dateTerminated->tm_mon += 6;
+      };
+
+      if (difftime(mktime(dateTerminated), time(NULL)) > 0) {
+        break;
+      };
+
+      // ask for confirmation
+      do {
+        cout << "Do you confirmed? (Y/N): ";
+        cin >> input;
+      } while (input != 'y' && input != 'Y' && input != 'n' && input != 'N');
+
+      bool insert = true;
+
+      switch (input) {
+        case 'y':
+        case 'Y':
+          // copy to temporary array
+          for (int x = 0; x < *tutorSize - 1; x++) {
+            if (insert && x != i) {
+              newTutors[x] = tutors[x];
+            } else if (x == i && x != *tutorSize - 1) {
+              newTutors[x] = tutors[x + 1];
+              insert = false;
+            } else if (!insert) {
+              newTutors[x] = tutors[x + 1];
+            };
+          };
+
+          // decrease tutor array by 1
+          tutors = new Tutor[*tutorSize - 1];
+
+          // copy all element back into tutor array
+          for (int x = 0; x < *tutorSize - 1; x++) {
+            tutors[x] = newTutors[x];
+          };
+
+          // decrease size
+          *tutorSize -= 1;
+          break;
+
+        default:
+          break;
+      };
+
+      // set as found
+      found = true;
+      // stop iteration
+      break;
+    };
+  };
+
+  // if no results
+  if (!found) {
+    cout << "No result found" << endl;
+  };
+};
 
 
 int main() {
@@ -601,16 +686,16 @@ int main() {
 
   // dummy data
   // lower limit for time is 1/1/1970, https://docs.microsoft.com/en-us/cpp/atl-mfc-shared/reference/ctime-class
-  tutors[0] = Tutor(2, "Aaron", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
+  tutors[0] = Tutor(2, "Aaron", 2, 3, 2000, 3, 3, 2000, 50, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
   tutors[1] = Tutor(1, "Bill", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
   tutors[2] = Tutor(4, "Charlie", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
   tutors[3] = Tutor(3, "Edwin", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 4);
-  tutors[4] = Tutor(10, "George", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0001", "Taman Laksamana", "S0001", "Science", 2);
+  tutors[4] = Tutor(10, "George", 2, 3, 2000, 3, 3, 2000, 50, "0123456789", "Somewhere", "C0001", "Taman Laksamana", "S0001", "Science", 2);
   tutors[5] = Tutor(8, "Jamal", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 3);
   tutors[6] = Tutor(5, "Kenny", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 3);
   tutors[7] = Tutor(9, "Maria", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 3);
   tutors[8] = Tutor(7, "Patricia", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
-  tutors[9] = Tutor(6, "Shelby", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 1);
+  tutors[9] = Tutor(6, "Shelby", 2, 3, 2000, 3, 3, 2000, 50, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 1);
 
   do {
     cout << "Tutor Management System" << endl;
