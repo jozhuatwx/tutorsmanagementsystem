@@ -536,7 +536,59 @@ void modifyTutor(Tutor *&tutors, int tutorSize) {
   };
 };
 
-void terminateTutor(Tutor *&tutors, int tutorSize) {};
+void terminateTutor(Tutor *&tutors, int tutorSize) {
+  // initialise
+  int tutorID, index, day, month, year ;
+  time_t dateTerminated;
+  char separator, input;
+  bool found;
+
+  // get user input
+  cout << "Tutor ID: ";
+  cin >> tutorID;
+
+  // search through the array
+  for (int i = 0; i < tutorSize; i++) {
+    // find tutor with searched id
+    if (tutors[i].tutorID == tutorID) {
+      // save index
+      index = i;
+      // set as found
+      found = true;
+      // stop iteration
+      break;
+    };
+  };
+
+  if (found) {
+    // ask for termination date
+    do {
+      cout << "Date Terminated (d/m/y): ";
+      cin >> day >> separator >> month >> separator >> year;
+    } while (!validateDate(day, month, year));
+
+    // convert to time
+    dateTerminated = intToTime(day, month, year);
+
+    // ask for confirmation
+    cout << "Do you confirmed? (Y/N): ";
+    cin >> input;
+
+    switch (input) {
+      case 'Y':
+        // terminate tutor in tutor array
+        tutors[index] = Tutor(tutors[index].tutorID, tutors[index].name, tutors[index].dateJoined, dateTerminated, tutors[index].hourlyPayRate, tutors[index].phone, tutors[index].address, tutors[index].tuitionCenterCode, tutors[index].tuitionCenterName, tutors[index].subjectCode, tutors[index].subjectName, tutors[index].rating);
+        break;
+
+      default:
+        break;
+    };
+  } else {
+    // if no results
+    cout << "No result found" << endl;
+  };
+};
+
 void deleteTutor(Tutor *&tutors, int *tutorSize) {};
 
 

@@ -3,7 +3,6 @@ upcoming feature
 #h2: sort and display by tutor id
 #h3: sort and display by pay rate
 #h4: sort and display by rating
-#h6: terminate existing tutor
 #h7: delete existing tutor
 #h8: display tutor records in pages
 #m1: display success/failure messages
@@ -11,3 +10,4 @@ upcoming feature
 
 added feature
 #h5: modify existing tutor
+#h6: terminate existing tutor
