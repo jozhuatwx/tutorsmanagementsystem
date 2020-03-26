@@ -11,3 +11,5 @@ fixed
 #m2: date terminated can be before date joined
 #m3: does not accept lowercase 'y'
 #m4: accepts every letter in confirmation
+#m5: search tuition name shows option to select even when there is no option
+#m6: search tuition name crashes if there are no options

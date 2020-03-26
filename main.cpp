@@ -259,13 +259,6 @@ void displayRecord(Tutor tutor) {
   cout << "Rating             : " << tutor.rating << endl << endl;
 };
 
-void displayAllRecords(Tutor *tutors, int tutorSize) {
-  for (int i = 0; i < tutorSize; i ++) {
-    displayRecord(tutors[i]);
-  };
-};
-
-
 void searchTutorID(Tutor *tutors, int tutorSize) {
   int tutorID = 0;
   bool found;
@@ -293,9 +286,90 @@ void searchTutorID(Tutor *tutors, int tutorSize) {
   };
 };
 
+void displayAllRecords(Tutor *tutors, int tutorSize) {
+  // initialise
+  int select, page = 1, upper;
+
+  // calculate total page numbers
+  upper = tutorSize / 10;
+  if (tutorSize % 10 > 0) {
+    upper++;
+  };
+
+  cout << "ID   Name     " << endl;
+  do {
+    if (select != 1) {
+      // display page
+      for (int i = (page - 1) * 10; i < page * 10; i++) {
+        // if it is the last page, break if page has less than 10
+        if (page == upper && i == (page - 1) * 10 + tutorSize % 10) {
+          break;
+        };
+        // spacing
+        if (tutors[i].tutorID < 10) {
+          cout << " ";
+        };
+        cout << tutors[i].tutorID << "   " << tutors[i].name << endl;
+      };
+      
+      // display page number
+      cout << endl << "Page " << page << endl << endl;
+    };
+
+    // get user input
+    cout << "1. View more details" << endl;
+    cout << "2. Jump to page";
+    if (upper == 1) {
+      cout << " (disabled)";
+    };
+    cout << endl << "3. Next page";
+    if (page >= upper) {
+      cout << " (disabled)";
+    };
+    cout << endl << "4. Previous page";
+    if (page <= 1) {
+      cout << " (disabled)";
+    };
+    cout << endl << "5. Exit" << endl;
+    cout << "Please select (1-5):";
+    cin >> select;
+
+    switch (select) {
+      case 1:
+        searchTutorID(tutors, tutorSize);
+        break;
+
+      case 2:
+        if (upper > 1) {
+          do {
+            cout << "Page (1-" << upper << "): ";
+            cin >> page;
+          } while (page < 1 || page > upper);
+        };
+        break;
+
+      case 3:
+        if (page < upper) {
+          page++;
+        };
+        break;
+
+      case 4:
+        if (page > 1) {
+          page--;
+        };
+        break;
+
+      default:
+        break;
+    };
+  } while (select != 5);
+};
+
 void searchRating(Tutor *tutors, int tutorSize) {
-  int rating;
+  int rating, tempSize = 0;
   bool found;
+  Tutor tempTutors[tutorSize];
 
   // get user input
   do {
@@ -307,8 +381,10 @@ void searchRating(Tutor *tutors, int tutorSize) {
   for (int i = 0; i < tutorSize; i++) {
     // find tutors with searched rating
     if (tutors[i].rating == rating) {
-      // display result
-      displayRecord(tutors[i]);
+      // copy to temporary array
+      tempTutors[tempSize] = tutors[i];
+      // increase array size
+      tempSize++;
       // set as found
       found = true;
     };
@@ -317,7 +393,10 @@ void searchRating(Tutor *tutors, int tutorSize) {
   // if no results
   if (!found) {
     cout << "No results found" << endl;
-  }
+  };
+
+  // display all records
+  displayAllRecords(tempTutors, tempSize);
 };
 
 struct SortCache {
@@ -348,8 +427,7 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
 
   // search through the array
   for (int i = 0; i < tutorSize; i++) {
-    size_t found = findInsensitive(tutors[i].tuitionCenterName, tuitionCenterName);
-    if (found != string::npos) {
+    if (findInsensitive(tutors[i].tuitionCenterName, tuitionCenterName) != string::npos) {
       // insertion sort
       if (nameSize == 0) {
         // insert new name as there are no existing names
@@ -442,17 +520,19 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
   };
 
   // get user input
-  for (int i = 0; i < nameSize; i++) {
-    cout << i+1 << ". ";
-    if (secondList) {
-      cout << tuitionNames2[i].value;
-    } else {
-      cout << tuitionNames1[i].value;
+  if (nameSize >= 2) {
+    for (int i = 0; i < nameSize; i++) {
+      cout << i + 1 << ". ";
+      if (secondList) {
+        cout << tuitionNames2[i].value;
+      } else {
+        cout << tuitionNames1[i].value;
+      };
+      cout << endl;
     };
-    cout << endl;
+    cout << "Please select: ";
+    cin >> select;
   };
-  cout << "Please select: ";
-  cin >> select;
 
   // search through the a portion of temporary array
 
@@ -460,20 +540,18 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
   // if no results
   if (!found) {
     cout << "No results found" << endl;
-  };
-
-  if (secondList) {
-    delete [] tuitionNames2;
   } else {
-    delete [] tuitionNames1;
+    if (secondList) {
+      delete [] tuitionNames2;
+    } else {
+      delete [] tuitionNames1;
+    };
   };
 };
-
 
 void sortTutorID(Tutor *tutors, int tutorSize) {};
 void sortPayRate(Tutor *tutors, int tutorSize) {};
 void sortRating(Tutor *tutors, int tutorSize) {};
-
 
 void modifyTutor(Tutor *&tutors, int tutorSize) {
   // initialise
@@ -680,7 +758,7 @@ void deleteTutor(Tutor *&tutors, int *tutorSize) {
 int main() {
   // initialise
   int select, subselect;
-  int tutorSize = 10;
+  int tutorSize = 14;
   Tutor *tutors;
   tutors = new Tutor[tutorSize];
 
@@ -696,6 +774,10 @@ int main() {
   tutors[7] = Tutor(9, "Maria", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 3);
   tutors[8] = Tutor(7, "Patricia", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
   tutors[9] = Tutor(6, "Shelby", 2, 3, 2000, 3, 3, 2000, 50, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 1);
+  tutors[10] = Tutor(11, "Shelby", 2, 3, 2000, 3, 3, 2000, 50, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 1);
+  tutors[11] = Tutor(12, "Shelby", 2, 3, 2000, 3, 3, 2000, 50, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 1);
+  tutors[12] = Tutor(13, "Shelby", 2, 3, 2000, 3, 3, 2000, 50, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 1);
+  tutors[13] = Tutor(14, "Shelby", 2, 3, 2000, 3, 3, 2000, 50, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 1);
 
   do {
     cout << "Tutor Management System" << endl;
