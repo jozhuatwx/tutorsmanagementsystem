@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <time.h>
 #include <iostream>
-
 using namespace std;
 
 // supplementary functions
@@ -45,7 +44,7 @@ bool validateDate(int day, int month, int year) {
       };
     };
   };
-  
+
   return false;
 };
 
@@ -135,7 +134,7 @@ void addTutor(Tutor *&tutors, int *tutorSize) {
     cout << "Hourly Pay (40-80) : ";
     cin >> hourlyPayRate;
   } while (hourlyPayRate < 40 || hourlyPayRate > 80);
-  
+
   do {
     cout << "Phone              : ";
     cin >> phone;
@@ -212,7 +211,7 @@ void addTutor(Tutor *&tutors, int *tutorSize) {
 
   // increase tutor array by 1
   tutors = new Tutor[*tutorSize + 1];
-  
+
   // copy all element back into tutor array
   for (int i = 0; i < *tutorSize + 1; i++) {
     tutors[i] = newTutors[i];
@@ -456,18 +455,19 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
 };
 
 
-void sortTutorID(Tutor *tutors, int tutorSize, Tutor *sortedTutors);
-void sortPayRate(Tutor *tutors, int tutorSize, Tutor *sortedTutors);
-void sortRating(Tutor *tutors, int tutorSize, Tutor *sortedTutors);
+void sortTutorID(Tutor *tutors, int tutorSize) {};
+void sortPayRate(Tutor *tutors, int tutorSize) {};
+void sortRating(Tutor *tutors, int tutorSize) {};
 
 
-void modifyTutor(Tutor *&tutors, int tutorSize);
-void deleteTutor(Tutor *&tutors, int *tutorSize);
+void modifyTutor(Tutor *&tutors, int tutorSize) {};
+void terminateTutor(Tutor *&tutors, int tutorSize) {};
+void deleteTutor(Tutor *&tutors, int *tutorSize) {};
 
 
 int main() {
   // initialise
-  int select;
+  int select, subselect;
   int tutorSize = 10;
   Tutor *tutors;
   tutors = new Tutor[tutorSize];
@@ -484,8 +484,19 @@ int main() {
   tutors[7] = Tutor(9, "Maria", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 3);
   tutors[8] = Tutor(7, "Patricia", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
   tutors[9] = Tutor(6, "Shelby", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 1);
-  
+
   do {
+    cout << "Tutor Management System" << endl;
+    cout << "-----------------------" << endl;
+    cout << "1. Add Tutor" << endl;
+    cout << "2. Display All Tutors" << endl;
+    cout << "3. Search Tutors" << endl;
+    cout << "4. Sort and Display Tutors" << endl;
+    cout << "5. Modify Tutor" << endl;
+    cout << "6. Terminate Tutor" << endl;
+    cout << "7. Delete Tutor" << endl;
+    cout << "8. Exit" << endl;
+
     cout << "Please select function: ";
     cin >> select;
     cout << endl;
@@ -504,26 +515,102 @@ int main() {
         cout << "-----------------" << endl;
         displayAllRecords(tutors, tutorSize);
         break;
-      
-      // search by tutor id
+
+      // search records
       case 3:
-        cout << "Search by Tutor ID" << endl;
-        cout << "------------------" << endl;
-        searchTutorID(tutors, tutorSize);
+        cout << "1. Tutor ID" << endl;
+        cout << "2. Rating" << endl;
+        cout << "3. Tuition Center Name" << endl;
+
+        do {
+          cout << "Search by (1-3): ";
+          cin >> subselect;
+        } while (subselect < 1 || subselect > 3);
+
+        switch (subselect) {
+          // search by tutor id
+          case 1:
+            cout << "Search by Tutor ID" << endl;
+            cout << "------------------" << endl;
+            searchTutorID(tutors, tutorSize);
+            break;
+
+          // search by rating
+          case 2:
+            cout << "Search by Rating" << endl;
+            cout << "----------------" << endl;
+            searchRating(tutors, tutorSize);
+            break;
+
+          // search by tuition center name
+          case 3:
+            cout << "Search by Tuition Center Name" << endl;
+            cout << "_____________________________" << endl;
+            searchTuitionName(tutors, tutorSize);
+            break;
+
+          default:
+            break;
+        };
         break;
 
-      // search by rating
+      // sort and display records
       case 4:
-        cout << "Search by Rating" << endl;
-        cout << "----------------" << endl;
-        searchRating(tutors, tutorSize);
+        cout << "1. Tutor ID (Ascending)" << endl;
+        cout << "2. Hourly Pay Rate (Ascending)" << endl;
+        cout << "3. Rating (Ascending)" << endl;
+
+        do {
+          cout << "Sort and Display by (1-3): " << endl;
+          cin >> subselect;
+        } while (subselect < 1 || subselect > 3);
+
+        switch (subselect) {
+          // sort and display by tutor id
+          case 1:
+            cout << "Sort and Display by Tutor ID" << endl;
+            cout << "----------------------------" << endl;
+            sortTutorID(tutors, tutorSize);
+            break;
+
+          // sort and display by hourly pay rate
+          case 2:
+            cout << "Sort and Display by Hourly Pay Rate" << endl;
+            cout << "-----------------------------------" << endl;
+            sortPayRate(tutors, tutorSize);
+            break;
+
+          // sort and display by rating
+          case 3:
+            cout << "Sort and Display by Rating" << endl;
+            cout << "--------------------------" << endl;
+            sortRating(tutors, tutorSize);
+            break;
+
+          default:
+            break;
+        };
         break;
 
-      // search by tuition center name
+      // modify tutor
       case 5:
-        cout << "Search by Tuition Center Name" << endl;
-        cout << "_____________________________" << endl;
-        searchTuitionName(tutors, tutorSize);
+        cout << "Modify Tutor" << endl;
+        cout << "------------" << endl;
+        modifyTutor(tutors, tutorSize);
+        break;
+
+      // terminate tutor
+      case 6:
+        cout << "Terminate Tutor" << endl;
+        cout << "---------------" << endl;
+        terminateTutor(tutors, tutorSize);
+        break;
+
+      // delete tutor
+      case 7:
+        cout << "Delete Tutor" << endl;
+        cout << "------------" << endl;
+        deleteTutor(tutors, &tutorSize);
         break;
 
       default:
@@ -531,7 +618,7 @@ int main() {
     };
 
     cout << endl;
-  } while (select != 10);
+  } while (select != 8);
 
   return 0;
 };
