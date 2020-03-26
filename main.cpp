@@ -84,6 +84,21 @@ struct Tutor {
 
     Tutor() {};
 
+    Tutor(int tutorID, string name, time_t dateJoined, time_t dateTerminated, double hourlyPayRate, string phone, string address, string tuitionCenterCode, string tuitionCenterName, string subjectCode, string subjectName, int rating) {
+      this->tutorID = tutorID;
+      this->name = name;
+      this->dateJoined = dateJoined;
+      this->dateTerminated = dateTerminated;
+      this->hourlyPayRate = hourlyPayRate;
+      this->phone = phone;
+      this->address = address;
+      this->tuitionCenterCode = tuitionCenterCode;
+      this->tuitionCenterName = tuitionCenterName;
+      this->subjectCode = subjectCode;
+      this->subjectName = subjectName;
+      this->rating = rating;
+    };
+
     Tutor(int tutorID, string name, int dayJoined, int monthJoined, int yearJoined, int dayTerminated, int monthTerminated, int yearTerminated, double hourlyPayRate, string phone, string address, string tuitionCenterCode, string tuitionCenterName, string subjectCode, string subjectName, int rating) {
       this->tutorID = tutorID;
       this->name = name;
@@ -460,7 +475,67 @@ void sortPayRate(Tutor *tutors, int tutorSize) {};
 void sortRating(Tutor *tutors, int tutorSize) {};
 
 
-void modifyTutor(Tutor *&tutors, int tutorSize) {};
+void modifyTutor(Tutor *&tutors, int tutorSize) {
+  // initialise
+  int tutorID, index, select;
+  string phone, address;
+  bool found;
+
+  // get user input
+  cout << "Tutor ID: ";
+  cin >> tutorID;
+
+  // search through the array
+  for (int i = 0; i < tutorSize; i++) {
+    // find tutor with searched id
+    if (tutors[i].tutorID == tutorID) {
+      // save index
+      index = i;
+      // set as found
+      found = true;
+      // stop iteration
+      break;
+    };
+  };
+
+  if (found) {
+    cout << "Results found. Modify: " << endl;
+    cout << "1. Phone" << endl;
+    cout << "2. Address" << endl;
+    cout << "3. Both" << endl;
+    cout << "Please select (1-3): ";
+    cin >> select;
+
+    // modify phone
+    if (select == 1 || select == 3) {
+      cout << "Current Phone: " << tutors[index].phone << endl;
+      do {
+        cout << "New Phone: ";
+        cin >> phone;
+      } while (phone == "");
+    } else {
+      phone = tutors[index].phone;
+    };
+
+    // modify address
+    if (select == 2 || select == 3) {
+      cout << "Current Address: " << tutors[index].address << endl;
+      do {
+        cout << "New Address: ";
+        cin >> address;
+      } while (address == "");
+    } else {
+      address = tutors[index].address;
+    };
+
+    // modify tutor in tutor array
+    tutors[index] = Tutor(tutors[index].tutorID, tutors[index].name, tutors[index].dateJoined, tutors[index].dateTerminated, tutors[index].hourlyPayRate, phone, address, tutors[index].tuitionCenterCode, tutors[index].tuitionCenterName, tutors[index].subjectCode, tutors[index].subjectName, tutors[index].rating);
+  } else {
+    // if no results
+    cout << "No result found" << endl;
+  };
+};
+
 void terminateTutor(Tutor *&tutors, int tutorSize) {};
 void deleteTutor(Tutor *&tutors, int *tutorSize) {};
 
