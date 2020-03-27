@@ -198,14 +198,9 @@ void addTutor(Tutor *&tutors, int *tutorSize) {
         // before insertion
         // compare the strings
         int comp = compareInsensitive(tutors[i].name, newTutor.name);
-        if (comp < 0) {
-          // if existing name is before new tutor
+        if (comp <= 0) {
+          // if existing name is before or same name as new tutor
           newTutors[i] = tutors[i];
-        } else if (comp == 0) {
-          // if existing name is equal new tutor
-          newTutors[i] = tutors[i];
-          newTutors[i + 1] = newTutor;
-          insert = false;
         } else {
           // if existing name is after new tutor
           newTutors[i] = newTutor;
@@ -296,13 +291,13 @@ void displayAllRecords(Tutor *tutors, int tutorSize) {
     upper++;
   };
 
-  cout << "ID   Name     " << endl;
   do {
     if (select != 1) {
+      cout << "ID   Name     " << endl;
       // display page
       for (int i = (page - 1) * 10; i < page * 10; i++) {
         // if it is the last page, break if page has less than 10
-        if (page == upper && i == (page - 1) * 10 + tutorSize % 10) {
+        if (page == upper && i == (page - 1) * 10 + tutorSize % 10 && i != 0) {
           break;
         };
         // spacing
@@ -337,6 +332,7 @@ void displayAllRecords(Tutor *tutors, int tutorSize) {
     switch (select) {
       case 1:
         searchTutorID(tutors, tutorSize);
+        cout << endl;
         break;
 
       case 2:
@@ -346,18 +342,21 @@ void displayAllRecords(Tutor *tutors, int tutorSize) {
             cin >> page;
           } while (page < 1 || page > upper);
         };
+        cout << endl;
         break;
 
       case 3:
         if (page < upper) {
           page++;
         };
+        cout << endl;
         break;
 
       case 4:
         if (page > 1) {
           page--;
         };
+        cout << endl;
         break;
 
       default:
@@ -758,7 +757,7 @@ void deleteTutor(Tutor *&tutors, int *tutorSize) {
 int main() {
   // initialise
   int select, subselect;
-  int tutorSize = 14;
+  int tutorSize = 10;
   Tutor *tutors;
   tutors = new Tutor[tutorSize];
 
@@ -774,10 +773,6 @@ int main() {
   tutors[7] = Tutor(9, "Maria", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 3);
   tutors[8] = Tutor(7, "Patricia", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
   tutors[9] = Tutor(6, "Shelby", 2, 3, 2000, 3, 3, 2000, 50, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 1);
-  tutors[10] = Tutor(11, "Shelby", 2, 3, 2000, 3, 3, 2000, 50, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 1);
-  tutors[11] = Tutor(12, "Shelby", 2, 3, 2000, 3, 3, 2000, 50, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 1);
-  tutors[12] = Tutor(13, "Shelby", 2, 3, 2000, 3, 3, 2000, 50, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 1);
-  tutors[13] = Tutor(14, "Shelby", 2, 3, 2000, 3, 3, 2000, 50, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 1);
 
   do {
     cout << "Tutor Management System" << endl;
