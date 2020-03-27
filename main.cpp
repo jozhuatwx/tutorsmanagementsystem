@@ -412,106 +412,114 @@ struct SortCache {
 
 void searchTuitionName(Tutor *tutors, int tutorSize) {
   // initialise
-  string tuitionCenterName;
-  bool found, secondList;
-  SortCache *tuitionNames1, *tuitionNames2;
-  Tutor *tempTutors = new Tutor[tutorSize];
-  int nameSize = 0, tempSize = 0, select;
+  int tempSize = 0, nameSize = 0, select;
+  string tuitionName;
+  SortCache *tempNames1, *tempNames2;
+  bool temp1;
 
   // get user input
   do {
     cout << "Tuition Center Name: ";
-    cin >> tuitionCenterName;
-  } while (tuitionCenterName == "");
+    cin >> tuitionName;
+  } while (tuitionName == "");
 
   // search through the array
   for (int i = 0; i < tutorSize; i++) {
-    if (findInsensitive(tutors[i].tuitionCenterName, tuitionCenterName) != string::npos) {
+    // find tutors with searched tuition name
+    if (findInsensitive(tutors[i].tuitionCenterName, tuitionName) != string::npos) {
       // insertion sort
       if (nameSize == 0) {
-        // insert new name as there are no existing names
-        tuitionNames1 = new SortCache[1];
-        secondList = false;
-        // add to tuition name list
-        tuitionNames1[0] = SortCache(tutors[i].tuitionCenterName, 0);
-        // increment name size;
+        // allocate memory
+        tempNames1 = new SortCache[1];
+        // insert new tuition name and tutor as there are no existing tutors
+        tempNames1[0] = SortCache(tutors[i].tuitionCenterName, 0);
+        // increase size
         nameSize++;
+        // set temp1 as active
+        temp1 = true;
       } else {
-        if (secondList) {
-          tuitionNames1 = new SortCache[nameSize + 1];
+        bool insert = true;
+
+        // allocate memory
+        if (temp1) {
+          tempNames2 = new SortCache[nameSize + 1];
         } else {
-          tuitionNames2 = new SortCache[nameSize + 1];
+          tempNames1 = new SortCache[nameSize + 1];
         };
 
-        bool insert = true;
-        // find if name added, if not, add it
         for (int x = 0, length = nameSize; x < length; x++) {
-          // before insertion
-          // compare the strings
           if (insert) {
-            int comp = 0;
-            if (secondList) {
-              comp = compareInsensitive(tuitionNames2[x].value, tutors[i].tuitionCenterName);
+            // before insertion
+            // compare the strings
+            int comp;
+            if (temp1) {
+              comp = compareInsensitive(tempNames1[x].value, tutors[i].tuitionCenterName);
             } else {
-              comp = compareInsensitive(tuitionNames1[x].value, tutors[i].tuitionCenterName);
+              comp = compareInsensitive(tempNames2[x].value, tutors[i].tuitionCenterName);
             };
 
             if (comp < 0) {
               // if existing name is before new name
-              if (secondList) {
-                tuitionNames1[x] = tuitionNames2[x];
+              if (temp1) {
+                tempNames2[x] = tempNames1[x];
               } else {
-                tuitionNames2[x] = tuitionNames1[x];
+                tempNames1[x] = tempNames2[x];
               };
             } else if (comp == 0) {
+              // if existing name is same with new name
               // stop iteration
               break;
             } else {
               // if existing name is after new name
-              if (secondList) {
-                tuitionNames1[x].value = tutors[i].tuitionCenterName;
-                tuitionNames1[x].start = 0;
-                tuitionNames1[x + 1] = tuitionNames2[x];
+              if (temp1) {
+                tempNames2[x] = SortCache(tutors[i].tuitionCenterName, 0);
+                tempNames2[x + 1] = tempNames1[x];
               } else {
-                tuitionNames2[x].value = tutors[i].tuitionCenterName;
-                tuitionNames2[x].start = 0;
-                tuitionNames2[x + 1] = tuitionNames1[x];
+                tempNames1[x] = SortCache(tutors[i].tuitionCenterName, 0);
+                tempNames1[x + 1] = tempNames2[x];
               };
 
-              // increment name size;
+              // increase size
               nameSize++;
               insert = false;
             };
 
             // if new name is after all existing names
-            if (insert && x == length - 1) {
-              if (secondList) {
-                tuitionNames1[x + 1].value = tutors[i].tuitionCenterName;
-                tuitionNames1[x + 1].start = 0;
+            if (insert && x == nameSize - 1) {
+              if (temp1) {
+                tempNames2[x + 1] = SortCache(tutors[i].tuitionCenterName, 0);
               } else {
-                tuitionNames2[x + 1].value = tutors[i].tuitionCenterName;
-                tuitionNames2[x + 1].start = 0;
+                tempNames1[x + 1] = SortCache(tutors[i].tuitionCenterName, 0);
               };
 
-              // increment name size;
+              // increase size
               nameSize++;
               insert = false;
             };
           } else {
             // after insertion
-            if (secondList) {
-              tuitionNames1[x + 1] = tuitionNames2[x];
+            if (temp1) {
+              tempNames2[x + 1] = tempNames1[x];
             } else {
-              tuitionNames2[x + 1] = tuitionNames1[x];
+              tempNames1[x + 1] = tempNames2[x];
             };
           };
+        };
 
-          if (!insert && secondList) {
-            delete [] tuitionNames2;
-            secondList = false;
+        // deallocate memory
+        if (insert) {
+          if (temp1) {
+            delete [] tempNames2;
           } else {
-            delete [] tuitionNames1;
-            secondList = true;
+            delete [] tempNames1;
+          };
+        } else {
+          if (temp1) {
+            delete [] tempNames1;
+            temp1 = false;
+          } else {
+            delete [] tempNames2;
+            temp1 = true;
           };
         };
       };
@@ -519,31 +527,33 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
   };
 
   // get user input
-  if (nameSize >= 2) {
+  if (nameSize == 1) {
+    select = 1;
+  } else if (nameSize >= 2) {
     for (int i = 0; i < nameSize; i++) {
       cout << i + 1 << ". ";
-      if (secondList) {
-        cout << tuitionNames2[i].value;
+      if (temp1) {
+        cout << tempNames1[i].value;
       } else {
-        cout << tuitionNames1[i].value;
+        cout << tempNames2[i].value;
       };
       cout << endl;
     };
-    cout << "Please select: ";
-    cin >> select;
+    do {
+      cout << "Please select (1-" << nameSize << "): ";
+      cin >> select;
+    } while (select < 1 || select > nameSize);
+  } else {
+    cout << "No results found" << endl;
   };
 
-  // search through the a portion of temporary array
-
-
-  // if no results
-  if (!found) {
-    cout << "No results found" << endl;
-  } else {
-    if (secondList) {
-      delete [] tuitionNames2;
+  // search through a portion of the temporary array
+  if (select >= 1) {
+    // deallocate memory
+    if (temp1) {
+      delete [] tempNames1;
     } else {
-      delete [] tuitionNames1;
+      delete [] tempNames2;
     };
   };
 };
