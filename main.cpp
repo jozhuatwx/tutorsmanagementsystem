@@ -66,6 +66,21 @@ size_t findInsensitive(string s1, string s2) {
   return s1.find(s2);
 };
 
+void ltrim(string &str) {
+  // erase with whitespaces from the left
+  str.erase(0, str.find_first_not_of("\t\n\v\f\r "));
+};
+
+void rtrim(string &str) {
+  // erase with whitespaces from the right
+  str.erase(str.find_last_not_of("\t\n\v\f\r ") + 1);
+};
+
+void trim(string &str) {
+  ltrim(str);
+  rtrim(str);
+};
+
 // tutor structure
 struct Tutor {
   public:
@@ -137,52 +152,92 @@ void addTutor(Tutor *&tutors, int *tutorSize) {
   // get user input
   do {
     cout << "Name               : ";
-    cin >> name;
+    getline(cin, name);
+    trim(name);
   } while (name == "");
 
   do {
     cout << "Date Joined (d/m/y): ";
-    cin >> dayJoined >> separator >> monthJoined >> separator >> yearJoined;
+    // ignore enter key
+    if (cin.peek() != '\n') {
+      cin >> dayJoined >> separator >> monthJoined >> separator >> yearJoined;
+    };
+
+    if (!cin) {
+      // clear error state
+      cin.clear();
+    };
+
+    // clear the input buffer
+    cin.ignore(numeric_limits<streamsize>::max(),'\n');
   } while (!validateDate(dayJoined, monthJoined, yearJoined));
 
   do {
     cout << "Hourly Pay (40-80) : ";
-    cin >> hourlyPayRate;
+    // ignore enter key
+    if (cin.peek() != '\n') {
+      cin >> hourlyPayRate;
+    };
+
+    if (!cin) {
+      // clear error state
+      cin.clear();
+    };
+
+    // clear the input buffer
+    cin.ignore(numeric_limits<streamsize>::max(),'\n');
   } while (hourlyPayRate < 40 || hourlyPayRate > 80);
 
   do {
     cout << "Phone              : ";
-    cin >> phone;
+    getline(cin, phone);
+    trim(phone);
   } while (phone == "");
 
   do {
     cout << "Address            : ";
-    cin >> address;
+    getline(cin, address);
+    trim(address);
   } while (address == "");
 
   do {
     cout << "Tuition Center Code: ";
-    cin >> tuitionCenterCode;
+    getline(cin, tuitionCenterCode);
+    trim(tuitionCenterCode);
   } while (tuitionCenterCode == "");
 
   do {
     cout << "Tuition Center Name: ";
-    cin >> tuitionCenterName;
+    getline(cin, tuitionCenterName);
+    trim(tuitionCenterName);
   } while (tuitionCenterName == "");
 
   do {
     cout << "Subject Code       : ";
-    cin >> subjectCode;
+    getline(cin, subjectCode);
+    trim(subjectCode);
   } while (subjectCode == "");
 
   do {
     cout << "Subject Name       : ";
-    cin >> subjectName;
+    getline(cin, subjectName);
+    trim(subjectName);
   } while (subjectName == "");
 
   do {
     cout << "Rating (1-5)       : ";
-    cin >> rating;
+    // ignore enter key
+    if (cin.peek() != '\n') {
+      cin >> rating;
+    };
+
+    if (!cin) {
+      // clear error state
+      cin.clear();
+    };
+
+    // clear the input buffer
+    cin.ignore(numeric_limits<streamsize>::max(),'\n');
   } while (rating < 1 || rating > 5);
 
   bool insert = true;
@@ -260,7 +315,18 @@ void searchTutorID(Tutor *tutors, int tutorSize) {
 
   // get user input
   cout << "Tutor ID: ";
-  cin >> tutorID;
+  // ignore enter key
+  if (cin.peek() != '\n') {
+    cin >> tutorID;
+  };
+
+  if (!cin) {
+    // clear error state
+    cin.clear();
+  };
+
+  // clear the input buffer
+  cin.ignore(numeric_limits<streamsize>::max(),'\n');
 
   // search through the array
   for (int i = 0; i < tutorSize; i++) {
@@ -327,7 +393,18 @@ void displayAllRecords(Tutor *tutors, int tutorSize) {
     };
     cout << endl << "5. Exit" << endl;
     cout << "Please select (1-5):";
-    cin >> select;
+    // ignore enter key
+    if (cin.peek() != '\n') {
+      cin >> select;
+    };
+
+    if (!cin) {
+      // clear error state
+      cin.clear();
+    };
+
+    // clear the input buffer
+    cin.ignore(numeric_limits<streamsize>::max(),'\n');
 
     switch (select) {
       case 1:
@@ -339,7 +416,18 @@ void displayAllRecords(Tutor *tutors, int tutorSize) {
         if (upper > 1) {
           do {
             cout << "Page (1-" << upper << "): ";
-            cin >> page;
+            // ignore enter key
+            if (cin.peek() != '\n') {
+              cin >> page;
+            };
+
+            if (!cin) {
+              // clear error state
+              cin.clear();
+            };
+
+            // clear the input buffer
+            cin.ignore(numeric_limits<streamsize>::max(),'\n');
           } while (page < 1 || page > upper);
         };
         cout << endl;
@@ -373,7 +461,18 @@ void searchRating(Tutor *tutors, int tutorSize) {
   // get user input
   do {
     cout << "Rating: ";
-    cin >> rating;
+    // ignore enter key
+    if (cin.peek() != '\n') {
+      cin >> rating;
+    };
+
+    if (!cin) {
+      // clear error state
+      cin.clear();
+    };
+
+    // clear the input buffer
+    cin.ignore(numeric_limits<streamsize>::max(),'\n');
   } while (rating < 1 || rating > 5);
 
   // search through the array
@@ -452,7 +551,8 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
   // get user input
   do {
     cout << "Tuition Center Name: ";
-    cin >> tuitionName;
+    getline(cin, tuitionName);
+    trim(tuitionName);
   } while (tuitionName == "");
 
   // search through the array
@@ -531,7 +631,18 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
     };
     do {
       cout << "Please select (1-" << nameSize << "): ";
-      cin >> select;
+      // ignore enter key
+      if (cin.peek() != '\n') {
+        cin >> select;
+      };
+
+      if (!cin) {
+        // clear error state
+        cin.clear();
+      };
+
+      // clear the input buffer
+      cin.ignore(numeric_limits<streamsize>::max(),'\n');
     } while (select < 1 || select > nameSize);
   } else {
     cout << "No results found" << endl;
@@ -560,7 +671,18 @@ void modifyTutor(Tutor *&tutors, int tutorSize) {
 
   // get user input
   cout << "Tutor ID: ";
-  cin >> tutorID;
+  // ignore enter key
+  if (cin.peek() != '\n') {
+    cin >> tutorID;
+  };
+
+  if (!cin) {
+    // clear error state
+    cin.clear();
+  };
+
+  // clear the input buffer
+  cin.ignore(numeric_limits<streamsize>::max(),'\n');
 
   // search through the array
   for (int i = 0; i < tutorSize; i++) {
@@ -572,14 +694,26 @@ void modifyTutor(Tutor *&tutors, int tutorSize) {
       cout << "2. Address" << endl;
       cout << "3. Both" << endl;
       cout << "Please select (1-3): ";
-      cin >> select;
+      // ignore enter key
+      if (cin.peek() != '\n') {
+        cin >> select;
+      };
+
+      if (!cin) {
+        // clear error state
+        cin.clear();
+      };
+
+      // clear the input buffer
+      cin.ignore(numeric_limits<streamsize>::max(),'\n');
 
       // modify phone
       if (select == 1 || select == 3) {
         cout << "Current Phone: " << tutors[i].phone << endl;
         do {
           cout << "New Phone: ";
-          cin >> phone;
+          getline(cin, phone);
+          trim(phone);
         } while (phone == "");
       } else {
         phone = tutors[i].phone;
@@ -590,7 +724,8 @@ void modifyTutor(Tutor *&tutors, int tutorSize) {
         cout << "Current Address: " << tutors[i].address << endl;
         do {
           cout << "New Address: ";
-          cin >> address;
+          getline(cin, address);
+          trim(address);
         } while (address == "");
       } else {
         address = tutors[i].address;
@@ -620,7 +755,18 @@ void terminateTutor(Tutor *&tutors, int tutorSize) {
 
   // get user input
   cout << "Tutor ID: ";
-  cin >> tutorID;
+  // ignore enter key
+  if (cin.peek() != '\n') {
+    cin >> tutorID;
+  };
+
+  if (!cin) {
+    // clear error state
+    cin.clear();
+  };
+
+  // clear the input buffer
+  cin.ignore(numeric_limits<streamsize>::max(),'\n');
 
   // search through the array
   for (int i = 0; i < tutorSize; i++) {
@@ -629,9 +775,20 @@ void terminateTutor(Tutor *&tutors, int tutorSize) {
       // ask for termination date
       do {
         cout << "Date Terminated (d/m/y): ";
-        cin >> day >> separator >> month >> separator >> year;
-        // convert to time
-        dateTerminated = intToTime(day, month, year);
+        // ignore enter key
+        if (cin.peek() != '\n') {
+          cin >> day >> separator >> month >> separator >> year;
+          // convert to time
+          dateTerminated = intToTime(day, month, year);
+        };
+
+        if (!cin) {
+          // clear error state
+          cin.clear();
+        };
+
+        // clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(),'\n');
       } while (!validateDate(day, month, year) || difftime(dateTerminated, tutors[i].dateJoined) <= 0);
 
       // ask for confirmation
@@ -650,6 +807,8 @@ void terminateTutor(Tutor *&tutors, int tutorSize) {
         default:
           break;
       };
+      // clear the input buffer
+      cin.ignore(numeric_limits<streamsize>::max(),'\n');
       // set as found
       found = true;
       // stop iteration
@@ -674,7 +833,18 @@ void deleteTutor(Tutor *&tutors, int *tutorSize) {
 
   // get user input
   cout << "Tutor ID: ";
-  cin >> tutorID;
+  // ignore enter key
+  if (cin.peek() != '\n') {
+    cin >> tutorID;
+  };
+
+  if (!cin) {
+    // clear error state
+    cin.clear();
+  };
+
+  // clear the input buffer
+  cin.ignore(numeric_limits<streamsize>::max(),'\n');
 
   // search through the array
   for (int i = 0; i < *tutorSize; i++) {
@@ -739,7 +909,8 @@ void deleteTutor(Tutor *&tutors, int *tutorSize) {
         default:
           break;
       };
-
+      // clear the input buffer
+      cin.ignore(numeric_limits<streamsize>::max(),'\n');
       // set as found
       found = true;
       // stop iteration
@@ -772,7 +943,7 @@ int main() {
   tutors[6] = Tutor(5, "Kenny", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 3);
   tutors[7] = Tutor(9, "Maria", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 3);
   tutors[8] = Tutor(7, "Patricia", 2, 3, 2000, 0, 0, 0, 50, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
-  tutors[9] = Tutor(6, "Shelby", 2, 3, 2000, 3, 3, 2000, 50, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 1);
+  tutors[9] = Tutor(6, "Shelby", 2, 3, 2000, 3, 3, 2000, 50, "0123456789", "Somewhere", "C0004", "Bukit Petaling", "S0001", "Science", 1);
 
   do {
     cout << "Tutor Management System" << endl;
@@ -786,8 +957,21 @@ int main() {
     cout << "7. Delete Tutor" << endl;
     cout << "8. Exit" << endl;
 
-    cout << "Please select function: ";
-    cin >> select;
+    do {
+      cout << "Please select function: ";
+      // ignore enter key
+      if (cin.peek() != '\n') {
+        cin >> select;
+      };
+
+      if (!cin) {
+        // clear error state
+        cin.clear();
+      };
+
+      // clear the input buffer
+      cin.ignore(numeric_limits<streamsize>::max(),'\n');
+    } while (select < 1 || select > 8);
     cout << endl;
 
     switch (select) {
@@ -813,7 +997,18 @@ int main() {
 
         do {
           cout << "Search by (1-3): ";
-          cin >> subselect;
+          // ignore enter key
+          if (cin.peek() != '\n') {
+            cin >> subselect;
+          };
+
+          if (!cin) {
+            // clear error state
+            cin.clear();
+          };
+
+          // clear the input buffer
+          cin.ignore(numeric_limits<streamsize>::max(),'\n');
         } while (subselect < 1 || subselect > 3);
 
         switch (subselect) {
@@ -850,8 +1045,19 @@ int main() {
         cout << "3. Rating (Ascending)" << endl;
 
         do {
-          cout << "Sort and Display by (1-3): " << endl;
-          cin >> subselect;
+          cout << "Sort and Display by (1-3): ";
+          // ignore enter key
+          if (cin.peek() != '\n') {
+            cin >> subselect;
+          };
+
+          if (!cin) {
+            // clear error state
+            cin.clear();
+          };
+
+          // clear the input buffer
+          cin.ignore(numeric_limits<streamsize>::max(),'\n');
         } while (subselect < 1 || subselect > 3);
 
         switch (subselect) {

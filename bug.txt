@@ -1,5 +1,6 @@
 active
 #m7: search rating allocates potentially too much memory to temporary array
+#l2: input integers don't repeat question if a space is entered before enter
 
 fixed
 #h1: names that starts before the record creates an additional empty record (eg. A)
@@ -8,10 +9,12 @@ fixed
 #h4: search tuition name displays an empty record (eg. Taman)
 #h5: search tuition names fails when there is more than 3 names
 #h6: display all tutors does not show anything when it is multiples of 10
+#h7: add tutor with spacing fills up the next value (split with the spacing)
 #m1: tuition names dynamic array is not properly deleted if there is duplicated names (eg. Bukit)
 #m2: date terminated can be before date joined
 #m3: does not accept lowercase 'y'
 #m4: accepts every letter in confirmation
 #m5: search tuition name shows option to select even when there is no option
 #m6: search tuition name crashes if there are no options
+#m8: input string when expecting a number loops forever
 #l1: adding the third duplicated name inserts in between, not after the last duplicated name (1,3,2 instead of 1,2,3)
