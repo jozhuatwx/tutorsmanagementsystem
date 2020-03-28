@@ -199,7 +199,7 @@ void addTutor(Tutor *&tutors, int *tutorSize) {
         // compare the strings
         int comp = compareInsensitive(tutors[i].name, newTutor.name);
         if (comp <= 0) {
-          // if existing name is before or same name as new tutor
+          // if existing name is before or same as new tutor
           newTutors[i] = tutors[i];
         } else {
           // if existing name is after new tutor
@@ -410,6 +410,38 @@ struct SortCache {
   };
 };
 
+int binarySearchCache(SortCache *arr, string keyword, int size) {
+  int lower = 0, mid, upper = size - 1;
+
+  while (lower <= upper) {
+    // get mid point
+    mid = (upper - lower) / 2 + lower;
+    // compare strings
+    int comp = compareInsensitive(arr[mid].value, keyword);
+    if (comp == 0) {
+      // if existing name is same as new name
+      return -1;
+    };
+    if (comp < 0) {
+      // if existing name is before new name
+      lower = mid + 1;
+    } else {
+      // if existing name is after new name
+      upper = mid - 1;
+    };
+  };
+
+  // compare strings
+  int comp = compareInsensitive(arr[mid].value, keyword);
+  if (comp > 0) {
+    // if existing name is after new name
+    return mid;
+  } else {
+    // if existing name is before new name
+    return mid + 1;
+  };
+};
+
 void searchTuitionName(Tutor *tutors, int tutorSize) {
   // initialise
   int tempSize = 0, nameSize = 0, select;
@@ -427,7 +459,7 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
   for (int i = 0; i < tutorSize; i++) {
     // find tutors with searched tuition name
     if (findInsensitive(tutors[i].tuitionCenterName, tuitionName) != string::npos) {
-      // insertion sort
+      // binary insertion sort
       if (nameSize == 0) {
         // allocate memory
         tempNames1 = new SortCache[1];
@@ -438,89 +470,47 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
         // set temp1 as active
         temp1 = true;
       } else {
-        bool insert = true;
-
-        // allocate memory
+        // binary search if tuition name exists
+        int index;
         if (temp1) {
-          tempNames2 = new SortCache[nameSize + 1];
+          index = binarySearchCache(tempNames1, tutors[i].tuitionCenterName, nameSize);
         } else {
-          tempNames1 = new SortCache[nameSize + 1];
+          index = binarySearchCache(tempNames2, tutors[i].tuitionCenterName, nameSize);
         };
 
-        for (int x = 0, length = nameSize; x < length; x++) {
-          if (insert) {
-            // before insertion
-            // compare the strings
-            int comp;
-            if (temp1) {
-              comp = compareInsensitive(tempNames1[x].value, tutors[i].tuitionCenterName);
-            } else {
-              comp = compareInsensitive(tempNames2[x].value, tutors[i].tuitionCenterName);
-            };
-
-            if (comp < 0) {
-              // if existing name is before new name
-              if (temp1) {
-                tempNames2[x] = tempNames1[x];
-              } else {
-                tempNames1[x] = tempNames2[x];
-              };
-            } else if (comp == 0) {
-              // if existing name is same with new name
-              // stop iteration
-              break;
-            } else {
-              // if existing name is after new name
-              if (temp1) {
-                tempNames2[x] = SortCache(tutors[i].tuitionCenterName, 0);
-                tempNames2[x + 1] = tempNames1[x];
-              } else {
-                tempNames1[x] = SortCache(tutors[i].tuitionCenterName, 0);
-                tempNames1[x + 1] = tempNames2[x];
-              };
-
-              // increase size
-              nameSize++;
-              insert = false;
-            };
-
-            // if new name is after all existing names
-            if (insert && x == nameSize - 1) {
-              if (temp1) {
-                tempNames2[x + 1] = SortCache(tutors[i].tuitionCenterName, 0);
-              } else {
-                tempNames1[x + 1] = SortCache(tutors[i].tuitionCenterName, 0);
-              };
-
-              // increase size
-              nameSize++;
-              insert = false;
-            };
-          } else {
-            // after insertion
-            if (temp1) {
-              tempNames2[x + 1] = tempNames1[x];
-            } else {
-              tempNames1[x + 1] = tempNames2[x];
-            };
-          };
-        };
-
-        // deallocate memory
-        if (insert) {
+        if (index >= 0) {
+          // name does not exist
+          // increase size
+          nameSize++;
           if (temp1) {
-            delete [] tempNames2;
-          } else {
-            delete [] tempNames1;
-          };
-        } else {
-          if (temp1) {
+            // allocate memory
+            tempNames2 = new SortCache[nameSize + 1];
+            for (int x = 0; x < index; x++) {
+              tempNames2[x] = tempNames1[x];
+            };
+            tempNames2[index] = SortCache(tutors[i].tuitionCenterName, 0);
+            for (int x = index + 1; x < nameSize; x++) {
+              tempNames2[x] = tempNames1[x - 1];
+            };
+            // deallocate memory
             delete [] tempNames1;
             temp1 = false;
           } else {
+            // allocate memory
+            tempNames1 = new SortCache[nameSize + 1];
+            for (int x = 0; x < index; x++) {
+              tempNames1[x] = tempNames2[x];
+            };
+            tempNames1[index] = SortCache(tutors[i].tuitionCenterName, 0);
+            for (int x = index + 1; x < nameSize; x++) {
+              tempNames1[x] = tempNames2[x - 1];
+            };
+            // deallocate memory
             delete [] tempNames2;
             temp1 = true;
           };
+        } else {
+          // name exists
         };
       };
     };
