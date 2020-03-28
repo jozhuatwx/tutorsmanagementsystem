@@ -543,7 +543,7 @@ struct SortCache {
   };
 };
 
-int binarySearchCache(SortCache *arr, string keyword, int size) {
+bool binarySearchCache(SortCache *arr, string keyword, int size, int *index) {
   int lower = 0, mid, upper = size - 1;
 
   while (lower <= upper) {
@@ -553,7 +553,8 @@ int binarySearchCache(SortCache *arr, string keyword, int size) {
     int comp = compareInsensitive(arr[mid].value, keyword);
     if (comp == 0) {
       // if existing name is same as new name
-      return -1;
+      *index = mid;
+      return true;
     };
     if (comp < 0) {
       // if existing name is before new name
@@ -568,19 +569,22 @@ int binarySearchCache(SortCache *arr, string keyword, int size) {
   int comp = compareInsensitive(arr[mid].value, keyword);
   if (comp > 0) {
     // if existing name is after new name
-    return mid;
+    *index = mid;
+    return false;
   } else {
     // if existing name is before new name
-    return mid + 1;
+    *index = mid + 1;
+    return false;
   };
 };
 
 void searchTuitionName(Tutor *tutors, int tutorSize) {
   // initialise
-  int tempSize = 0, nameSize = 0, select;
+  int tempSize = 0, nameSize = 0, nameIndex, tempIndex, select;
   string tuitionName;
   SortCache *tempNames1, *tempNames2;
-  bool temp1;
+  Tutor *tempTutors1, *tempTutors2;
+  bool name1, exist, temp1;
 
   // get user input
   do {
@@ -597,55 +601,160 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
       if (nameSize == 0) {
         // allocate memory
         tempNames1 = new SortCache[1];
-        // insert new tuition name and tutor as there are no existing tutors
+        // insert new tuition name as there are no existing names
         tempNames1[0] = SortCache(tutors[i].tuitionCenterName, 0);
-        // increase size
+        // increase name size
         nameSize++;
-        // set temp1 as active
-        temp1 = true;
+        // set name 1 as active
+        name1 = true;
       } else {
         // binary search if tuition name exists
-        int index;
-        if (temp1) {
-          index = binarySearchCache(tempNames1, tutors[i].tuitionCenterName, nameSize);
+        if (name1) {
+          exist = binarySearchCache(tempNames1, tutors[i].tuitionCenterName, nameSize, &nameIndex);
         } else {
-          index = binarySearchCache(tempNames2, tutors[i].tuitionCenterName, nameSize);
+          exist = binarySearchCache(tempNames2, tutors[i].tuitionCenterName, nameSize, &nameIndex);
         };
 
-        if (index >= 0) {
+        if (!exist) {
           // name does not exist
-          // increase size
-          nameSize++;
-          if (temp1) {
+          if (name1) {
             // allocate memory
             tempNames2 = new SortCache[nameSize + 1];
-            for (int x = 0; x < index; x++) {
+            for (int x = 0; x < nameIndex; x++) {
               tempNames2[x] = tempNames1[x];
             };
-            tempNames2[index] = SortCache(tutors[i].tuitionCenterName, 0);
-            for (int x = index + 1; x < nameSize; x++) {
-              tempNames2[x] = tempNames1[x - 1];
+
+            // calculate start value
+            int start;
+            if (nameIndex == 0) {
+              // name is before all existing names
+              start = 0;
+            } else if (nameIndex == nameSize) {
+              // name is after all existing names
+              start = tempSize;
+            } else {
+              // name is in between existing names
+              start = tempNames1[nameIndex].start;
             };
+            tempNames2[nameIndex] = SortCache(tutors[i].tuitionCenterName, start);
+
+            for (int x = nameIndex + 1; x < nameSize + 1; x++) {
+              tempNames2[x].value = tempNames1[x - 1].value;
+              tempNames2[x].start = tempNames1[x - 1].start + 1;
+            };
+
             // deallocate memory
             delete [] tempNames1;
-            temp1 = false;
+            name1 = false;
           } else {
             // allocate memory
             tempNames1 = new SortCache[nameSize + 1];
-            for (int x = 0; x < index; x++) {
+            for (int x = 0; x < nameIndex; x++) {
               tempNames1[x] = tempNames2[x];
             };
-            tempNames1[index] = SortCache(tutors[i].tuitionCenterName, 0);
-            for (int x = index + 1; x < nameSize; x++) {
-              tempNames1[x] = tempNames2[x - 1];
+
+            // calculate start value
+            int start;
+            if (nameIndex == 0) {
+              // name is before all existing names
+              start = 0;
+            } else if (nameIndex == nameSize) {
+              // name is after all existing names
+              start = tempSize;
+            } else {
+              // name is in between existing names
+              start = tempNames2[nameIndex].start;
             };
+            tempNames1[nameIndex] = SortCache(tutors[i].tuitionCenterName, start);
+
+            for (int x = nameIndex + 1; x < nameSize + 1; x++) {
+              tempNames1[x].value = tempNames2[x - 1].value;
+              tempNames1[x].value = tempNames2[x - 1].start + 1;
+            };
+
             // deallocate memory
             delete [] tempNames2;
-            temp1 = true;
+            name1 = true;
           };
+
+          // increase name size
+          nameSize++;
         } else {
           // name exists
+          // adjust start of all names after the current name
+          if (name1) {
+            for (int x = nameIndex + 1; x < nameSize; x++) {
+              tempNames1[x].start += 1;
+            };
+          } else {
+            for (int x = nameIndex + 1; x < nameSize; x++) {
+              tempNames2[x].start += 1;
+            };
+          };
         };
+      };
+
+      if (tempSize == 0) {
+        // allocate memory
+        tempTutors1 = new Tutor[1];
+        // insert tutor as there are no existing tutors
+        tempTutors1[0] = tutors[i];
+        // increase temporary array size
+        tempSize++;
+        // set temp 1 as active
+        temp1 = true;
+      } else {
+        // calculate index
+        if (nameIndex < nameSize - 1) {
+          // name is in between existing names;
+          if (name1) {
+            tempIndex = tempNames1[nameIndex + 1].start - 1;
+          } else {
+            tempIndex = tempNames2[nameIndex + 1].start - 1;
+          };
+        } else {
+          tempIndex = tempSize;
+        };
+
+        // copy element into temporary array
+        if (temp1) {
+          // allocate memory
+          tempTutors2 = new Tutor[tempSize + 1];
+
+          for (int x = 0; x < tempIndex; x++) {
+            tempTutors2[x] = tempTutors1[x];
+          };
+
+          tempTutors2[tempIndex] = tutors[i];
+
+          for (int x = tempIndex + 1; x < tempSize + 1; x++) {
+            tempTutors2[x] = tempTutors1[x - 1];
+          };
+
+          // deallocate memory
+          delete [] tempTutors1;
+          temp1 = false;
+        } else {
+          // allocate memory
+          tempTutors1 = new Tutor[tempSize + 1];
+
+          for (int x = 0; x < tempIndex; x++) {
+            tempTutors1[x] = tempTutors2[x];
+          };
+
+          tempTutors1[tempIndex] = tutors[i];
+
+          for (int x = tempIndex + 1; x < tempSize + 1; x++) {
+            tempTutors1[x] = tempTutors2[x - 1];
+          };
+
+          // deallocate memory
+          delete [] tempTutors2;
+          temp1 = true;
+        };
+
+        // increase temporary array size
+        tempSize++;
       };
     };
   };
@@ -656,7 +765,7 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
   } else if (nameSize >= 2) {
     for (int i = 0; i < nameSize; i++) {
       cout << i + 1 << ". ";
-      if (temp1) {
+      if (name1) {
         cout << tempNames1[i].value;
       } else {
         cout << tempNames2[i].value;
@@ -685,11 +794,68 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
 
   // search through a portion of the temporary array
   if (select >= 1) {
-    // deallocate memory
+    int size, start;
+    if (name1) {
+      // calculate size
+      if (select == 1) {
+        if (nameSize == 1) {
+          size = tempSize;
+        } else {
+          size = tempNames1[select].start;
+        };
+      } else if (select < nameSize) {
+        size = tempNames1[select].start - tempNames1[select - 1].start;
+      } else {
+        size = tempSize - tempNames1[select - 1].start;
+      };
+      start = tempNames1[select - 1].start;
+    } else {
+      // calculate size
+      if (select == 1) {
+        if (nameSize == 1) {
+          size = tempSize;
+        } else {
+          size = tempNames2[select].start;
+        };
+      } else if (select < nameSize) {
+        size = tempNames2[select].start - tempNames2[select - 1].start;
+      } else {
+        size = tempSize - tempNames2[select - 1].start;
+      };
+      start = tempNames2[select - 1].start;
+    };
+
     if (temp1) {
+      tempTutors2 = new Tutor[size];
+      for (int i = 0; i < size; i++) {
+        tempTutors2[i] = tempTutors1[start + i];
+      };
+      delete [] tempTutors1;
+      temp1 = false;
+
+      displayAllRecords(tempTutors2, size);
+    } else {
+      tempTutors1 = new Tutor[size];
+      for (int i = 0; i < size; i++) {
+        tempTutors1[i] = tempTutors2[start + i];
+      };
+      delete [] tempTutors2;
+      temp1 = true;
+
+      displayAllRecords(tempTutors1, size);
+    };
+
+    // deallocate memory
+    if (name1) {
       delete [] tempNames1;
     } else {
       delete [] tempNames2;
+    };
+
+    if (temp1) {
+      delete [] tempTutors1;
+    } else {
+      delete [] tempTutors2;
     };
   };
 };

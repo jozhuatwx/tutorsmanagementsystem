@@ -1,11 +1,11 @@
 upcoming feature
-#h1: search by tuition center name
 #h2: sort and display by tutor id
 #h3: sort and display by pay rate
 #h4: sort and display by rating
 #m1: display success/failure messages
 
 added feature
+#h1: search by tuition center name
 #h5: modify existing tutor
 #h6: terminate existing tutor
 #h7: delete existing tutor
