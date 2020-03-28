@@ -1,5 +1,4 @@
 active
-#m7: search rating allocates potentially too much memory to temporary array
 #l2: input integers don't repeat question if a space is entered before enter
 
 fixed
@@ -16,5 +15,6 @@ fixed
 #m4: accepts every letter in confirmation
 #m5: search tuition name shows option to select even when there is no option
 #m6: search tuition name crashes if there are no options
+#m7: search rating allocates potentially too much memory to temporary array
 #m8: input string when expecting a number loops forever
 #l1: adding the third duplicated name inserts in between, not after the last duplicated name (1,3,2 instead of 1,2,3)

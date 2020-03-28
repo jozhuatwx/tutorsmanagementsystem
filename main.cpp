@@ -455,8 +455,8 @@ void displayAllRecords(Tutor *tutors, int tutorSize) {
 
 void searchRating(Tutor *tutors, int tutorSize) {
   int rating, tempSize = 0;
-  bool found;
-  Tutor tempTutors[tutorSize];
+  Tutor *tempTutors1, *tempTutors2;
+  bool temp1;
 
   // get user input
   do {
@@ -479,22 +479,56 @@ void searchRating(Tutor *tutors, int tutorSize) {
   for (int i = 0; i < tutorSize; i++) {
     // find tutors with searched rating
     if (tutors[i].rating == rating) {
-      // copy to temporary array
-      tempTutors[tempSize] = tutors[i];
-      // increase array size
-      tempSize++;
-      // set as found
-      found = true;
+      if (tempSize == 0) {
+        // allocate memory
+        tempTutors1 = new Tutor[1];
+        tempTutors1[0] = tutors[i];
+        temp1 = true;
+        // increase temporary array size
+        tempSize++;
+      } else {
+        if (temp1) {
+          // allocate memory
+          tempTutors2 = new Tutor[tempSize + 1];
+          for (int x = 0; x < tempSize; x++) {
+            tempTutors2[x] = tempTutors1[x];
+          };
+          tempTutors2[tempSize] = tutors[i];
+          // deallocate memory
+          delete [] tempTutors1;
+          temp1 = false;
+        } else {
+          // allocate memory
+          tempTutors1 = new Tutor[tempSize + 1];
+          for (int x = 0; x < tempSize; x++) {
+            tempTutors1[x] = tempTutors2[x];
+          };
+          tempTutors1[tempSize] = tutors[i];
+          // deallocate memory
+          delete [] tempTutors2;
+          temp1 = true;
+        };
+        // increase temporary array size
+        tempSize++;
+      };
     };
   };
 
-  // if no results
-  if (!found) {
+  if (tempSize > 0) {
+    // display all records
+    if (temp1) {
+      displayAllRecords(tempTutors1, tempSize);
+      // deallocate memory
+      delete [] tempTutors1;
+    } else {
+      displayAllRecords(tempTutors2, tempSize);
+      // deallocate memory
+      delete [] tempTutors2;
+    };
+  } else {
+    // if no results
     cout << "No results found" << endl;
   };
-
-  // display all records
-  displayAllRecords(tempTutors, tempSize);
 };
 
 struct SortCache {
@@ -645,6 +679,7 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
       cin.ignore(numeric_limits<streamsize>::max(),'\n');
     } while (select < 1 || select > nameSize);
   } else {
+    // if no results
     cout << "No results found" << endl;
   };
 
