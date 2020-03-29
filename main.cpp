@@ -885,44 +885,44 @@ int binarySearchID(Tutor *tutors, Tutor key, int lower, int upper) {
 };
 
 int binarySearchPayRate(Tutor *tutors, Tutor key, int lower, int upper) {
-  // recursive binary search
+  // recursive stable binary search
   if (upper <= lower) {
-    return (key.hourlyPayRate > tutors[lower].hourlyPayRate ? (lower + 1) : lower);
+    return (key.hourlyPayRate >= tutors[lower].hourlyPayRate ? (lower + 1) : lower);
   };
 
   // get mid point
   int mid = (lower + upper) / 2;
 
   if (key.hourlyPayRate == tutors[mid].hourlyPayRate) {
-    // if existing id is same as new id
-    return mid + 1;
+    // if existing pay rate is same as new pay rate
+    return (key.hourlyPayRate == tutors[mid + 1].hourlyPayRate ? binarySearchPayRate(tutors, key, mid + 1, upper) : mid + 1);
   } else if (key.hourlyPayRate > tutors[mid].hourlyPayRate) {
-    // if existing id is after new id
-    return binarySearchID(tutors, key, mid + 1, upper);
+    // if existing pay rate is after new pay rate
+    return binarySearchPayRate(tutors, key, mid + 1, upper);
   } else {
-    // if existing id is before new id
-    return binarySearchID(tutors, key, lower, mid - 1);
+    // if existing pay rate is before new pay rate
+    return binarySearchPayRate(tutors, key, lower, mid - 1);
   };
 };
 
 int binarySearchRating(Tutor *tutors, Tutor key, int lower, int upper) {
-  // recursive binary search
+  // recursive stable binary search
   if (upper <= lower) {
-    return (key.rating > tutors[lower].rating ? (lower + 1) : lower);
+    return (key.rating >= tutors[lower].rating ? (lower + 1) : lower);
   };
 
   // get mid point
   int mid = (lower + upper) / 2;
 
   if (key.rating == tutors[mid].rating) {
-    // if existing id is same as new id
-    return mid + 1;
+    // if existing rating is same as new rating
+    return (key.rating == tutors[mid + 1].rating ? binarySearchRating(tutors, key, mid + 1, upper) : mid + 1);
   } else if (key.rating > tutors[mid].rating) {
-    // if existing id is after new id
-    return binarySearchID(tutors, key, mid + 1, upper);
+    // if existing rating is after new rating
+    return binarySearchRating(tutors, key, mid + 1, upper);
   } else {
-    // if existing id is before new id
-    return binarySearchID(tutors, key, lower, mid - 1);
+    // if existing rating is before new rating
+    return binarySearchRating(tutors, key, lower, mid - 1);
   };
 };
 

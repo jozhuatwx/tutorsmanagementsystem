@@ -1,6 +1,4 @@
 active
-#h8: sort by hourly rating doesn't work produces jumbled sequence when there is same pay rate
-#h9: sort by rating doesn't work
 #l2: input integers don't repeat question if a space is entered before enter
 
 fixed
@@ -11,6 +9,8 @@ fixed
 #h5: search tuition names fails when there is more than 3 names
 #h6: display all tutors does not show anything when it is multiples of 10
 #h7: add tutor with spacing fills up the next value (split with the spacing)
+#h8: sort by hourly rating doesn't work produces jumbled sequence when there is same pay rate
+#h9: sort by rating doesn't work
 #m1: tuition names dynamic array is not properly deleted if there is duplicated names (eg. Bukit)
 #m2: date terminated can be before date joined
 #m3: does not accept lowercase 'y'
