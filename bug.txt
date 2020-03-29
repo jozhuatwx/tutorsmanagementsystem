@@ -1,4 +1,6 @@
 active
+#h8: sort by hourly rating doesn't work produces jumbled sequence when there is same pay rate
+#h9: sort by rating doesn't work
 #l2: input integers don't repeat question if a space is entered before enter
 
 fixed
@@ -18,3 +20,4 @@ fixed
 #m7: search rating allocates potentially too much memory to temporary array
 #m8: input string when expecting a number loops forever
 #l1: adding the third duplicated name inserts in between, not after the last duplicated name (1,3,2 instead of 1,2,3)
+#l3: refactor if statements that checks if name/temp size is zero first to more than zero first

@@ -359,7 +359,7 @@ void displayAllRecords(Tutor *tutors, int tutorSize) {
 
   do {
     if (select != 1) {
-      cout << "ID   Name     " << endl;
+      cout << "ID   Name      Pay    Rating" << endl;
       // display page
       for (int i = (page - 1) * 10; i < page * 10; i++) {
         // if it is the last page, break if page has less than 10
@@ -370,7 +370,7 @@ void displayAllRecords(Tutor *tutors, int tutorSize) {
         if (tutors[i].tutorID < 10) {
           cout << " ";
         };
-        cout << tutors[i].tutorID << "   " << tutors[i].name << endl;
+        cout << tutors[i].tutorID << "   " << tutors[i].name << " " << tutors[i].hourlyPayRate << "     " << tutors[i].rating << endl;
       };
       
       // display page number
@@ -479,14 +479,7 @@ void searchRating(Tutor *tutors, int tutorSize) {
   for (int i = 0; i < tutorSize; i++) {
     // find tutors with searched rating
     if (tutors[i].rating == rating) {
-      if (tempSize == 0) {
-        // allocate memory
-        tempTutors1 = new Tutor[1];
-        tempTutors1[0] = tutors[i];
-        temp1 = true;
-        // increase temporary array size
-        tempSize++;
-      } else {
+      if (tempSize > 0) {
         if (temp1) {
           // allocate memory
           tempTutors2 = new Tutor[tempSize + 1];
@@ -508,6 +501,13 @@ void searchRating(Tutor *tutors, int tutorSize) {
           delete [] tempTutors2;
           temp1 = true;
         };
+        // increase temporary array size
+        tempSize++;
+      } else {
+        // allocate memory
+        tempTutors1 = new Tutor[1];
+        tempTutors1[0] = tutors[i];
+        temp1 = true;
         // increase temporary array size
         tempSize++;
       };
@@ -544,6 +544,7 @@ struct SortCache {
 };
 
 bool binarySearchCache(SortCache *arr, string keyword, int size, int *index) {
+  // iterative binary search
   int lower = 0, mid, upper = size - 1;
 
   while (lower <= upper) {
@@ -598,16 +599,7 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
     // find tutors with searched tuition name
     if (findInsensitive(tutors[i].tuitionCenterName, tuitionName) != string::npos) {
       // binary insertion sort
-      if (nameSize == 0) {
-        // allocate memory
-        tempNames1 = new SortCache[1];
-        // insert new tuition name as there are no existing names
-        tempNames1[0] = SortCache(tutors[i].tuitionCenterName, 0);
-        // increase name size
-        nameSize++;
-        // set name 1 as active
-        name1 = true;
-      } else {
+      if (nameSize > 0) {
         // binary search if tuition name exists
         if (name1) {
           exist = binarySearchCache(tempNames1, tutors[i].tuitionCenterName, nameSize, &nameIndex);
@@ -692,18 +684,18 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
             };
           };
         };
+      } else {
+        // allocate memory
+        tempNames1 = new SortCache[1];
+        // insert new tuition name as there are no existing names
+        tempNames1[0] = SortCache(tutors[i].tuitionCenterName, 0);
+        // increase name size
+        nameSize++;
+        // set name 1 as active
+        name1 = true;
       };
 
-      if (tempSize == 0) {
-        // allocate memory
-        tempTutors1 = new Tutor[1];
-        // insert tutor as there are no existing tutors
-        tempTutors1[0] = tutors[i];
-        // increase temporary array size
-        tempSize++;
-        // set temp 1 as active
-        temp1 = true;
-      } else {
+      if (tempSize >= 0) {
         // calculate index
         if (nameIndex < nameSize - 1) {
           // name is in between existing names;
@@ -755,6 +747,15 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
 
         // increase temporary array size
         tempSize++;
+      } else {
+        // allocate memory
+        tempTutors1 = new Tutor[1];
+        // insert tutor as there are no existing tutors
+        tempTutors1[0] = tutors[i];
+        // increase temporary array size
+        tempSize++;
+        // set temp 1 as active
+        temp1 = true;
       };
     };
   };
@@ -797,49 +798,51 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
     int size, start;
     if (name1) {
       // calculate size
-      if (select == 1) {
-        if (nameSize == 1) {
-          size = tempSize;
-        } else {
-          size = tempNames1[select].start;
-        };
-      } else if (select < nameSize) {
+      if (select < nameSize && nameSize > 1) {
+        // next tuition's start index - selected tuition's start index
         size = tempNames1[select].start - tempNames1[select - 1].start;
       } else {
+        // selected is last, temporary array size - selected tuition's start index
         size = tempSize - tempNames1[select - 1].start;
       };
+      // get start index
       start = tempNames1[select - 1].start;
     } else {
       // calculate size
-      if (select == 1) {
-        if (nameSize == 1) {
-          size = tempSize;
-        } else {
-          size = tempNames2[select].start;
-        };
-      } else if (select < nameSize) {
+      if (select < nameSize && nameSize > 1) {
+        // next tuition's start index - selected tuition's start index
         size = tempNames2[select].start - tempNames2[select - 1].start;
       } else {
+        // selected is last, temporary array size - selected tuition's start index
         size = tempSize - tempNames2[select - 1].start;
       };
+      // get start index
       start = tempNames2[select - 1].start;
     };
 
     if (temp1) {
+      // allocate memory
       tempTutors2 = new Tutor[size];
+      // copy existing elements from start till the end of size
       for (int i = 0; i < size; i++) {
         tempTutors2[i] = tempTutors1[start + i];
       };
+      // deallocate memory
       delete [] tempTutors1;
+      // set temp 1 as inactive
       temp1 = false;
 
       displayAllRecords(tempTutors2, size);
     } else {
+      // allocate memory
       tempTutors1 = new Tutor[size];
+      // copy existing elements from start till the end of size
       for (int i = 0; i < size; i++) {
         tempTutors1[i] = tempTutors2[start + i];
       };
+      // deallocate memory
       delete [] tempTutors2;
+      // set temp 1 as active
       temp1 = true;
 
       displayAllRecords(tempTutors1, size);
@@ -860,9 +863,108 @@ void searchTuitionName(Tutor *tutors, int tutorSize) {
   };
 };
 
-void sortTutorID(Tutor *tutors, int tutorSize) {};
-void sortPayRate(Tutor *tutors, int tutorSize) {};
-void sortRating(Tutor *tutors, int tutorSize) {};
+int binarySearchID(Tutor *tutors, Tutor key, int lower, int upper) {
+  // recursive binary search
+  if (upper <= lower) {
+    return (key.tutorID > tutors[lower].tutorID ? (lower + 1) : lower);
+  };
+
+  // get mid point
+  int mid = (lower + upper) / 2;
+
+  if (key.tutorID == tutors[mid].tutorID) {
+    // if existing id is same as new id
+    return mid + 1;
+  } else if (key.tutorID > tutors[mid].tutorID) {
+    // if existing id is after new id
+    return binarySearchID(tutors, key, mid + 1, upper);
+  } else {
+    // if existing id is before new id
+    return binarySearchID(tutors, key, lower, mid - 1);
+  };
+};
+
+int binarySearchPayRate(Tutor *tutors, Tutor key, int lower, int upper) {
+  // recursive binary search
+  if (upper <= lower) {
+    return (key.hourlyPayRate > tutors[lower].hourlyPayRate ? (lower + 1) : lower);
+  };
+
+  // get mid point
+  int mid = (lower + upper) / 2;
+
+  if (key.hourlyPayRate == tutors[mid].hourlyPayRate) {
+    // if existing id is same as new id
+    return mid + 1;
+  } else if (key.hourlyPayRate > tutors[mid].hourlyPayRate) {
+    // if existing id is after new id
+    return binarySearchID(tutors, key, mid + 1, upper);
+  } else {
+    // if existing id is before new id
+    return binarySearchID(tutors, key, lower, mid - 1);
+  };
+};
+
+int binarySearchRating(Tutor *tutors, Tutor key, int lower, int upper) {
+  // recursive binary search
+  if (upper <= lower) {
+    return (key.rating > tutors[lower].rating ? (lower + 1) : lower);
+  };
+
+  // get mid point
+  int mid = (lower + upper) / 2;
+
+  if (key.rating == tutors[mid].rating) {
+    // if existing id is same as new id
+    return mid + 1;
+  } else if (key.rating > tutors[mid].rating) {
+    // if existing id is after new id
+    return binarySearchID(tutors, key, mid + 1, upper);
+  } else {
+    // if existing id is before new id
+    return binarySearchID(tutors, key, lower, mid - 1);
+  };
+};
+
+void sortTutor(Tutor *tutors, int tutorSize, int opt) {
+  // initialise
+  Tutor *tempTutors;
+  tempTutors = new Tutor[tutorSize];
+
+  // search through the array
+  for (int i = 0; i < tutorSize; i++) {
+    int x = i - 1;
+    // binary insertion sort
+    if (i > 0) {
+      // binary search
+      int index;
+      switch (opt) {
+        case 1:
+          index = binarySearchID(tempTutors, tutors[i], 0, x);
+          break;
+        
+        case 2:
+          index = binarySearchPayRate(tempTutors, tutors[i], 0, x);
+          break;
+
+        case 3:
+          index = binarySearchRating(tempTutors, tutors[i], 0, x);
+          break;
+      };
+
+      for (; x >= index; x--) {
+        tempTutors[x + 1] = tempTutors[x];
+      };
+
+      tempTutors[index] = tutors[i];
+    } else {
+      tempTutors[0] = tutors[i];
+    };
+    x++;
+  };
+
+  displayAllRecords(tempTutors, tutorSize);
+};
 
 void modifyTutor(Tutor *&tutors, int tutorSize) {
   // initialise
@@ -1260,32 +1362,27 @@ int main() {
           // clear the input buffer
           cin.ignore(numeric_limits<streamsize>::max(),'\n');
         } while (subselect < 1 || subselect > 3);
-
         switch (subselect) {
-          // sort and display by tutor id
-          case 1:
+            case 1:
             cout << "Sort and Display by Tutor ID" << endl;
             cout << "----------------------------" << endl;
-            sortTutorID(tutors, tutorSize);
             break;
-
-          // sort and display by hourly pay rate
+          
           case 2:
             cout << "Sort and Display by Hourly Pay Rate" << endl;
             cout << "-----------------------------------" << endl;
-            sortPayRate(tutors, tutorSize);
             break;
 
-          // sort and display by rating
           case 3:
             cout << "Sort and Display by Rating" << endl;
             cout << "--------------------------" << endl;
-            sortRating(tutors, tutorSize);
             break;
 
           default:
             break;
         };
+
+        sortTutor(tutors, tutorSize, subselect);
         break;
 
       // modify tutor
