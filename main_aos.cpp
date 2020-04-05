@@ -1,0 +1,1294 @@
+#include <iostream>
+#include <string>
+#include <time.h>
+#include "searchCache.h"
+#include "stringc.h"
+#include "tutor.h"
+using namespace std;
+
+// function headers
+void addTutor(Tutor *&tutors, int *size, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, string tcCode, string tcName, string subCode, string subName, int rating);
+void modifyTutor(Tutor *&tutors, int size, int tutorID);
+void terminateTutor(Tutor *&tutors, int size, int tutorID);
+void deleteTutor(Tutor *&tutors, int *size, int tutorID);
+
+void displayRecord(Tutor tutor);
+void displayAllRecords(Tutor *tutors, int size);
+
+void sortTutorID(Tutor* tutors, int size);
+void sortRating(Tutor* tutors, int size);
+void sortPayRate(Tutor* tutors, int size);
+
+void searchTutorID(Tutor *tutors, int size, int tutorID);
+void searchRating(Tutor *tutors, int size, int rating);
+void searchTuitionName(Tutor *tutors, int size, string tcName);
+
+int main() {
+  // initialise
+  int size = 10;
+  Tutor *tutors = new Tutor[size];
+  int input = 0, subinput = 0;
+  char cinput = ' ';
+
+  // dummy hardcoded data
+  tutors[0] = Tutor(2, "Aaron", 2, 3, 2000, 3, 3, 2000, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
+  tutors[1] = Tutor(1, "Bill", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
+  tutors[2] = Tutor(4, "Charlie", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
+  tutors[3] = Tutor(3, "Edwin", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 4);
+  tutors[4] = Tutor(8, "George", 2, 3, 2000, 3, 3, 2000, 50.00, "0123456789", "Somewhere", "C0001", "Taman Laksamana", "S0001", "Science", 2);
+  tutors[5] = Tutor(10, "Jamal", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 3);
+  tutors[6] = Tutor(5, "Kenny", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 3);
+  tutors[7] = Tutor(9, "Maria", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 3);
+  tutors[8] = Tutor(7, "Patricia", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
+  tutors[9] = Tutor(6, "Shelby", 2, 3, 2000, 3, 3, 2000, 50.00, "0123456789", "Somewhere", "C0004", "Bukit Petaling", "S0001", "Science", 1);
+
+  // set cout to always display two decimals for doubles
+  cout.setf(ios::fixed, ios::floatfield);
+  cout.precision(2);
+
+  // menu
+  do {
+    cout << "-----------------------" << endl;
+    cout << "Tutor Management System" << endl;
+    cout << "-----------------------" << endl;
+    cout << "(1) Add Tutor" << endl;
+    cout << "(2) Modify Tutor" << endl;
+    cout << "(3) Terminate Tutor" << endl;
+    cout << "(4) Delete Tutor" << endl;
+    cout << "(5) Display Records" << endl;
+    cout << "(6) Sort and Display Records" << endl;
+    cout << "(7) Search Tutors" << endl;
+    cout << "(8) Exit" << endl;
+
+    // get user input
+    do {
+      cout << "Select function (1-8): ";
+      cin >> input;
+      // ignore enter key
+      if (cin.peek() != '\n')
+        cin >> input;
+      // clear error state
+      if (!cin)
+        cin.clear();
+      // clear the input buffer
+      cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    } while (input < 1 || input > 8);
+    cout << endl;
+
+    // determine outcome
+    switch (input) {
+      // add tutor
+      case 1:
+        {
+          cout << "Add Tutor" << endl;
+          cout << "---------------" << endl;
+
+          // initialise
+          string name = "", phone = "", address = "", tcCode = "", tcName = "", subCode = "", subName = "";
+          int day = 0, month = 0, year = 0, rating = 0;
+          double hourlyPayRate = 0.0;
+          char sp = ' ';
+
+          // get tutor details
+          // name
+          do {
+            cout << "Name               : ";
+            getline(cin, name);
+            trim(name);
+          } while (name == "");
+
+          // date joined
+          do {
+            cout << "Date Joined (d/m/y): ";
+            // ignore enter key
+            if (cin.peek() != '\n')
+              cin >> day >> sp >> month >> sp >> year;
+            // clear error state
+            if (!cin)
+              cin.clear();
+            // clear the input buffer
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+          } while (!validateDate(day, month, year));
+
+          // hourly pay rate
+          do {
+            cout << "Hourly Pay (40-80) : ";
+            // ignore enter key
+            if (cin.peek() != '\n')
+              cin >> hourlyPayRate;
+            // clear error state
+            if (!cin)
+              cin.clear();
+            // clear the input buffer
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+          } while (hourlyPayRate < 40 || hourlyPayRate > 80);
+
+          // phone
+          do {
+            cout << "Phone              : ";
+            getline(cin, phone);
+            trim(phone);
+          } while (phone == "");
+
+          // address
+          do {
+            cout << "Address            : ";
+            getline(cin, address);
+            trim(address);
+          } while (address == "");
+
+          // tuition centre code
+          do {
+            cout << "Tuition Centre Code: ";
+            getline(cin, tcCode);
+            trim(tcCode);
+          } while (tcCode == "");
+
+          // tuition centre name
+          do {
+            cout << "Tuition Centre Name: ";
+            getline(cin, tcName);
+            trim(tcName);
+          } while (tcName == "");
+
+          // subject code
+          do {
+            cout << "Subject Code       : ";
+            getline(cin, subCode);
+            trim(subCode);
+          } while (subCode == "");
+
+          // subject name
+          do {
+            cout << "Subject Name       : ";
+            getline(cin, subName);
+            trim(subName);
+          } while (subName == "");
+
+          // rating
+          do {
+            cout << "Rating (1-5)       : ";
+            // ignore enter key
+            if (cin.peek() != '\n')
+              cin >> rating;
+            // clear error state
+            if (!cin)
+              cin.clear();
+            // clear the input buffer
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+          } while (rating < 1 || rating > 5);
+          addTutor(tutors, &size, name, day, month, year, hourlyPayRate, phone, address, tcCode, tcName, subCode, subName, rating);
+          break;
+        };
+
+      // modify tutor
+      case 2:
+        {
+          // initialise
+          int tutorID = 0;
+          // get user input
+          do {
+            cout << "Modify Tutor (ID): ";
+            // ignore enter key
+            if (cin.peek() != '\n')
+              cin >> tutorID;
+            // clear error state
+            if (!cin)
+              cin.clear();
+            // clear the input buffer
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+          } while (tutorID < 0);
+          cout << "---------------" << endl;
+          modifyTutor(tutors, size, tutorID);
+          break;
+        };
+
+      // terminate tutor
+      case 3:
+        {
+          // initialise
+          int tutorID = 0;
+          // get user input
+          do {
+            cout << "Terminate Tutor (ID): ";
+            // ignore enter key
+            if (cin.peek() != '\n')
+              cin >> tutorID;
+            // clear error state
+            if (!cin)
+              cin.clear();
+            // clear the input buffer
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+          } while (tutorID < 0);
+          cout << "---------------" << endl;
+          terminateTutor(tutors, size, tutorID);
+          break;
+        };
+
+      // delete tutor
+      case 4:
+        {
+          // initialise
+          int tutorID = 0;
+          // get user input
+          do {
+            cout << "Delete Tutor (ID): ";
+            // ignore enter key
+            if (cin.peek() != '\n')
+              cin >> tutorID;
+            // clear error state
+            if (!cin)
+              cin.clear();
+            // clear the input buffer
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+          } while (tutorID < 0);
+          cout << "---------------" << endl;
+          deleteTutor(tutors, &size, tutorID);
+          break;
+        };
+
+      // display records
+      case 5:
+        cout << "Display Records" << endl;
+        cout << "---------------" << endl;
+        displayAllRecords(tutors, size);
+        break;
+
+      // sort and display records
+      case 6:
+        cout << "(1) Tutor ID (Ascending)" << endl;
+        cout << "(2) Rating (Ascending)" << endl;
+        cout << "(3) Hourly Pay Rate (Ascending)" << endl;
+        // get user input
+        do {
+          cout << "Sort by (1-3): ";
+          // ignore enter key
+          if (cin.peek() != '\n')
+            cin >> subinput;
+          // clear error state
+          if (!cin)
+            cin.clear();
+          // clear the input buffer
+          cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        } while (subinput < 1 || subinput > 3);
+        cout << endl;
+
+        // determine outcome
+        switch (subinput) {
+          // sort by tutor id
+          case 1:
+            cout << "Display Records (Tutor ID (Asc))" << endl;
+            cout << "---------------------------------------" << endl;
+            sortTutorID(tutors, size);
+            break;
+
+          // sort by rating
+          case 2:
+            cout << "Display Records (Rating (Asc))" << endl;
+            cout << "---------------------------------------" << endl;
+            sortRating(tutors, size);
+            break;
+
+          // sort by hourly pay rate
+          default:
+            cout << "Display Records (Hourly Pay Rate (Asc))" << endl;
+            cout << "---------------------------------------" << endl;
+            sortPayRate(tutors, size);
+            break;
+        };
+        break;
+
+      // search tutors
+      case 7:
+        cout << "(1) Tutor ID" << endl;
+        cout << "(2) Rating" << endl;
+        cout << "(3) Tuition Centre Name" << endl;
+        // get user input
+        do {
+          cout << "Search by (1-3): ";
+          if (cin.peek() != '\n')
+            cin >> subinput;
+          if (!cin)
+            // clear error state
+            cin.clear();
+          // clear the input buffer
+          cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        } while (subinput < 1 || subinput > 3);
+        cout << endl;
+
+        // determine outcome
+        switch (subinput) {
+          // search by tutor id
+          case 1:
+            {
+              // initialise
+              int tutorID = 0;
+              // get user input
+              do {
+                cout << "Tutor ID: ";
+                // ignore enter key
+                if (cin.peek() != '\n')
+                  cin >> tutorID;
+                // clear error state
+                if (!cin)
+                  cin.clear();
+                // clear the input buffer
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+              } while (tutorID < 0);
+              cout << "-------------------------------------" << endl;
+              searchTutorID(tutors, size, tutorID);
+              break;
+            };
+
+          // search by rating
+          case 2:
+            {
+              // initialise
+              int rating = 0;
+              // get user input
+              do {
+                cout << "Rating (1-5): ";
+                // ignore enter key
+                if (cin.peek() != '\n')
+                  cin >> rating;
+                // clear error state
+                if (!cin)
+                  cin.clear();
+                // clear the input buffer
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+              } while (rating < 1 || rating > 5);
+              cout << "-------------------------------------" << endl;
+              searchRating(tutors, size, rating);
+              break;
+            };
+
+          // search by tuition centre name
+          default:
+            {
+              // initialise
+              string tcName;
+              // get user input
+              do {
+                cout << "Tuition Centre Name: ";
+                getline(cin, tcName);
+                trim(tcName);
+              } while (tcName == "");
+              cout << "-------------------------------------" << endl;
+              searchTuitionName(tutors, size, tcName);
+              break;
+            };
+        };
+        break;
+
+      // exit program
+      case 8:
+        // ask for confirmation
+        do {
+          cout << "Exit program? (Y/N): ";
+          cin >> cinput;
+          // clear the input buffer
+          cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        } while (cinput != 'y' && cinput != 'Y' && cinput != 'n' && cinput != 'N');
+
+        // determine outcome
+        switch (cinput) {
+          // exit program
+          case 'y':
+          case 'Y':
+            // display success message
+            cout << "Exited Successfully";
+            break;
+
+          // return to menu
+          default:
+            // display cancelled message
+            cout << "Cancelled" << endl << endl;
+            input = 0;
+            break;
+        };
+        break;
+    };
+  } while (input != 8);
+  return 0;
+};
+
+void addTutor(Tutor *&tutors, int *size, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, string tcCode, string tcName, string subCode, string subName, int rating) {
+  // initialise
+  int tutorID = 1;
+
+  // find the largest tutor id then increment by 1
+  for (int i = 0; i < *size; i++)
+    if (tutors[i].getTutorID() > (tutorID - 1))
+      tutorID = tutors[i].getTutorID() + 1;
+
+  Tutor newTutor(tutorID, name, day, month, year, 0, 0, 0, hourlyPayRate, phone, address, tcCode, tcName, subCode, subCode, rating);
+
+  // binary insertion sort
+  if (*size > 0) {
+    // binary search
+    int index = binarySearchName(tutors, *size - 1, name);
+
+    // allocate memory
+    Tutor *tempTutors = new Tutor[*size + 1];
+
+    // copy elements into temporary tutor array
+    for (int i = 0; i < index; i++)
+      tempTutors[i] = tutors[i];
+    tempTutors[index] = newTutor;
+    for (int i = index + 1; i < *size + 1; i++)
+      tempTutors[i] = tutors[i - 1];
+
+    // reallocate memory
+    tutors = new Tutor[*size + 1];
+
+    // copy all elements into tutor array
+    for (int i = 0; i < *size + 1; i++)
+      tutors[i] = tempTutors[i];
+
+    // deallocate memory
+    delete[] tempTutors;
+  } else {
+    // insert new tutor as there are no existing tutors
+    // reallocate memory
+    tutors = new Tutor[1];
+    tutors[0] = newTutor;
+  };
+  // display success message
+  cout << "Added Successfully" << endl << endl;
+  // increase tutor size
+  *size += 1;
+};
+
+void modifyTutor(Tutor *&tutors, int size, int tutorID) {
+  // initialise
+  int input = 0;
+  string phone = "", address = "";
+  bool found = false;
+
+  // linear search through the array
+  for (int i = 0; i < size; i++) {
+    // find tutor with searched id
+    if (tutors[i].getTutorID() == tutorID) {
+      // display record
+      displayRecord(tutors[i]);
+
+      // get user input
+      cout << "Modify:" << endl;
+      cout << "(1) Phone" << endl;
+      cout << "(2) Address" << endl;
+      cout << "(3) Both" << endl;
+      do {
+        cout << "Sort by (1-3): ";
+        // ignore enter key
+        if (cin.peek() != '\n')
+          cin >> input;
+        // clear error state
+        if (!cin)
+          cin.clear();
+        // clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      } while (input < 1 || input > 3);
+
+      // modify phone
+      if (input == 1 || input == 3) {
+        do {
+          cout << "New Phone: ";
+          getline(cin, phone);
+          trim(phone);
+        } while (phone == "");
+        tutors[i].setPhone(phone);
+      };
+
+      // modify address
+      if (input == 2 || input == 3) {
+        do {
+          cout << "New Address: ";
+          getline(cin, address);
+          trim(address);
+        } while (address == "");
+        tutors[i].setAddress(address);
+      };
+
+      // display sucess message
+      if (input >= 1)
+        cout << "Modified Successfully" << endl << endl;
+
+      // set as found
+      found = true;
+      // stop iteration
+      break;
+    };
+  };
+  // if no results
+  if (!found)
+    cout << "No results found" << endl << endl;
+};
+
+void terminateTutor(Tutor *&tutors, int size, int tutorID) {
+  // initialise
+  int day = 0, month = 0, year = 0;
+  time_t dateTerminated = time(0);
+  char sp = ' ', cinput = ' ';
+  bool found = false;
+
+  // linear search through the array
+  for (int i = 0; i < size; i++) {
+    // find tutor with searched id
+    if (tutors[i].getTutorID() == tutorID) {
+      // display record
+      displayRecord(tutors[i]);
+
+      // set as found
+      found = true;
+
+      // check if tutor is terminated
+      if (tutors[i].getDateTerminated() != -1) {
+        do {
+          cout << "Tutor is already terminated. Modify termination date? (Y/N): ";
+          cin >> cinput;
+          // clear the input buffer
+          cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        } while (cinput != 'y' && cinput != 'Y' && cinput != 'n' && cinput != 'N');
+
+        // cancel termination
+        if (cinput == 'n' || cinput == 'N') {
+          // display cancelled message
+          cout << "Cancelled" << endl << endl;
+          break;
+        };
+      };
+
+      // get user input
+      do {
+        cout << "Date Terminated (d/m/y): ";
+        // ignore enter key
+        if (cin.peek() != '\n') {
+          cin >> day >> sp >> month >> sp >> year;
+          // convert to time
+          dateTerminated = intToTime(day, month, year);
+        };
+        // clear error state
+        if (!cin)
+          cin.clear();
+        // clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      } while (!validateDate(day, month, year) || difftime(dateTerminated, tutors[i].getDateJoined()) <= 0);
+
+      // ask for confirmation
+      do {
+        if (tutors[i].getDateTerminated() != -1)
+          cout << "Terminate user? (Y/N): ";
+        else
+          cout << "Modify terminated date? (Y/N): ";
+        cin >> cinput;
+        // clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      } while (cinput != 'y' && cinput != 'Y' && cinput != 'n' && cinput != 'N');
+
+      // determine outcome
+      switch (cinput) {
+        // terminate tutor
+        case 'y':
+        case 'Y':
+          tutors[i].setDateTerminated(dateTerminated);
+          // display success message
+          cout << "Terminated Successfully" << endl << endl;
+          break;
+
+        // cancel termination
+        default:
+          // display cancelled message
+          cout << "Cancelled" << endl << endl;
+          break;
+      };
+
+      // stop iteration
+      break;
+    };
+  };
+  // if no results
+  if (!found)
+    cout << "No results found" << endl << endl;
+};
+
+void deleteTutor(Tutor *&tutors, int *size, int tutorID) {
+  // initialise
+  char cinput = ' ';
+  bool found = false;
+
+  // linear search through the array
+  for (int i = 0; i < *size; i++) {
+    // find tutor with searched id
+    if (tutors[i].getTutorID() == tutorID) {
+      // display record
+      displayRecord(tutors[i]);
+
+      // set as found
+      found = true;
+
+      // check if tutor is terminated
+      if (tutors[i].getDateTerminated() == -1) {
+        // display not terminated message
+        cout << "Tutor has not been terminated" << endl << endl;
+        // stop iteration
+        break;
+      };
+
+      // check if terminated date has reached at least 6 months
+      tm tmTerminated;
+      time_t dateTerminated = tutors[i].getDateTerminated();
+      gmtime_s(&tmTerminated, &dateTerminated);
+
+      if (tmTerminated.tm_mon > 6) {
+        tmTerminated.tm_mon -= 6;
+        tmTerminated.tm_year += 1;
+      } else {
+        tmTerminated.tm_mon += 6;
+      };
+
+      if (difftime(mktime(&tmTerminated), time(0)) > 0) {
+        // display not passed 6 months message
+        cout << "Tutor has not been terminated at least 6 months ago" << endl << endl;
+        // stop iteration
+        break;
+      };
+
+      // ask for confirmation
+      do {
+        cout << "Permanently delete tutor? (Y/N): ";
+        cin >> cinput;
+        // clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      } while (cinput != 'y' && cinput != 'Y' && cinput != 'n' && cinput != 'N');
+
+      // determine outcome
+      switch (cinput) {
+        // delete tutor
+        case 'y':
+        case 'Y':
+          {
+            // initialise
+            bool deleted = false;
+
+            // allocate memory
+            Tutor *tempTutors = new Tutor[*size + 1];
+
+            // copy to temporary tutor array
+            for (int x = 0; x < *size - 1; x++) {
+              if (!deleted && x != i) {
+                tempTutors[x] = tutors[x];
+              } else if (deleted) {
+                tempTutors[x] = tutors[x + 1];
+              } else if (x == i && x != *size - 1) {
+                tempTutors[x] = tutors[x + 1];
+                deleted = true;
+              };
+            };
+
+            // reallocate memory
+            tutors = new Tutor[*size - 1];
+
+            // copy all elements into tutor array
+            for (int x = 0; x < *size - 1; x++) {
+              tutors[x] = tempTutors[x];
+            };
+
+            // deallocate memory
+            delete[] tempTutors;
+
+            // display success message
+            cout << "Deleted Successfully" << endl << endl;
+            // decrease tutor size
+            *size -= 1;
+            break;
+          };
+
+        // cancel delete
+        default:
+          // display cancelled message
+          cout << "Cancelled" << endl << endl;
+          break;
+      };
+    };
+  };
+  // if no results
+  if (!found)
+    cout << "No results found" << endl << endl;
+};
+
+
+void displayRecord(Tutor tutor) {
+  cout << "ID                 : " << tutor.getTutorID() << endl;
+  cout << "Name               : " << tutor.getName() << endl;
+  tm tmJoined;
+  time_t dateJoined = tutor.getDateJoined();
+  localtime_s(&tmJoined, &dateJoined);
+  cout << "Date Joined        : " << tmJoined.tm_mday << "/" << tmJoined.tm_mon + 1 << "/" << tmJoined.tm_year + 1900 << endl;
+  cout << "Date Terminated    : ";
+  if (tutor.getDateTerminated() != -1) {
+    // display date as it is set
+    tm tmTerminated;
+    time_t dateTerminated = tutor.getDateTerminated();
+    localtime_s(&tmTerminated, &dateTerminated);
+    cout << tmTerminated.tm_mday << "/" << tmTerminated.tm_mon + 1 << "/" << tmTerminated.tm_year + 1900 << endl;
+  } else {
+    // hide date as it is not set
+    cout << "-" << endl;
+  };
+  cout << "Hourly Pay Rate    : " << tutor.getHourlyPayRate() << endl;
+  cout << "Phone              : " << tutor.getPhone() << endl;
+  cout << "Address            : " << tutor.getAddress() << endl;
+  cout << "Tuition Centre Code: " << tutor.getTuitionCentreCode() << endl;
+  cout << "Tuition Centre Name: " << tutor.getTuitionCentreName() << endl;
+  cout << "Subject Code       : " << tutor.getSubjectCode() << endl;
+  cout << "Subject Name       : " << tutor.getSubjectName() << endl;
+  cout << "Rating             : " << tutor.getRating() << endl << endl;
+};
+
+void displayAllRecords(Tutor *tutors, int size) {
+  // initialise
+  int page = 1, input = 0;
+
+  // calculate total page numbers
+  int total = size / 10;
+  if (size % 10 > 0)
+    total++;
+
+  // display page
+  do {
+    if (input != 1) {
+      cout << "ID    Name             Pay    Tuition Centre       Rating" << endl;
+      cout << "---------------------------------------------------------" << endl;
+      for (int i = (page - 1) * 10; i < page * 10; i++) {
+        // print list of tutors
+        cout.width(4);
+        cout << right << tutors[i].getTutorID() << "  ";
+        cout.width(15);
+        cout << left << tutors[i].getName() << "  ";
+        cout.width(5);
+        cout << tutors[i].getHourlyPayRate() << "  ";
+        cout.width(19);
+        cout << tutors[i].getTuitionCentreName() << "  ";
+        cout << tutors[i].getRating() << endl;
+        // break when last page and is the last element
+        if (page == total && i + 1 == (page - 1) * 10 + size % 10)
+          break;
+      };
+      // display page number
+      cout << endl << "Page " << page << endl << endl;
+    };
+
+    cout << "(1) View more details" << endl;
+    cout << "(2) Jump to page";
+    if (total == 1)
+      cout << " (disabled)";
+    cout << endl << "(3) Next page";
+    if (page >= total)
+      cout << " (disabled)";
+    cout << endl << "(4) Previous page";
+    if (page <= 1)
+      cout << " (disabled)";
+    cout << endl << "(5) Exit" << endl;
+    // get user input
+    do {
+      cout << "Please select (1-5): ";
+      // ignore enter key
+      if (cin.peek() != '\n')
+        cin >> input;
+      // clear error state
+      if (!cin)
+        cin.clear();
+      // clear the input buffer
+      cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    } while (input < 1 || input > 5);
+
+    // determine outcome
+    switch (input) {
+      // view more details
+      case 1:
+        {
+          // initialise
+          int tutorID = 0;
+
+          // get user input
+          do {
+            cout << "Tutor ID: ";
+            // ignore enter key
+            if (cin.peek() != '\n')
+              cin >> tutorID;
+            // clear error state
+            if (!cin)
+              cin.clear();
+            // clear the input buffer
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+          } while (tutorID < 0);
+          cout << "-------------------------------------" << endl;
+          searchTutorID(tutors, size, tutorID);
+          break;
+        };
+
+      // jump to page
+      case 2:
+        if (total > 1) {
+          do {
+            cout << "Page (1-" << total << "): ";
+            // ignore enter key
+            if (cin.peek() != '\n')
+              cin >> page;
+            // clear error state
+            if (!cin)
+              cin.clear();
+            // clear the input buffer
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+          } while (page < 1 || page > total);
+        };
+        cout << endl;
+        break;
+
+      // next page
+      case 3:
+        if (page < total)
+          page++;
+        cout << endl;
+        break;
+
+      // previous page
+      case 4:
+        if (page > 1)
+          page--;
+        cout << endl;
+        break;
+
+      default:
+        cout << endl;
+        break;
+    };
+  } while (input != 5);
+};
+
+
+void sortTutorID(Tutor *tutors, int size) {
+  // allocate memory
+  Tutor *tempTutors = new Tutor[size];
+  
+  // copy all elements into temporary tutor array
+  for (int i = 0; i < size; i++)
+    tempTutors[i] = tutors[i];
+
+  // sort the temporary tutor array by id
+  dualPivotQuicksortID(tempTutors, 0, size - 1);
+  
+  // display sorted array
+  displayAllRecords(tempTutors, size);
+  
+  // deallocate memory
+  delete[] tempTutors;
+};
+
+void sortRating(Tutor *tutors, int size) {
+  // allocate memory
+  Tutor *tempTutors = new Tutor[size];
+
+  // copy all elements into temporary tutor array
+  for (int i = 0; i < size; i++)
+    tempTutors[i] = tutors[i];
+
+  // sort the temporary tutor array by rating
+  dualPivotQuicksortRating(tempTutors, 0, size - 1);
+
+  // sort the temporary tutor array by name
+  for (int i = 0; i < size - 1; i++) {
+    if (tempTutors[i].getRating() == tempTutors[i + 1].getRating()) {
+      int low = i, up = i + 1;
+      while (tempTutors[i + 1].getRating() == tempTutors[i + 2].getRating()) {
+        up++;
+        i++;
+      };
+      dualPivotQuicksortName(tempTutors, low, up);
+    };
+  };
+
+  // display sorted array
+  displayAllRecords(tempTutors, size);
+
+  // deallocate memory
+  delete[] tempTutors;
+};
+
+void sortPayRate(Tutor *tutors, int size) {
+  // allocate memory
+  Tutor *tempTutors = new Tutor[size];
+
+  // copy all elements into temporary tutor array
+  for (int i = 0; i < size; i++)
+    tempTutors[i] = tutors[i];
+
+  // sort the temporary tutor array by hourly pay rate
+  dualPivotQuicksortPayRate(tempTutors, 0, size - 1);
+
+  // sort the temporary tutor array by name
+  for (int i = 0; i < size - 1; i++) {
+    if (tempTutors[i].getHourlyPayRate() == tempTutors[i + 1].getHourlyPayRate()) {
+      int low = i, up = i + 1;
+      while (tempTutors[i + 1].getHourlyPayRate() == tempTutors[i + 2].getHourlyPayRate()) {
+        up++;
+        i++;
+      };
+      dualPivotQuicksortName(tempTutors, low, up);
+    };
+  };
+
+  // display sorted array
+  displayAllRecords(tempTutors, size);
+
+  // deallocate memory
+  delete[] tempTutors;
+};
+
+
+void searchTutorID(Tutor *tutors, int size, int tutorID) {
+  // initialise
+  bool found = false;
+
+  // linear search through the array
+  for (int i = 0; i < size; i++)
+    // find tutor with searched id
+    if (tutors[i].getTutorID() == tutorID) {
+      // display result
+      displayRecord(tutors[i]);
+      // set as found
+      found = true;
+      // stop iteration
+      break;
+    };
+
+  // if no results
+  if (!found)
+    cout << "No results found" << endl << endl;
+};
+
+void searchRating(Tutor *tutors, int size, int rating) {
+  // initialise
+  int tutorSize = 0;
+  Tutor *tempTutors1 = NULL, *tempTutors2 = NULL;
+  bool tutor1 = true, found = false;
+
+  // linear search through the array
+  for (int i = 0; i < size; i++) {
+    // find tutors with searched rating
+    if (tutors[i].getRating() == rating) {
+      if (tutorSize > 0) {
+        if (tutor1) {
+          // allocate memory
+          tempTutors2 = new Tutor[tutorSize + 1];
+          // copy all elements into temporary tutor array 2
+          for (int x = 0; x < tutorSize; x++)
+            tempTutors2[x] = tempTutors1[x];
+          tempTutors2[tutorSize] = tutors[i];
+          // deallocate memory
+          delete[] tempTutors1;
+          // set tutor 1 as inactive
+          tutor1 = false;
+        } else {
+          // allocate memory
+          tempTutors1 = new Tutor[tutorSize + 1];
+          // copy all elements into temporary tutor array 1
+          for (int x = 0; x < tutorSize; x++)
+            tempTutors1[x] = tempTutors2[x];
+          tempTutors1[tutorSize] = tutors[i];
+          // deallocate memory
+          delete[] tempTutors2;
+          // set tutor 1 as active
+          tutor1 = true;
+        };
+        // increase temporary tutor array size
+        tutorSize++;
+      } else {
+        // allocate memory
+        tempTutors1 = new Tutor[1];
+        tempTutors1[0] = tutors[i];
+        // set tutor 1 as active
+        tutor1 = true;
+        // increase temporary tutor size
+        tutorSize++;
+      };
+    };
+  };
+
+  if (tutorSize > 0) {
+    // display all records
+    if (tutor1) {
+      displayAllRecords(tempTutors1, tutorSize);
+      // deallocate memory
+      delete[] tempTutors1;
+    } else {
+      displayAllRecords(tempTutors2, tutorSize);
+      // deallocate memory
+      delete[] tempTutors2;
+    };
+  } else {
+    // if no results
+    cout << "No results found" << endl;
+  };
+};
+
+void searchTuitionName(Tutor *tutors, int size, string tcName) {
+  // initialise
+  int tutorSize = 0, nameSize = 0, nameIndex = 0, tutorIndex = 0, input = 0;
+  SearchCache *tempNames1 = NULL, *tempNames2 = NULL;
+  Tutor *tempTutors1 = NULL, *tempTutors2 = NULL;
+  bool name1 = true, tutor1 = true, exist = false;
+
+  // linear search through the array
+  for (int i = 0; i < size; i++) {
+    // find tutors with searched tuition name
+    if (findInsensitive(tutors[i].getTuitionCentreName(), tcName) != string::npos) {
+      // binary insertion sort
+      if (nameSize > 0) {
+        // binary search if tuition name exists
+        if (name1)
+          exist = binarySearchCache(tempNames1, tutors[i].getTuitionCentreName(), nameSize - 1, &nameIndex);
+        else
+          exist = binarySearchCache(tempNames2, tutors[i].getTuitionCentreName(), nameSize - 1, &nameIndex);
+
+        if (!exist) {
+          // name does not exist
+          if (name1) {
+            // allocate memory
+            tempNames2 = new SearchCache[nameSize + 1];
+            for (int x = 0; x < nameIndex; x++)
+              tempNames2[x] = tempNames1[x];
+
+            // calculate start index
+            int index;
+            if (nameIndex == 0)
+              // name is before all existing names
+              index = 0;
+            else if (nameIndex == nameSize)
+              // name is after all existing names
+              index = tutorSize;
+            else
+              // name is in between existing names
+              index = tempNames1[nameIndex].getIndex();
+            
+            tempNames2[nameIndex] = SearchCache(tutors[i].getTuitionCentreName(), index);
+
+            for (int x = nameIndex + 1; x < nameSize + 1; x++) {
+              tempNames2[x].setName(tempNames1[x - 1].getName());
+              tempNames2[x].setIndex(tempNames1[x - 1].getIndex() + 1);
+            };
+
+            // deallocate memory
+            delete[] tempNames1;
+            // set name 1 as inactive
+            name1 = false;
+          } else {
+            // allocate memory
+            tempNames1 = new SearchCache[nameSize + 1];
+            for (int x = 0; x < nameIndex; x++)
+              tempNames1[x] = tempNames2[x];
+
+            // calculate start index
+            int index;
+            if (nameIndex == 0)
+              // name is before all existing names
+              index = 0;
+            else if (nameIndex == nameSize)
+              // name is after all existing names
+              index = tutorSize;
+            else
+              // name is in between existing names
+              index = tempNames2[nameIndex].getIndex();
+            
+            tempNames1[nameIndex] = SearchCache(tutors[i].getTuitionCentreName(), index);
+
+            for (int x = nameIndex + 1; x < nameSize + 1; x++) {
+              tempNames1[x].setName(tempNames2[x - 1].getName());
+              tempNames1[x].setIndex(tempNames2[x - 1].getIndex() + 1);
+            };
+
+            // deallocate memory
+            delete[] tempNames2;
+            // set name 1 as active
+            name1 = true;
+          };
+
+          // increase name size
+          nameSize++;
+        } else {
+          // name exists
+          // adjust start of all names after the current name
+          if (name1)
+            for (int x = nameIndex + 1; x < nameSize; x++)
+              tempNames1[x].setIndex(tempNames1[x].getIndex() + 1);
+          else
+            for (int x = nameIndex + 1; x < nameSize; x++)
+              tempNames2[x].setIndex(tempNames2[x].getIndex() + 1);
+        };
+      } else {
+        // allocate memory
+        tempNames1 = new SearchCache[1];
+        // insert new tuition name as there are no existing names
+        tempNames1[0] = SearchCache(tutors[i].getTuitionCentreName(), 0);
+        // increase name size
+        nameSize++;
+        // set name 1 as active
+        name1 = true;
+      };
+
+      if (tutorSize >= 0) {
+        // calculate index
+        if (nameIndex < nameSize - 1) {
+          // name is in between existing names;
+          if (name1)
+            tutorIndex = tempNames1[nameIndex + 1].getIndex() - 1;
+          else
+            tutorIndex = tempNames2[nameIndex + 1].getIndex() - 1;
+        } else {
+          tutorIndex = tutorSize;
+        };
+
+        // copy element into temporary tutor array
+        if (tutor1) {
+          // allocate memory
+          tempTutors2 = new Tutor[tutorSize + 1];
+
+          for (int x = 0; x < tutorIndex; x++)
+            tempTutors2[x] = tempTutors1[x];
+
+          tempTutors2[tutorIndex] = tutors[i];
+
+          for (int x = tutorIndex + 1; x < tutorSize + 1; x++)
+            tempTutors2[x] = tempTutors1[x - 1];
+
+          // deallocate memory
+          delete[] tempTutors1;
+          // set tutor 1 as inactive
+          tutor1 = false;
+        } else {
+          // allocate memory
+          tempTutors1 = new Tutor[tutorSize + 1];
+
+          for (int x = 0; x < tutorIndex; x++)
+            tempTutors1[x] = tempTutors2[x];
+
+          tempTutors1[tutorIndex] = tutors[i];
+
+          for (int x = tutorIndex + 1; x < tutorSize + 1; x++)
+            tempTutors1[x] = tempTutors2[x - 1];
+
+          // deallocate memory
+          delete[] tempTutors2;
+          // set tutor 1 as active
+          tutor1 = true;
+        };
+
+        // increase temporary tutor array size
+        tutorSize++;
+      } else {
+        // allocate memory
+        tempTutors1 = new Tutor[1];
+        // insert tutor as there are no existing tutors
+        tempTutors1[0] = tutors[i];
+        // increase temporary tutor array size
+        tutorSize++;
+        // set tutor 1 as active
+        tutor1 = true;
+      };
+    };
+  };
+
+  // get user input
+  if (nameSize >= 2) {
+    for (int i = 0; i < nameSize; i++) {
+      cout << i + 1 << ". ";
+      if (name1)
+        cout << tempNames1[i].getName();
+      else
+        cout << tempNames2[i].getName();
+      cout << endl;
+    };
+    do {
+      cout << "Please input (1-" << nameSize << "): ";
+      // ignore enter key
+      if (cin.peek() != '\n')
+        cin >> input;
+      if (!cin)
+        // clear error state
+        cin.clear();
+      // clear the input buffer
+      cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    } while (input < 1 || input > nameSize);
+  } else if (nameSize == 1) {
+    input = 1;
+  } else {
+    // if no results
+    cout << "No results found" << endl << endl;
+    // deallocate memory
+    if (name1)
+      delete[] tempNames1;
+    else
+      delete[] tempNames2;
+  };
+
+  // search through a portion of the temporary tutor array
+  if (input >= 1) {
+    int portionSize, index;
+    if (name1) {
+      // calculate size
+      if (input < nameSize && nameSize > 1)
+        // next tuition's start index - selected tuition's start index
+        portionSize = tempNames1[input].getIndex() - tempNames1[input - 1].getIndex();
+      else
+        // selected is last, temporary tutor array size - selected tuition's start index
+        portionSize = tutorSize - tempNames1[input - 1].getIndex();
+      // get start index
+      index = tempNames1[input - 1].getIndex();
+      // deallocate memory
+      delete[] tempNames1;
+    } else {
+      // calculate size
+      if (input < nameSize && nameSize > 1)
+        // next tuition's start index - selected tuition's start index
+        portionSize = tempNames2[input].getIndex() - tempNames2[input - 1].getIndex();
+      else
+        // selected is last, temporary tutor array size - selected tuition's start index
+        portionSize = tutorSize - tempNames2[input - 1].getIndex();
+      // get start index
+      index = tempNames2[input - 1].getIndex();
+      // deallocate memory
+      delete[] tempNames2;
+    };
+
+
+    if (tutor1) {
+      // allocate memory
+      tempTutors2 = new Tutor[portionSize];
+      // copy existing elements from start till the end of size
+      for (int i = 0; i < portionSize; i++)
+        tempTutors2[i] = tempTutors1[index + i];
+      // deallocate memory
+      delete[] tempTutors1;
+      // set tutor 1 as inactive
+      tutor1 = false;
+      // display searched records
+      displayAllRecords(tempTutors2, portionSize);
+      // deallocate memory
+      delete[] tempTutors2;
+    } else {
+      // allocate memory
+      tempTutors1 = new Tutor[portionSize];
+      // copy existing elements from start till the end of size
+      for (int i = 0; i < portionSize; i++)
+        tempTutors1[i] = tempTutors2[index + i];
+      // deallocate memory
+      delete[] tempTutors2;
+      // set tutor 1 as active
+      tutor1 = true;
+      // display searched records
+      displayAllRecords(tempTutors1, portionSize);
+      // deallocate memory
+      delete[] tempTutors1;
+    };
+  };
+};

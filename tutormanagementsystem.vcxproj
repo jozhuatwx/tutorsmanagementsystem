@@ -142,12 +142,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp.old" />
+    <ClCompile Include="datec.cpp" />
     <ClCompile Include="main_aos.cpp" />
+    <ClCompile Include="searchCache.cpp" />
+    <ClCompile Include="stringc.cpp" />
+    <ClCompile Include="tutor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="bug.txt" />
     <Text Include="feature.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="datec.h" />
+    <ClInclude Include="searchCache.h" />
+    <ClInclude Include="stringc.h" />
+    <ClInclude Include="tutor.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
