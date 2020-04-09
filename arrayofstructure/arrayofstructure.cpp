@@ -1,13 +1,151 @@
 #include <iostream>
 #include <string>
 #include <time.h>
-#include "searchCache.h"
-#include "stringc.h"
-#include "tutor.h"
+#include "../datec.h"
+#include "../stringc.h"
 using namespace std;
 
+struct Tutor {
+  private:
+  int tutorID;
+  string name;
+  time_t dateJoined;
+  time_t dateTerminated;
+  double hourlyPayRate;
+  string phone;
+  string address;
+  string tuitionCentreCode;
+  string tuitionCentreName;
+  string subjectCode;
+  string subjectName;
+  int rating;
+
+  public:
+  // constructor
+  Tutor() {
+    this->tutorID = -1;
+    this->name = "";
+    this->dateJoined = -1;
+    this->dateTerminated = -1;
+    this->hourlyPayRate = -1.0;
+    this->phone = "";
+    this->address = "";
+    this->tuitionCentreCode = "";
+    this->tuitionCentreName = "";
+    this->subjectCode = "";
+    this->subjectName = "";
+    this->rating = -1;
+  };
+  Tutor(int tutorID, string name, time_t dateJoined, time_t dateTerminated, double hourlyPayRate, string phone, string address, string tuitionCentreCode, string tuitionCentreName, string subjectCode, string subjectName, int rating) {
+    this->tutorID = tutorID;
+    this->name = name;
+    this->dateJoined = dateJoined;
+    this->dateTerminated = dateTerminated;
+    this->hourlyPayRate = hourlyPayRate;
+    this->phone = phone;
+    this->address = address;
+    this->tuitionCentreCode = tuitionCentreCode;
+    this->tuitionCentreName = tuitionCentreName;
+    this->subjectCode = subjectCode;
+    this->subjectName = subjectName;
+    this->rating = rating;
+  };
+  Tutor(int tutorID, string name, int dayJoined, int monthJoined, int yearJoined, int dayTerminated, int monthTerminated, int yearTerminated, double hourlyPayRate, string phone, string address, string tuitionCentreCode, string tuitionCentreName, string subjectCode, string subjectName, int rating) {
+    this->tutorID = tutorID;
+    this->name = name;
+    this->dateJoined = intToTime(dayJoined, monthJoined, yearJoined);
+    this->dateTerminated = intToTime(dayTerminated, monthTerminated, yearTerminated);
+    this->hourlyPayRate = hourlyPayRate;
+    this->phone = phone;
+    this->address = address;
+    this->tuitionCentreCode = tuitionCentreCode;
+    this->tuitionCentreName = tuitionCentreName;
+    this->subjectCode = subjectCode;
+    this->subjectName = subjectName;
+    this->rating = rating;
+  };
+
+  // getters and setters
+  int getTutorID() {
+    return tutorID;
+  };
+  string getName() {
+    return name;
+  };
+  time_t getDateJoined() {
+    return dateJoined;
+  };
+  time_t getDateTerminated() {
+    return dateTerminated;
+  };
+  void setDateTerminated(time_t dateTerminated) {
+    this->dateTerminated = dateTerminated;
+  };
+  double getHourlyPayRate() {
+    return hourlyPayRate;
+  };
+  string getPhone() {
+    return phone;
+  };
+  void setPhone(string phone) {
+    this->phone = phone;
+  };
+  string getAddress() {
+    return address;
+  };
+  void setAddress(string address) {
+    this->address = address;
+  };
+  string getTuitionCentreCode() {
+    return tuitionCentreCode;
+  };
+  string getTuitionCentreName() {
+    return tuitionCentreName;
+  };
+  string getSubjectCode() {
+    return subjectCode;
+  };
+  string getSubjectName() {
+    return subjectName;
+  };
+  int getRating() {
+    return rating;
+  };
+};
+struct SearchCache {
+  private:
+  string name;
+  int index;
+
+  public:
+  // constructors
+  SearchCache() {
+    this->name = "";
+    this->index = -1;
+  };
+  SearchCache(string name, int index) {
+    this->name = name;
+    this->index = index;
+  };
+
+  // getters and setters
+  string getName() {
+    return name;
+  };
+  void setName(string name) {
+    this->name = name;
+  };
+  int getIndex() {
+    return index;
+  };
+  void setIndex(int index) {
+    this->index = index;
+  };
+};
+
 // function headers
-void addTutor(Tutor *&tutors, int *size, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, string tcCode, string tcName, string subCode, string subName, int rating);
+void generateTutors(Tutor *&tutors, int *lastID, int *size);
+void addTutor(Tutor *&tutors, int *lastID, int *size, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, string tcCode, string tcName, string subCode, string subName, int rating);
 void modifyTutor(Tutor *&tutors, int size, int tutorID);
 void terminateTutor(Tutor *&tutors, int size, int tutorID);
 void deleteTutor(Tutor *&tutors, int *size, int tutorID);
@@ -15,32 +153,43 @@ void deleteTutor(Tutor *&tutors, int *size, int tutorID);
 void displayRecord(Tutor tutor);
 void displayAllRecords(Tutor *tutors, int size);
 
-void sortTutorID(Tutor* tutors, int size);
-void sortRating(Tutor* tutors, int size);
-void sortPayRate(Tutor* tutors, int size);
+void sortTutorID(Tutor *tutors, int size);
+void sortRating(Tutor *tutors, int size);
+void sortPayRate(Tutor *tutors, int size);
 
 void searchTutorID(Tutor *tutors, int size, int tutorID);
 void searchRating(Tutor *tutors, int size, int rating);
 void searchTuitionName(Tutor *tutors, int size, string tcName);
 
+// binary search
+int binarySearchName(Tutor *tutors, int size, string name);
+bool binarySearchCache(SearchCache *cache, string tcName, int size, int *index);
+
+// dual pivot quicksort
+void swap(Tutor *t1, Tutor *t2);
+
+void dualPivotQuicksortName(Tutor *tutors, int low, int up);
+void partitionName(Tutor *tutors, int low, int up, int *lp, int *rp);
+
+void dualPivotQuicksortID(Tutor *tutors, int low, int up);
+void partitionID(Tutor *tutors, int low, int up, int *lp, int *rp);
+
+void dualPivotQuicksortRating(Tutor *tutors, int low, int up);
+void partitionRating(Tutor *tutors, int low, int up, int *lp, int *rp);
+
+void dualPivotQuicksortPayRate(Tutor *tutors, int low, int up);
+void partitionPayRate(Tutor *tutors, int low, int up, int *lp, int *rp);
+
+
 int main() {
   // initialise
-  int size = 10;
-  Tutor *tutors = new Tutor[size];
+  int size = 0, lastID = 0;
+  Tutor *tutors = NULL;
   int input = 0, subinput = 0;
   char cinput = ' ';
 
-  // dummy hardcoded data
-  tutors[0] = Tutor(2, "Aaron", 2, 3, 2000, 3, 3, 2000, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
-  tutors[1] = Tutor(1, "Bill", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
-  tutors[2] = Tutor(4, "Charlie", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
-  tutors[3] = Tutor(3, "Edwin", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 4);
-  tutors[4] = Tutor(8, "George", 2, 3, 2000, 3, 3, 2000, 50.00, "0123456789", "Somewhere", "C0001", "Taman Laksamana", "S0001", "Science", 2);
-  tutors[5] = Tutor(10, "Jamal", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 3);
-  tutors[6] = Tutor(5, "Kenny", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 3);
-  tutors[7] = Tutor(9, "Maria", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 3);
-  tutors[8] = Tutor(7, "Patricia", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
-  tutors[9] = Tutor(6, "Shelby", 2, 3, 2000, 3, 3, 2000, 50.00, "0123456789", "Somewhere", "C0004", "Bukit Petaling", "S0001", "Science", 1);
+  // generate hardcoded data
+  generateTutors(tutors, &lastID, &size);
 
   // set cout to always display two decimals for doubles
   cout.setf(ios::fixed, ios::floatfield);
@@ -177,11 +326,11 @@ int main() {
             // clear the input buffer
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
           } while (rating < 1 || rating > 5);
-          addTutor(tutors, &size, name, day, month, year, hourlyPayRate, phone, address, tcCode, tcName, subCode, subName, rating);
+          addTutor(tutors, &lastID, &size, name, day, month, year, hourlyPayRate, phone, address, tcCode, tcName, subCode, subName, rating);
           break;
         };
 
-      // modify tutor
+        // modify tutor
       case 2:
         {
           // initialise
@@ -203,7 +352,7 @@ int main() {
           break;
         };
 
-      // terminate tutor
+        // terminate tutor
       case 3:
         {
           // initialise
@@ -225,7 +374,7 @@ int main() {
           break;
         };
 
-      // delete tutor
+        // delete tutor
       case 4:
         {
           // initialise
@@ -247,14 +396,14 @@ int main() {
           break;
         };
 
-      // display records
+        // display records
       case 5:
-        cout << "Display Records" << endl;
-        cout << "---------------" << endl;
+        cout << "Display Records (Name (Asc))" << endl;
+        cout << "---------------------------------------" << endl;
         displayAllRecords(tutors, size);
         break;
 
-      // sort and display records
+        // sort and display records
       case 6:
         cout << "(1) Tutor ID (Ascending)" << endl;
         cout << "(2) Rating (Ascending)" << endl;
@@ -282,14 +431,14 @@ int main() {
             sortTutorID(tutors, size);
             break;
 
-          // sort by rating
+            // sort by rating
           case 2:
             cout << "Display Records (Rating (Asc))" << endl;
             cout << "---------------------------------------" << endl;
             sortRating(tutors, size);
             break;
 
-          // sort by hourly pay rate
+            // sort by hourly pay rate
           default:
             cout << "Display Records (Hourly Pay Rate (Asc))" << endl;
             cout << "---------------------------------------" << endl;
@@ -298,7 +447,7 @@ int main() {
         };
         break;
 
-      // search tutors
+        // search tutors
       case 7:
         cout << "(1) Tutor ID" << endl;
         cout << "(2) Rating" << endl;
@@ -340,7 +489,7 @@ int main() {
               break;
             };
 
-          // search by rating
+            // search by rating
           case 2:
             {
               // initialise
@@ -362,7 +511,7 @@ int main() {
               break;
             };
 
-          // search by tuition centre name
+            // search by tuition centre name
           default:
             {
               // initialise
@@ -380,7 +529,7 @@ int main() {
         };
         break;
 
-      // exit program
+        // exit program
       case 8:
         // ask for confirmation
         do {
@@ -399,7 +548,7 @@ int main() {
             cout << "Exited Successfully";
             break;
 
-          // return to menu
+            // return to menu
           default:
             // display cancelled message
             cout << "Cancelled" << endl << endl;
@@ -412,14 +561,26 @@ int main() {
   return 0;
 };
 
-void addTutor(Tutor *&tutors, int *size, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, string tcCode, string tcName, string subCode, string subName, int rating) {
-  // initialise
-  int tutorID = 1;
 
-  // find the largest tutor id then increment by 1
-  for (int i = 0; i < *size; i++)
-    if (tutors[i].getTutorID() > (tutorID - 1))
-      tutorID = tutors[i].getTutorID() + 1;
+void generateTutors(Tutor *&tutors, int *lastID, int *size) {
+  *size = 10;
+  tutors = new Tutor[*size];
+  *lastID = 10;
+
+  tutors[0] = Tutor(2, "Aaron", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
+  tutors[1] = Tutor(1, "Bill", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
+  tutors[2] = Tutor(4, "Charlie", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
+  tutors[3] = Tutor(3, "Edwin", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 4);
+  tutors[4] = Tutor(8, "George", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0001", "Taman Laksamana", "S0001", "Science", 2);
+  tutors[5] = Tutor(10, "Jamal", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 3);
+  tutors[6] = Tutor(5, "Kenny", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 3);
+  tutors[7] = Tutor(9, "Maria", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 3);
+  tutors[8] = Tutor(7, "Patricia", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
+  tutors[9] = Tutor(6, "Shelby", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0004", "Bukit Petaling", "S0001", "Science", 1);
+};
+void addTutor(Tutor *&tutors, int *lastID, int *size, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, string tcCode, string tcName, string subCode, string subName, int rating) {
+  // initialise
+  int tutorID = *lastID + 1;
 
   Tutor newTutor(tutorID, name, day, month, year, 0, 0, 0, hourlyPayRate, phone, address, tcCode, tcName, subCode, subCode, rating);
 
@@ -457,8 +618,9 @@ void addTutor(Tutor *&tutors, int *size, string name, int day, int month, int ye
   cout << "Added Successfully" << endl << endl;
   // increase tutor size
   *size += 1;
+  // increase last id
+  *lastID += 1;
 };
-
 void modifyTutor(Tutor *&tutors, int size, int tutorID) {
   // initialise
   int input = 0;
@@ -523,7 +685,6 @@ void modifyTutor(Tutor *&tutors, int size, int tutorID) {
   if (!found)
     cout << "No results found" << endl << endl;
 };
-
 void terminateTutor(Tutor *&tutors, int size, int tutorID) {
   // initialise
   int day = 0, month = 0, year = 0;
@@ -576,7 +737,7 @@ void terminateTutor(Tutor *&tutors, int size, int tutorID) {
 
       // ask for confirmation
       do {
-        if (tutors[i].getDateTerminated() != -1)
+        if (tutors[i].getDateTerminated() == -1)
           cout << "Terminate user? (Y/N): ";
         else
           cout << "Modify terminated date? (Y/N): ";
@@ -595,7 +756,7 @@ void terminateTutor(Tutor *&tutors, int size, int tutorID) {
           cout << "Terminated Successfully" << endl << endl;
           break;
 
-        // cancel termination
+          // cancel termination
         default:
           // display cancelled message
           cout << "Cancelled" << endl << endl;
@@ -610,7 +771,6 @@ void terminateTutor(Tutor *&tutors, int size, int tutorID) {
   if (!found)
     cout << "No results found" << endl << endl;
 };
-
 void deleteTutor(Tutor *&tutors, int *size, int tutorID) {
   // initialise
   char cinput = ' ';
@@ -703,7 +863,7 @@ void deleteTutor(Tutor *&tutors, int *size, int tutorID) {
             break;
           };
 
-        // cancel delete
+          // cancel delete
         default:
           // display cancelled message
           cout << "Cancelled" << endl << endl;
@@ -715,7 +875,6 @@ void deleteTutor(Tutor *&tutors, int *size, int tutorID) {
   if (!found)
     cout << "No results found" << endl << endl;
 };
-
 
 void displayRecord(Tutor tutor) {
   cout << "ID                 : " << tutor.getTutorID() << endl;
@@ -744,7 +903,6 @@ void displayRecord(Tutor tutor) {
   cout << "Subject Name       : " << tutor.getSubjectName() << endl;
   cout << "Rating             : " << tutor.getRating() << endl << endl;
 };
-
 void displayAllRecords(Tutor *tutors, int size) {
   // initialise
   int page = 1, input = 0;
@@ -770,8 +928,8 @@ void displayAllRecords(Tutor *tutors, int size) {
         cout.width(19);
         cout << tutors[i].getTuitionCentreName() << "  ";
         cout << tutors[i].getRating() << endl;
-        // break when last page and is the last element
-        if (page == total && i + 1 == (page - 1) * 10 + size % 10)
+        // break when last element
+        if (i == size - 1)
           break;
       };
       // display page number
@@ -827,7 +985,7 @@ void displayAllRecords(Tutor *tutors, int size) {
           break;
         };
 
-      // jump to page
+        // jump to page
       case 2:
         if (total > 1) {
           do {
@@ -845,14 +1003,14 @@ void displayAllRecords(Tutor *tutors, int size) {
         cout << endl;
         break;
 
-      // next page
+        // next page
       case 3:
         if (page < total)
           page++;
         cout << endl;
         break;
 
-      // previous page
+        // previous page
       case 4:
         if (page > 1)
           page--;
@@ -866,25 +1024,23 @@ void displayAllRecords(Tutor *tutors, int size) {
   } while (input != 5);
 };
 
-
 void sortTutorID(Tutor *tutors, int size) {
   // allocate memory
   Tutor *tempTutors = new Tutor[size];
-  
+
   // copy all elements into temporary tutor array
   for (int i = 0; i < size; i++)
     tempTutors[i] = tutors[i];
 
   // sort the temporary tutor array by id
   dualPivotQuicksortID(tempTutors, 0, size - 1);
-  
+
   // display sorted array
   displayAllRecords(tempTutors, size);
-  
+
   // deallocate memory
   delete[] tempTutors;
 };
-
 void sortRating(Tutor *tutors, int size) {
   // allocate memory
   Tutor *tempTutors = new Tutor[size];
@@ -914,7 +1070,6 @@ void sortRating(Tutor *tutors, int size) {
   // deallocate memory
   delete[] tempTutors;
 };
-
 void sortPayRate(Tutor *tutors, int size) {
   // allocate memory
   Tutor *tempTutors = new Tutor[size];
@@ -945,7 +1100,6 @@ void sortPayRate(Tutor *tutors, int size) {
   delete[] tempTutors;
 };
 
-
 void searchTutorID(Tutor *tutors, int size, int tutorID) {
   // initialise
   bool found = false;
@@ -966,7 +1120,6 @@ void searchTutorID(Tutor *tutors, int size, int tutorID) {
   if (!found)
     cout << "No results found" << endl << endl;
 };
-
 void searchRating(Tutor *tutors, int size, int rating) {
   // initialise
   int tutorSize = 0;
@@ -1031,7 +1184,6 @@ void searchRating(Tutor *tutors, int size, int rating) {
     cout << "No results found" << endl;
   };
 };
-
 void searchTuitionName(Tutor *tutors, int size, string tcName) {
   // initialise
   int tutorSize = 0, nameSize = 0, nameIndex = 0, tutorIndex = 0, input = 0;
@@ -1070,7 +1222,7 @@ void searchTuitionName(Tutor *tutors, int size, string tcName) {
             else
               // name is in between existing names
               index = tempNames1[nameIndex].getIndex();
-            
+
             tempNames2[nameIndex] = SearchCache(tutors[i].getTuitionCentreName(), index);
 
             for (int x = nameIndex + 1; x < nameSize + 1; x++) {
@@ -1099,7 +1251,7 @@ void searchTuitionName(Tutor *tutors, int size, string tcName) {
             else
               // name is in between existing names
               index = tempNames2[nameIndex].getIndex();
-            
+
             tempNames1[nameIndex] = SearchCache(tutors[i].getTuitionCentreName(), index);
 
             for (int x = nameIndex + 1; x < nameSize + 1; x++) {
@@ -1291,4 +1443,273 @@ void searchTuitionName(Tutor *tutors, int size, string tcName) {
       delete[] tempTutors1;
     };
   };
+};
+
+// binary search
+int binarySearchName(Tutor *tutors, int size, string name) {
+  // initialise
+  int low = 0, mid = 0, up = size;
+  while (up >= low) {
+    // get mid point
+    mid = (up - low) / 2 + low;
+    // compare strings
+    int comp = compareInsensitive(tutors[mid].getName(), name);
+    if (comp == 0) {
+      // if exising name is same as new name
+      while (compareInsensitive(tutors[mid + 1].getName(), name))
+        mid++;
+      return mid + 1;
+    } else if (comp < 0) {
+      // if existing name is before new name
+      low = mid + 1;
+    } else {
+      // if existing name is after new name
+      up = mid - 1;
+    };
+  };
+
+  // compare strings
+  int comp = compareInsensitive(tutors[mid].getName(), name);
+  if (comp > 0) {
+    // if existing name is after new name
+    return mid;
+  } else {
+    // if existing name is before new name
+    return mid + 1;
+  };
+};
+bool binarySearchCache(SearchCache *cache, string tcName, int size, int *index) {
+  // initialise
+  int low = 0, mid = 0, up = size;
+
+  while (up >= low) {
+    // get mid point
+    mid = (up - low) / 2 + low;
+    // compare strings
+    int comp = compareInsensitive(cache[mid].getName(), tcName);
+    if (comp == 0) {
+      // if existing name is same as new name
+      *index = mid;
+      return true;
+    };
+    if (comp < 0) {
+      // if existing name is before new name
+      low = mid + 1;
+    } else {
+      // if existing name is after new name
+      up = mid - 1;
+    };
+  };
+
+  // compare strings
+  int comp = compareInsensitive(cache[mid].getName(), tcName);
+  if (comp > 0) {
+    // if existing name is after new name
+    *index = mid;
+    return false;
+  } else {
+    // if existing name is before new name
+    *index = mid + 1;
+    return false;
+  };
+};
+
+// dual pivot quicksort
+void swap(Tutor *t1, Tutor *t2) {
+  // swap the elements' position
+  Tutor temp = *t1;
+  *t1 = *t2;
+  *t2 = temp;
+};
+
+void dualPivotQuicksortName(Tutor *tutors, int low, int up) {
+  if (low < up) {
+    int lPivot, rPivot;
+    partitionName(tutors, low, up, &lPivot, &rPivot);
+    // sort left subarray
+    dualPivotQuicksortName(tutors, low, lPivot - 1);
+    // sort mid subarray
+    dualPivotQuicksortName(tutors, lPivot + 1, rPivot - 1);
+    // sort right subarray
+    dualPivotQuicksortName(tutors, rPivot + 1, up);
+  };
+};
+void partitionName(Tutor *tutors, int low, int up, int *lPivot, int *rPivot) {
+  if (compareInsensitive(tutors[low].getName(), tutors[up].getName()) > 0)
+    // swap between left and right pivots
+    swap(&tutors[low], &tutors[up]);
+
+  // initialise
+  int lIndex = low + 1, rIndex = up - 1;
+  string lPiv = tutors[low].getName(), rPiv = tutors[up].getName();
+
+  for (int i = lIndex; i <= rIndex; i++) {
+    if (compareInsensitive(tutors[i].getName(), lPiv) < 0) {
+      // swap elements that are less than the left pivot
+      swap(&tutors[i], &tutors[lIndex]);
+      lIndex++;
+    } else if (compareInsensitive(tutors[i].getName(), rPiv) >= 0) {
+      // swap elements are greater than or equal to the right pivot
+      while (compareInsensitive(tutors[rIndex].getName(), rPiv) > 0 && i < rIndex)
+        rIndex--;
+      swap(&tutors[i], &tutors[rIndex]);
+      rIndex--;
+    };
+  };
+  // decrement left index
+  lIndex--;
+  // increment right index
+  rIndex++;
+
+  // swap pivots to their new positions
+  swap(&tutors[low], &tutors[lIndex]);
+  swap(&tutors[up], &tutors[rIndex]);
+
+  // return the indices of the pivots
+  *lPivot = lIndex;
+  *rPivot = rIndex;
+};
+
+void dualPivotQuicksortID(Tutor *tutors, int low, int up) {
+  if (low < up) {
+    int lPivot, rPivot;
+    partitionID(tutors, low, up, &lPivot, &rPivot);
+    // sort left subarray
+    dualPivotQuicksortID(tutors, low, lPivot - 1);
+    // sort mid subarray
+    dualPivotQuicksortID(tutors, lPivot + 1, rPivot - 1);
+    // sort right subarray
+    dualPivotQuicksortID(tutors, rPivot + 1, up);
+  };
+};
+void partitionID(Tutor *tutors, int low, int up, int *lPivot, int *rPivot) {
+  if (tutors[low].getTutorID() > tutors[up].getTutorID())
+    // swap between left and right pivots
+    swap(&tutors[low], &tutors[up]);
+
+  // initialise
+  int lIndex = low + 1, rIndex = up - 1;
+  int lPiv = tutors[low].getTutorID(), rPiv = tutors[up].getTutorID();
+
+  for (int i = lIndex; i <= rIndex; i++) {
+    if (tutors[i].getTutorID() < lPiv) {
+      // swap elements that are less than the left pivot
+      swap(&tutors[i], &tutors[lIndex]);
+      lIndex++;
+    } else if (tutors[i].getTutorID() >= rPiv) {
+      // swap elements are greater than or equal to the right pivot
+      while (tutors[rIndex].getTutorID() > rPiv && i < rIndex)
+        rIndex--;
+      swap(&tutors[i], &tutors[rIndex]);
+      rIndex--;
+    };
+  };
+  // decrement left index
+  lIndex--;
+  // increment right index
+  rIndex++;
+
+  // swap pivots to their new positions
+  swap(&tutors[low], &tutors[lIndex]);
+  swap(&tutors[up], &tutors[rIndex]);
+
+  // return the indices of the pivots
+  *lPivot = lIndex;
+  *rPivot = rIndex;
+};
+
+void dualPivotQuicksortRating(Tutor *tutors, int low, int up) {
+  if (low < up) {
+    int lPivot, rPivot;
+    partitionRating(tutors, low, up, &lPivot, &rPivot);
+    // sort left subarray
+    dualPivotQuicksortRating(tutors, low, lPivot - 1);
+    // sort mid subarray
+    dualPivotQuicksortRating(tutors, lPivot + 1, rPivot - 1);
+    // sort right subarray
+    dualPivotQuicksortRating(tutors, rPivot + 1, up);
+  };
+};
+void partitionRating(Tutor *tutors, int low, int up, int *lPivot, int *rPivot) {
+  if (tutors[low].getRating() > tutors[up].getRating())
+    // swap between left and right pivots
+    swap(&tutors[low], &tutors[up]);
+
+  // initialise
+  int lIndex = low + 1, rIndex = up - 1;
+  int lPiv = tutors[low].getRating(), rPiv = tutors[up].getRating();
+
+  for (int i = lIndex; i <= rIndex; i++) {
+    if (tutors[i].getRating() < lPiv) {
+      // swap elements that are less than the left pivot
+      swap(&tutors[i], &tutors[lIndex]);
+      lIndex++;
+    } else if (tutors[i].getRating() >= rPiv) {
+      // swap elements are greater than or equal to the right pivot
+      while (tutors[rIndex].getRating() > rPiv && i < rIndex)
+        rIndex--;
+      swap(&tutors[i], &tutors[rIndex]);
+      rIndex--;
+    };
+  };
+  // decrement left index
+  lIndex--;
+  // increment right index
+  rIndex++;
+
+  // swap pivots to their new positions
+  swap(&tutors[low], &tutors[lIndex]);
+  swap(&tutors[up], &tutors[rIndex]);
+
+  // return the indices of the pivots
+  *lPivot = lIndex;
+  *rPivot = rIndex;
+};
+
+void dualPivotQuicksortPayRate(Tutor *tutors, int low, int up) {
+  if (low < up) {
+    int lPivot, rPivot;
+    partitionPayRate(tutors, low, up, &lPivot, &rPivot);
+    // sort left subarray
+    dualPivotQuicksortPayRate(tutors, low, lPivot - 1);
+    // sort mid subarray
+    dualPivotQuicksortPayRate(tutors, lPivot + 1, rPivot - 1);
+    // sort right subarray
+    dualPivotQuicksortPayRate(tutors, rPivot + 1, up);
+  };
+};
+void partitionPayRate(Tutor *tutors, int low, int up, int *lPivot, int *rPivot) {
+  if (tutors[low].getHourlyPayRate() > tutors[up].getHourlyPayRate())
+    // swap between left and right pivots
+    swap(&tutors[low], &tutors[up]);
+
+  // initialise
+  int lIndex = low + 1, rIndex = up - 1;
+  double lPiv = tutors[low].getHourlyPayRate(), rPiv = tutors[up].getHourlyPayRate();
+
+  for (int i = lIndex; i <= rIndex; i++) {
+    if (tutors[i].getHourlyPayRate() < lPiv) {
+      // swap elements that are less than the left pivot
+      swap(&tutors[i], &tutors[lIndex]);
+      lIndex++;
+    } else if (tutors[i].getHourlyPayRate() >= rPiv) {
+      // swap elements are greater than or equal to the right pivot
+      while (tutors[rIndex].getHourlyPayRate() > rPiv && i < rIndex)
+        rIndex--;
+      swap(&tutors[i], &tutors[rIndex]);
+      rIndex--;
+    };
+  };
+  // decrement left index
+  lIndex--;
+  // increment right index
+  rIndex++;
+
+  // swap pivots to their new positions
+  swap(&tutors[low], &tutors[lIndex]);
+  swap(&tutors[up], &tutors[rIndex]);
+
+  // return the indices of the pivots
+  *lPivot = lIndex;
+  *rPivot = rIndex;
 };

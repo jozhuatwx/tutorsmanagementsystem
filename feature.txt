@@ -1,14 +1,25 @@
 upcoming feature
+#h9: add tutor (ll)
+#h10: modify existing tutor (ll)
+#h11: terminate existing tutor (ll)
+#h12: delete existing tutor (ll)
+#h13: display tutor records (ll)
+#h14: sort and display by tutor id (ll)
+#h15: sort and display by rating (ll)
+#h16: sort and display by pay rate (ll)
+#h17: search by tutor id (ll)
+#h18: search by rating (ll)
+#h19: search by tuition center name (ll)
 
 added feature
-#h1: search by tuition center name
-#h2: sort and display by tutor id
-#h3: sort and display by pay rate
-#h4: sort and display by rating
-#h5: modify existing tutor
-#h6: terminate existing tutor
-#h7: delete existing tutor
-#h8: display tutor records in pages
+#h1: search by tuition center name (aos)
+#h2: sort and display by tutor id (aos)
+#h3: sort and display by pay rate (aos)
+#h4: sort and display by rating (aos)
+#h5: modify existing tutor (aos)
+#h6: terminate existing tutor (aos)
+#h7: delete existing tutor (aos)
+#h8: display tutor records in pages (aos)
 #m1: display success/failure messages
 #l1: list only tutor id and names
-#l2: switch search tuition name to binary insertion sort
+#l2: switch search tuition name to binary insertion sort (aos)

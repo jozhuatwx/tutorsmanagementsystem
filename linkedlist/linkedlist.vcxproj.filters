@@ -15,47 +15,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main_aos.cpp">
+    <ClCompile Include="linkedlist.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="stringc.cpp">
+    <ClCompile Include="..\datec.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="datec.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="searchCache.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tutor.cpp">
+    <ClCompile Include="..\stringc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="bug.txt">
-      <Filter>Source Files</Filter>
-    </Text>
-    <Text Include="feature.txt">
-      <Filter>Source Files</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="tutor.h">
+    <ClInclude Include="..\datec.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stringc.h">
+    <ClInclude Include="..\stringc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="datec.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="searchCache.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="README.md">
-      <Filter>Source Files</Filter>
-    </None>
   </ItemGroup>
 </Project>

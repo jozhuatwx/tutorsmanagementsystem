@@ -19,5 +19,6 @@ fixed
 #m6: search tuition name crashes if there are no options
 #m7: search rating allocates potentially too much memory to temporary array
 #m8: input string when expecting a number loops forever
+#m9: id can be duplicated if the id is previously deleted
 #l1: adding the third duplicated name inserts in between, not after the last duplicated name (1,3,2 instead of 1,2,3)
 #l3: refactor if statements that checks if name/temp size is zero first to more than zero first
