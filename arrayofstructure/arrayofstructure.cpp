@@ -671,7 +671,7 @@ void modifyTutor(Tutor *&tutors, int size, int tutorID) {
         tutors[i].setAddress(address);
       };
 
-      // display sucess message
+      // display success message
       if (input >= 1)
         cout << "Modified Successfully" << endl << endl;
 

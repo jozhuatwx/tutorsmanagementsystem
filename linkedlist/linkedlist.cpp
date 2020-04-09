@@ -120,23 +120,27 @@ struct Tutor {
 // function headers
 void generateTutors(Tutor *&head, Tutor *&tail, int *lastID, int *size);
 void addTutor(Tutor *&head, Tutor *&tail, int *lastID, int *size, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, string tcCode, string tcName, string subCode, string subName, int rating);
-void modifyTutor(Tutor *head, int size, int tutorID);
-void terminateTutor(Tutor *head, int size, int tutorID);
-void deleteTutor(Tutor *head, int *size, int tutorID);
+void modifyTutor(Tutor *head, int tutorID);
+void terminateTutor(Tutor *head, int tutorID);
+void deleteTutor(Tutor *&head, Tutor *&tail, int *size, int tutorID);
 
 void displayRecord(Tutor tutor);
-void displayAllRecords(Tutor *head, Tutor *tail, int size);
+void displayAllRecords(Tutor *head, int size);
 
 void sortTutorID(Tutor *head, int size);
 void sortRating(Tutor *head, int size);
 void sortPayRate(Tutor *head, int size);
 
-void searchTutorID(Tutor *head, int size, int tutorID);
-void searchRating(Tutor *head, int size, int rating);
+void searchTutorID(Tutor *head, int tutorID);
+void searchRating(Tutor *head, int rating);
 void searchTuitionName(Tutor *head, int size, string tcName);
 
 // insert
-void insertToEnd(Tutor *&head, Tutor *&tail, int *size, int tutorID, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, string tcCode, string tcName, string subCode, string subName, int rating);
+void insertToEnd(Tutor *&head, Tutor *&tail, Tutor tutor);
+void insertToEnd(Tutor *&head, Tutor *&tail, int tutorID, string name, int dayJoined, int monthJoined, int yearJoined, int dayTerminated, int monthTerminated, int yearTerminated, double hourlyPayRate, string phone, string address, string tuitionCentreCode, string tuitionCentreName, string subjectCode, string subjectName, int rating);
+
+// delete
+void deleteList(Tutor *head);
 
 
 int main() {
@@ -306,7 +310,7 @@ int main() {
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
           } while (tutorID < 0);
           cout << "---------------" << endl;
-          modifyTutor(head, size, tutorID);
+          modifyTutor(head, tutorID);
           break;
         };
 
@@ -328,7 +332,7 @@ int main() {
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
           } while (tutorID < 0);
           cout << "---------------" << endl;
-          terminateTutor(head, size, tutorID);
+          terminateTutor(head, tutorID);
           break;
         };
 
@@ -350,7 +354,7 @@ int main() {
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
           } while (tutorID < 0);
           cout << "---------------" << endl;
-          deleteTutor(head, &size, tutorID);
+          deleteTutor(head, tail, &size, tutorID);
           break;
         };
 
@@ -358,7 +362,7 @@ int main() {
       case 5:
         cout << "Display Records (Name (Asc))" << endl;
         cout << "---------------------------------------" << endl;
-        displayAllRecords(head, tail, size);
+        displayAllRecords(head, size);
         break;
 
         // sort and display records
@@ -443,7 +447,7 @@ int main() {
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
               } while (tutorID < 0);
               cout << "-------------------------------------" << endl;
-              searchTutorID(head, size, tutorID);
+              searchTutorID(head, tutorID);
               break;
             };
 
@@ -465,7 +469,7 @@ int main() {
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
               } while (rating < 1 || rating > 5);
               cout << "-------------------------------------" << endl;
-              searchRating(head, size, rating);
+              searchRating(head, rating);
               break;
             };
 
@@ -521,40 +525,19 @@ int main() {
 
 
 void generateTutors(Tutor *&head, Tutor *&tail, int *lastID, int *size) {
-  *lastID = 13;
+  *lastID = 10;
+  *size = 10;
 
-  insertToEnd(head, tail, size, 2, "Aaron", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
-  insertToEnd(head, tail, size, 1, "Bill", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
-  insertToEnd(head, tail, size, 4, "Charlie", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
-  insertToEnd(head, tail, size, 3, "Edwin", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 4);
-  insertToEnd(head, tail, size, 8, "George", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0001", "Taman Laksamana", "S0001", "Science", 2);
-  insertToEnd(head, tail, size, 10, "Jamal", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 3);
-  insertToEnd(head, tail, size, 5, "Kenny", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 3);
-  insertToEnd(head, tail, size, 9, "Maria", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 3);
-  insertToEnd(head, tail, size, 7, "Patricia", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
-  insertToEnd(head, tail, size, 6, "Shelby", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0004", "Bukit Petaling", "S0001", "Science", 1);
-
-  insertToEnd(head, tail, size, 11, "Maria", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 3);
-  insertToEnd(head, tail, size, 12, "Patricia", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
-  insertToEnd(head, tail, size, 13, "Shelby", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0004", "Bukit Petaling", "S0001", "Science", 1);
-  insertToEnd(head, tail, size, 14, "George", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0001", "Taman Laksamana", "S0001", "Science", 2);
-  insertToEnd(head, tail, size, 15, "Jamal", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 3);
-  insertToEnd(head, tail, size, 16, "Kenny", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 3);
-  insertToEnd(head, tail, size, 17, "Aaron", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
-  insertToEnd(head, tail, size, 18, "Bill", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
-  insertToEnd(head, tail, size, 19, "Charlie", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
-  insertToEnd(head, tail, size, 20, "Edwin", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 4);
-
-  insertToEnd(head, tail, size, 21, "Maria", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 3);
-  insertToEnd(head, tail, size, 22, "Patricia", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
-  insertToEnd(head, tail, size, 23, "Shelby", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0004", "Bukit Petaling", "S0001", "Science", 1);
-  insertToEnd(head, tail, size, 24, "George", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0001", "Taman Laksamana", "S0001", "Science", 2);
-  insertToEnd(head, tail, size, 25, "Jamal", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 3);
-  insertToEnd(head, tail, size, 26, "Kenny", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 3);
-  insertToEnd(head, tail, size, 27, "Aaron", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
-  insertToEnd(head, tail, size, 28, "Bill", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
-  insertToEnd(head, tail, size, 29, "Charlie", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
-  insertToEnd(head, tail, size, 30, "Edwin", 2, 3, 2000, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 4);
+  insertToEnd(head, tail, 2, "Aaron", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
+  insertToEnd(head, tail, 1, "Bill", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
+  insertToEnd(head, tail, 4, "Charlie", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
+  insertToEnd(head, tail, 3, "Edwin", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 4);
+  insertToEnd(head, tail, 8, "George", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0001", "Taman Laksamana", "S0001", "Science", 2);
+  insertToEnd(head, tail, 10, "Jamal", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 3);
+  insertToEnd(head, tail, 5, "Kenny", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 3);
+  insertToEnd(head, tail, 9, "Maria", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 3);
+  insertToEnd(head, tail, 7, "Patricia", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
+  insertToEnd(head, tail, 6, "Shelby", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0004", "Bukit Petaling", "S0001", "Science", 1);
 };
 void addTutor(Tutor *&head, Tutor *&tail, int *lastID, int *size, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, string tcCode, string tcName, string subCode, string subName, int rating) {
   // initialise
@@ -573,32 +556,30 @@ void addTutor(Tutor *&head, Tutor *&tail, int *lastID, int *size, string name, i
       // head is new tutor
       head = newTutor;
     } else {
-      // allocate memory
-      Tutor *temp = head;
+      // initialise
+      Tutor *current = head;
 
-      while (temp->getNext()) {
-        if (compareInsensitive(name, temp->getNext()->getName()) < 0)
+      while (current->getNext()) {
+        if (compareInsensitive(name, current->getNext()->getName()) < 0)
           // new tutor is before next existing tutor, stop iteration
           break;
-        temp = temp->getNext();
+        current = current->getNext();
       };
 
-      if (temp->getNext())
+      if (current->getNext()) {
         // link new tutor to next tutor
-        newTutor->setNext(temp->getNext());
-      else
+        newTutor->setNext(current->getNext());
+        // link next tutor to new tutor
+        current->getNext()->setPrevious(newTutor);
+      } else {
         // tail is new tutor
         tail = newTutor;
+      };
 
-      // link next tutor to new tutor
-      temp->getNext()->setPrevious(newTutor);
       // link current tutor to new tutor
-      temp->setNext(newTutor);
+      current->setNext(newTutor);
       // link new tutor to current tutor
-      newTutor->setPrevious(temp);
-
-      // deallocate memory
-      delete temp;
+      newTutor->setPrevious(current);
     };
   } else {
     // insert new tutor as there are no existing tutors
@@ -612,9 +593,256 @@ void addTutor(Tutor *&head, Tutor *&tail, int *lastID, int *size, string name, i
   // increase last id
   *lastID += 1;
 };
-void modifyTutor(Tutor *head, int size, int tutorID) {};
-void terminateTutor(Tutor *head, int size, int tutorID) {};
-void deleteTutor(Tutor *head, int *size, int tutorID) {};
+void modifyTutor(Tutor *head, int tutorID) {
+  // initialise
+  int input = 0;
+  string phone = "", address = "";
+  bool found = false;
+  Tutor *current = head;
+
+  // linear search through the list
+  while (current) {
+    // find tutor with searched id
+    if (current->getTutorID() == tutorID) {
+      // display record
+      displayRecord(*current);
+
+      // get user input
+      cout << "Modify:" << endl;
+      cout << "(1) Phone" << endl;
+      cout << "(2) Address" << endl;
+      cout << "(3) Both" << endl;
+      do {
+        cout << "Sort by (1-3): ";
+        // ignore enter key
+        if (cin.peek() != '\n')
+          cin >> input;
+        // clear error state
+        if (!cin)
+          cin.clear();
+        // clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      } while (input < 1 || input > 3);
+
+      // modify phone
+      if (input == 1 || input == 3) {
+        do {
+          cout << "New Phone: ";
+          getline(cin, phone);
+          trim(phone);
+        } while (phone == "");
+        current->setPhone(phone);
+      };
+
+      // modify address
+      if (input == 2 || input == 3) {
+        do {
+          cout << "New Address: ";
+          getline(cin, address);
+          trim(address);
+        } while (address == "");
+        current->setAddress(address);
+      };
+
+      // display success message
+      if (input >= 1)
+        cout << "Modified Successfully" << endl << endl;
+
+      // set as found
+      found = true;
+      // stop iteration
+      break;
+    };
+    current = current->getNext();
+  };
+  // if no results
+  if (!found)
+    cout << "No results found" << endl << endl;
+};
+void terminateTutor(Tutor *head, int tutorID) {
+  // initialise
+  int day = 0, month = 0, year = 0;
+  time_t dateTerminated = time(0);
+  char sp = ' ', cinput = ' ';
+  bool found = false;
+  Tutor *current = head;
+
+  // linear search through the list
+  while (current) {
+    // find tutor with searched id
+    if (current->getTutorID() == tutorID) {
+      // display record
+      displayRecord(*current);
+
+      // set as found
+      found = true;
+
+      // check if tutor is terminated
+      if (current->getDateTerminated() != -1) {
+        do {
+          cout << "Tutor is already terminated. Modify termination date? (Y/N): ";
+          cin >> cinput;
+          // clear the input buffer
+          cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        } while (cinput != 'y' && cinput != 'Y' && cinput != 'n' && cinput != 'N');
+
+        // cancel termination
+        if (cinput == 'n' || cinput == 'N') {
+          // display cancelled message
+          cout << "Cancelled" << endl << endl;
+          break;
+        };
+      };
+
+      // get user input
+      do {
+        cout << "Date Terminated (d/m/y): ";
+        // ignore enter key
+        if (cin.peek() != '\n') {
+          cin >> day >> sp >> month >> sp >> year;
+          // convert to time
+          dateTerminated = intToTime(day, month, year);
+        };
+        // clear error state
+        if (!cin)
+          cin.clear();
+        // clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      } while (!validateDate(day, month, year) || difftime(dateTerminated, current->getDateJoined()) <= 0);
+
+      // ask for confirmation
+      do {
+        if (current->getDateTerminated() == -1)
+          cout << "Terminate user? (Y/N): ";
+        else
+          cout << "Modify terminated date? (Y/N): ";
+        cin >> cinput;
+        // clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      } while (cinput != 'y' && cinput != 'Y' && cinput != 'n' && cinput != 'N');
+
+      // determine outcome
+      switch (cinput) {
+        // terminate tutor
+        case 'y':
+        case 'Y':
+          current->setDateTerminated(dateTerminated);
+          // display success message
+          cout << "Terminated Successfully" << endl << endl;
+          break;
+
+          // cancel termination
+        default:
+          // display cancelled message
+          cout << "Cancelled" << endl << endl;
+          break;
+      };
+
+      // stop iteration
+      break;
+    };
+    current = current->getNext();
+  };
+  // if no results
+  if (!found)
+    cout << "No results found" << endl << endl;
+};
+void deleteTutor(Tutor *&head, Tutor *&tail, int *size, int tutorID) {
+  // initialise
+  char cinput = ' ';
+  bool found = false;
+  Tutor *current = head;
+
+  // linear search through the list
+  while (current) {
+    // find tutor with searched id
+    if (current->getTutorID() == tutorID) {
+      // display record
+      displayRecord(*current);
+
+      // set as found
+      found = true;
+
+      // check if tutor is terminated
+      if (current->getDateTerminated() == -1) {
+        // display not terminated message
+        cout << "Tutor has not been terminated" << endl << endl;
+        // stop iteration
+        break;
+      };
+
+      // check if terminated date has reached at least 6 months
+      tm tmTerminated;
+      time_t dateTerminated = current->getDateTerminated();
+      gmtime_s(&tmTerminated, &dateTerminated);
+
+      if (tmTerminated.tm_mon > 6) {
+        tmTerminated.tm_mon -= 6;
+        tmTerminated.tm_year += 1;
+      } else {
+        tmTerminated.tm_mon += 6;
+      };
+
+      if (difftime(mktime(&tmTerminated), time(0)) > 0) {
+        // display not passed 6 months message
+        cout << "Tutor has not been terminated at least 6 months ago" << endl << endl;
+        // stop iteration
+        break;
+      };
+
+      // ask for confirmation
+      do {
+        cout << "Permanently delete tutor? (Y/N): ";
+        cin >> cinput;
+        // clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      } while (cinput != 'y' && cinput != 'Y' && cinput != 'n' && cinput != 'N');
+
+      // determine outcome
+      switch (cinput) {
+        // delete tutor
+        case 'y':
+        case 'Y':
+          if (current->getNext())
+            // link next tutor to previous tutor
+            current->getNext()->setPrevious(current->getPrevious());
+          else
+            // tail is previous tutor
+            tail = current->getPrevious();
+
+          if (current->getPrevious())
+            // link previous tutor to next tutor
+            current->getPrevious()->setNext(current->getNext());
+          else
+            // head is next tutor
+            head = current->getNext();
+
+          // deallocate memory
+          delete current;
+
+          // display success message
+          cout << "Deleted Successfully" << endl << endl;
+          // decrease tutor size
+          *size -= 1;
+          break;
+
+        // cancel delete
+        default:
+          // display cancelled message
+          cout << "Cancelled" << endl << endl;
+          break;
+      };
+
+      // stop iteration
+      break;
+    };
+    current = current->getNext();
+  };
+
+  // if no results
+  if (!found)
+    cout << "No results found" << endl << endl;
+};
 
 void displayRecord(Tutor tutor) {
   cout << "ID                 : " << tutor.getTutorID() << endl;
@@ -643,10 +871,10 @@ void displayRecord(Tutor tutor) {
   cout << "Subject Name       : " << tutor.getSubjectName() << endl;
   cout << "Rating             : " << tutor.getRating() << endl << endl;
 };
-void displayAllRecords(Tutor *head, Tutor *tail, int size) {
+void displayAllRecords(Tutor *head, int size) {
   // initialise
-  int page = 1, input = 0;
-  Tutor *temp = head;
+  int page = 1, input = 0, i = 0;
+  Tutor *current = head;
 
   // calculate total page numbers
   int total = size / 10;
@@ -658,22 +886,24 @@ void displayAllRecords(Tutor *head, Tutor *tail, int size) {
     if (input != 1) {
       cout << "ID    Name             Pay    Tuition Centre       Rating" << endl;
       cout << "---------------------------------------------------------" << endl;
-      for (int i = 0; i < 10 && temp; i++) {
+      for (i = 0; i < 10; i++) {
         // print list of tutors
         cout.width(4);
-        cout << right << temp->getTutorID() << "  ";
+        cout << right << current->getTutorID() << "  ";
         cout.width(15);
-        cout << left << temp->getName() << "  ";
+        cout << left << current->getName() << "  ";
         cout.width(5);
-        cout << temp->getHourlyPayRate() << "  ";
+        cout << current->getHourlyPayRate() << "  ";
         cout.width(19);
-        cout << temp->getTuitionCentreName() << "  ";
-        cout << temp->getRating() << endl;
+        cout << current->getTuitionCentreName() << "  ";
+        cout << current->getRating() << endl;
 
-        temp = temp->getNext();
+        if (current->getNext())
+          current = current->getNext();
+        else
+          // break when last element
+          break;
       };
-      if (!temp)
-        temp = tail;
       // display page number
       cout << endl << "Page " << page << endl << endl;
     };
@@ -723,7 +953,7 @@ void displayAllRecords(Tutor *head, Tutor *tail, int size) {
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
           } while (tutorID < 0);
           cout << "-------------------------------------" << endl;
-          searchTutorID(head, size, tutorID);
+          searchTutorID(head, tutorID);
           break;
         };
 
@@ -746,14 +976,12 @@ void displayAllRecords(Tutor *head, Tutor *tail, int size) {
             } while (page < 1 || page > total);
             if (oldPage >= page) {
               // go to previous tutors
-              for (int i = 0; i < 10 * (oldPage - page + 1) && temp; i++)
-                temp = temp->getPrevious();
-              if (!temp)
-                temp = head;
+              for (int x = 0; x < 10 * (oldPage - page + 1) - (10 - i); x++)
+                current = current->getPrevious();
             } else {
               // go to next tutors
-              for (int i = 0; i < 10 * (page - oldPage - 1); i++)
-                temp = temp->getNext();
+              for (int x = 0; x < 10 * (page - oldPage - 1); x++)
+                current = current->getNext();
             };
           };
           cout << endl;
@@ -771,10 +999,9 @@ void displayAllRecords(Tutor *head, Tutor *tail, int size) {
       case 4:
         if (page > 1)
           page--;
-        for (int i = 0; i < 20 && temp; i++)
-          temp = temp->getPrevious();
-        if (!temp)
-          temp = head;
+        // go to previous tutors
+        for (int x = 0; x < 10 + i; x++)
+          current = current->getPrevious();
         cout << endl;
         break;
 
@@ -789,18 +1016,67 @@ void sortTutorID(Tutor *head, int size) {};
 void sortRating(Tutor *head, int size) {};
 void sortPayRate(Tutor *head, int size) {};
 
-void searchTutorID(Tutor *head, int size, int tutorID) {};
-void searchRating(Tutor *head, int size, int rating) {};
+void searchTutorID(Tutor *head, int tutorID) {
+  // initialise
+  bool found = false;
+  Tutor *current = head;
+
+  // linear seaarch through the list
+  while (current) {
+    // find tutor with searched id
+    if (current->getTutorID() == tutorID) {
+      // display result
+      displayRecord(*current);
+      // set as found
+      found = true;
+      // stop iteration
+      break;
+    };
+    current = current->getNext();
+  };
+
+  // if no results
+  if (!found)
+    cout << "No results found" << endl << endl;
+};
+void searchRating(Tutor *head, int rating) {
+  // initialise
+  bool found = false;
+  int tempSize = 0;
+  Tutor *current = head, *tempHead = NULL, *tempTail = NULL;
+
+  // linear search through the list
+  while (current) {
+    // find tutors with searched rating
+    if (current->getRating() == rating) {
+      // insert to the temporary list
+      insertToEnd(tempHead, tempTail, *current);
+      // set as found
+      found = true;
+      // increase temporary list size
+      tempSize++;
+    };
+    current = current->getNext();
+  };
+
+  if (found) {
+    // display all records
+    displayAllRecords(tempHead, tempSize);
+    // deallocate memory
+    deleteList(tempHead);
+  } else {
+    // if no results
+    cout << "No results found" << endl << endl;
+  };
+};
 void searchTuitionName(Tutor *head, int size, string tcName) {};
 
 // insert
-void insertToEnd(Tutor *&head, Tutor *&tail, int *size, int tutorID, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, string tcCode, string tcName, string subCode, string subName, int rating) {
-  Tutor *newTutor = new Tutor(tutorID, name, day, month, year, 0, 0, 0, hourlyPayRate, phone, address, tcCode, tcName, subCode, subCode, rating);
+void insertToEnd(Tutor *&head, Tutor *&tail, Tutor tutor) {
+  // initialise
+  Tutor *newTutor = new Tutor(tutor.getTutorID(), tutor.getName(), tutor.getDateJoined(), tutor.getDateTerminated(), tutor.getHourlyPayRate(), tutor.getPhone(), tutor.getAddress(), tutor.getTuitionCentreCode(), tutor.getTuitionCentreName(), tutor.getSubjectCode(), tutor.getSubjectName(), tutor.getRating());
 
   if (head) {
-    // allocate memory
-    Tutor *temp = tail;
-
     // link new tutor to tail tutor
     newTutor->setPrevious(tail);
     // link tail tutor to new tutor
@@ -812,7 +1088,33 @@ void insertToEnd(Tutor *&head, Tutor *&tail, int *size, int tutorID, string name
     head = newTutor;
     tail = newTutor;
   };
+};
+void insertToEnd(Tutor *&head, Tutor *&tail, int tutorID, string name, int dayJoined, int monthJoined, int yearJoined, int dayTerminated, int monthTerminated, int yearTerminated, double hourlyPayRate, string phone, string address, string tuitionCentreCode, string tuitionCentreName, string subjectCode, string subjectName, int rating) {
+  // initialise
+  Tutor *newTutor = new Tutor(tutorID, name, dayJoined, monthJoined, yearJoined, dayTerminated, monthTerminated, yearTerminated, hourlyPayRate, phone, address, tuitionCentreCode, tuitionCentreName, subjectCode, subjectName, rating);
 
-  // increase tutor size
-  *size += 1;
+  if (head) {
+    // link new tutor to tail tutor
+    newTutor->setPrevious(tail);
+    // link tail tutor to new tutor
+    tail->setNext(newTutor);
+    // tail is new tutor
+    tail = newTutor;
+  } else {
+    // insert new tutor as there are no existing tutors
+    head = newTutor;
+    tail = newTutor;
+  };
+};
+
+// delete
+void deleteList(Tutor *head) {
+  // initialise
+  Tutor *current = head;
+  while (current) {
+    current = current->getNext();
+    // deallocate memory
+    delete head;
+    head = current;
+  };
 };
