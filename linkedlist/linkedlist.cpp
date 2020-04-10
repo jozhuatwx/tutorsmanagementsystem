@@ -585,7 +585,7 @@ void addTutor(Tutor *&head, Tutor *&tail, int *lastID, int *size, string name, i
   // initialise
   int tutorID = *lastID + 1;
 
-  Tutor *newTutor = new Tutor(tutorID, name, day, month, year, 0, 0, 0, hourlyPayRate, phone, address, tcCode, tcName, subCode, subCode, rating);
+  Tutor *newTutor = new Tutor(tutorID, name, day, month, year, 0, 0, 0, hourlyPayRate, phone, address, tcCode, tcName, subCode, subName, rating);
 
   // insertion sort
   if (head) {

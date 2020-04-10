@@ -557,7 +557,7 @@ void addTutor(Tutor *&tutors, int *lastID, int *size, string name, int day, int 
   // initialise
   int tutorID = *lastID + 1;
 
-  Tutor newTutor(tutorID, name, day, month, year, 0, 0, 0, hourlyPayRate, phone, address, tcCode, tcName, subCode, subCode, rating);
+  Tutor newTutor(tutorID, name, day, month, year, 0, 0, 0, hourlyPayRate, phone, address, tcCode, tcName, subCode, subName, rating);
 
   // binary insertion sort
   if (*size > 0) {
