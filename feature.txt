@@ -1,8 +1,7 @@
 upcoming feature
-#h14: sort and display by tutor id (ll)
-#h15: sort and display by rating (ll)
-#h16: sort and display by pay rate (ll)
-#h19: search by tuition center name (ll)
+#h20: switch from binary insertion sort to quicksort (aos)
+#m2: include multiple algorithms for different use cases (aos)
+#m3: include multiple algorithms for different use cases (ll)
 
 added feature
 #h1: search by tuition center name (aos)
@@ -18,8 +17,12 @@ added feature
 #h11: terminate existing tutor (ll)
 #h12: delete existing tutor (ll)
 #h13: display tutor records (ll)
+#h14: sort and display by tutor id (ll)
+#h15: sort and display by rating (ll)
+#h16: sort and display by pay rate (ll)
 #h17: search by tutor id (ll)
 #h18: search by rating (ll)
+#h19: search by tuition center name (ll)
 #m1: display success/failure messages
 #l1: list only tutor id and names
 #l2: switch search tuition name to binary insertion sort (aos)
