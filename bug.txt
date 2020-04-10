@@ -11,6 +11,9 @@ fixed
 #h7: add tutor with spacing fills up the next value (split with the spacing)
 #h8: sort by hourly rating doesn't work produces jumbled sequence when there is same pay rate
 #h9: sort by rating doesn't work
+#h10: quicksort will produce partially sorted results under certain conditions
+#h11: add tutor with same name will crash
+#h12: sorting tutors by name will crash when same names are last
 #m1: tuition names dynamic array is not properly deleted if there is duplicated names (eg. Bukit)
 #m2: date terminated can be before date joined
 #m3: does not accept lowercase 'y'

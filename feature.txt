@@ -1,5 +1,4 @@
 upcoming feature
-#h20: switch from binary insertion sort to quicksort (aos)
 #m2: include multiple algorithms for different use cases (aos)
 #m3: include multiple algorithms for different use cases (ll)
 
@@ -23,6 +22,7 @@ added feature
 #h17: search by tutor id (ll)
 #h18: search by rating (ll)
 #h19: search by tuition center name (ll)
+#h20: switch from binary insertion sort to quicksort (aos)
 #m1: display success/failure messages
 #l1: list only tutor id and names
 #l2: switch search tuition name to binary insertion sort (aos)
