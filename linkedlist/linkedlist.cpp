@@ -578,6 +578,7 @@ void generateTutors(Tutor *&head, Tutor *&tail, int *lastID, int *size) {
   insertToEnd(head, tail, 5, "Kenny", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 3);
   insertToEnd(head, tail, 9, "Maria", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 3);
   insertToEnd(head, tail, 7, "Patricia", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
+  insertToEnd(head, tail, 6, "Shelby", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0004", "Bukit Petaling", "S0001", "Science", 1);
 };
 void addTutor(Tutor *&head, Tutor *&tail, int *lastID, int *size, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, string tcCode, string tcName, string subCode, string subName, int rating) {
   // initialise

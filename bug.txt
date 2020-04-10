@@ -14,6 +14,7 @@ fixed
 #h10: quicksort will produce partially sorted results under certain conditions
 #h11: add tutor with same name will crash
 #h12: sorting tutors by name will crash when same names are last
+#h13: linked list missing record id 6
 #m1: tuition names dynamic array is not properly deleted if there is duplicated names (eg. Bukit)
 #m2: date terminated can be before date joined
 #m3: does not accept lowercase 'y'
