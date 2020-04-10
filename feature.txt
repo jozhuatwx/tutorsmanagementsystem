@@ -23,6 +23,7 @@ added feature
 #h18: search by rating (ll)
 #h19: search by tuition center name (ll)
 #h20: switch from binary insertion sort to quicksort (aos)
+#h21: display all records split to list view and detailed view
 #m1: display success/failure messages
 #m4: optimise search tuition centre name algorithm (ll)
 #l1: list only tutor id and names
