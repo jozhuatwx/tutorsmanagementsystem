@@ -1159,39 +1159,42 @@ void searchRating(Tutor *head, int rating) {
 };
 void searchTuitionName(Tutor *head, int size, string tcName) {
   // initialise
-  Tutor *current = head, *sortHead = NULL, *sortedTail = NULL, *tempHead = NULL, *tempTail = NULL;
+  Tutor *current = head, *tempHead = NULL, *tempTail = NULL;
   SearchCache *currentName = NULL, *nameHead = NULL;
   int tempSize = 0, input = 0;
   string sinput = "";
-  bool exist = false;
 
   // copy all elements into temporary tutor list
   while (current) {
-    insertToEnd(sortHead, sortedTail, *current);
+    insertToEnd(tempHead, tempTail, *current);
     current = current->getNext();
   };
 
-  // sort the temporary tutor list by tuition centre name
-  mergesortTCName(sortHead, tcName);
+  // sort the temporary tutor list by tuition name
+  mergesortTCName(tempHead, tcName);
 
   // linear search through the list
-  current = sortHead;
+  current = tempHead;
   while (current) {
     if (nameHead) {
-      exist = false;
+      bool exist = false;
       currentName = nameHead;
       // linear search through the list
       while (currentName) {
-        if (compareInsensitive(currentName->getName(), current->getTuitionCentreName()) == 0) {
+        if (compareInsensitive(current->getTuitionCentreName(), currentName->getName()) == 0) {
+          // tuition name exists
           exist = true;
+          // stop iteration
           break;
-        }
+        };
         if (currentName->getNext())
           currentName = currentName->getNext();
         else
+          // break when last element
           break;
       };
       if (!exist)
+        // link tuition name to new tuition name
         currentName->setNext(new SearchCache(current->getTuitionCentreName()));
     } else {
       // insert new tuition name as there are no existing tuition names
@@ -1224,28 +1227,36 @@ void searchTuitionName(Tutor *head, int size, string tcName) {
     cout << "No results found" << endl << endl;
   };
 
-  // get tuition centre name
+  // get tuition name
   currentName = nameHead;
   for (int i = 0; i < input - 1; i++)
     currentName = currentName->getNext();
   sinput = currentName->getName();
 
-  // linear search through a portion of the temporary tutor array
-  current = sortHead;
-  while (current && compareInsensitive(current->getTuitionCentreName(), sinput) != 0)
+  // deallocate non-searched results
+  current = tempHead;
+  while (current && compareInsensitive(current->getTuitionCentreName(), sinput) != 0) {
     current = current->getNext();
+    // deallocate memory
+    delete tempHead;
+    tempHead = current;
+  };
   while (current && compareInsensitive(current->getTuitionCentreName(), sinput) == 0) {
-    insertToEnd(tempHead, tempTail, *current);
     // increase temporary list size
     tempSize++;
     current = current->getNext();
+  };
+  while (current) {
+    current = current->getNext();
+    // deallocate memory
+    delete tempHead;
+    tempHead = current;
   };
 
   // display sorted list
   displayAllRecords(tempHead, tempSize);
 
   // deallocate memory
-  deleteList(sortHead);
   deleteList(tempHead);
 };
 

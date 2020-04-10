@@ -24,5 +24,6 @@ added feature
 #h19: search by tuition center name (ll)
 #h20: switch from binary insertion sort to quicksort (aos)
 #m1: display success/failure messages
+#m4: optimise search tuition centre name algorithm (ll)
 #l1: list only tutor id and names
 #l2: switch search tuition name to binary insertion sort (aos)
