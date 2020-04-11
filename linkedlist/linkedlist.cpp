@@ -1064,7 +1064,7 @@ void displayRecordsDetailed(Tutor *head, int size) {
 
         // linear search through the array
         current = head;
-        for (; current; index++) {
+        for (index = 0; current; index++) {
           // find tutor with searched id
           if (current->getTutorID() == tutorID) {
             // set as found
@@ -1330,11 +1330,16 @@ void searchTuitionName(Tutor *head, int size, string tcName) {
     tempSize++;
     current = current->getNext();
   };
-  while (current) {
+  if (current) {
+    // unlink list from to be deleted list
+    current->getPrevious()->setNext(NULL);
     current = current->getNext();
-    // deallocate memory
-    delete tempHead;
-    tempHead = current;
+
+    while (current) {
+      // deallocate memory
+      delete current->getPrevious();
+      current = current->getNext();
+    };
   };
 
   // display sorted list
