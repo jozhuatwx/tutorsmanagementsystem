@@ -5,7 +5,7 @@ time_t intToTime(int day, int month, int year) {
   // initialise
   tm date;
   time_t now = time(0);
-  gmtime_s(&date, &now);
+  localtime_s(&date, &now);
   // change date to user input date
   date.tm_mday = day;
   // tm month measures from 0

@@ -172,9 +172,9 @@ int main() {
 
   // menu
   do {
-    cout << "--------------------------------------------" << endl;
-    cout << "Tutor Management System (Array of Structure)" << endl;
-    cout << "--------------------------------------------" << endl;
+    cout << "---------------------------------------------------" << endl;
+    cout << "Tutor Management System (Array of Structures 1.0.0)" << endl;
+    cout << "---------------------------------------------------" << endl;
     cout << "(1) Add Tutor" << endl;
     cout << "(2) Modify Tutor" << endl;
     cout << "(3) Terminate Tutor" << endl;
@@ -232,7 +232,7 @@ int main() {
               cin.clear();
             // clear the input buffer
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-          } while (!validateDate(day, month, year));
+          } while (!validateDate(day, month, year) || difftime(intToTime(day, month, year), time(0)) > 0);
 
           // hourly pay rate
           do {
@@ -772,7 +772,7 @@ void deleteTutor(Tutor *&tutors, int *size, int tutorID) {
       // check if terminated date has reached at least 6 months
       tm tmTerminated;
       time_t dateTerminated = tutors[i].getDateTerminated();
-      gmtime_s(&tmTerminated, &dateTerminated);
+      localtime_s(&tmTerminated, &dateTerminated);
 
       if (tmTerminated.tm_mon > 6) {
         tmTerminated.tm_mon -= 6;
@@ -989,6 +989,7 @@ void displayRecordsDetailed(Tutor *tutors, int size) {
 
   do {
     if (input == 2) {
+      found = false;
       // get user input
       do {
         do {
@@ -1298,70 +1299,74 @@ void searchTuitionName(Tutor *tutors, int size, string tcName) {
   };
 
   // get user input
-  if (nameSize >= 2) {
-    for (int i = 0; i < nameSize; i++) {
-      cout << "(" << i + 1 << ") ";
-      if (name1)
-        cout << tempNames1[i];
-      else
-        cout << tempNames2[i];
-      cout << endl;
+  if (nameSize > 0) {
+    if (nameSize > 1) {
+      for (int i = 0; i < nameSize; i++) {
+        cout << "(" << i + 1 << ") ";
+        if (name1)
+          cout << tempNames1[i];
+        else
+          cout << tempNames2[i];
+        cout << endl;
+      };
+      do {
+        cout << "Please input (1-" << nameSize << "): ";
+        // ignore enter key
+        if (cin.peek() != '\n')
+          cin >> input;
+        if (!cin)
+          // clear error state
+          cin.clear();
+        // clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      } while (input < 1 || input > nameSize);
+    } else {
+      input = 1;
     };
-    do {
-      cout << "Please input (1-" << nameSize << "): ";
-      // ignore enter key
-      if (cin.peek() != '\n')
-        cin >> input;
-      if (!cin)
-        // clear error state
-        cin.clear();
-      // clear the input buffer
-      cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    } while (input < 1 || input > nameSize);
-  } else if (nameSize == 1) {
-    input = 1;
+
+    // get tuition name
+    if (name1)
+      sinput = tempNames1[input - 1];
+    else
+      sinput = tempNames2[input - 1];
+
+    // binary search through a portion of the temporary tutor array
+    binarySearchTCName(sortTutors, size, sinput, &startIndex, &endIndex);
+
+    // allocate memory
+    tutorSize = endIndex - startIndex + 1;
+    tempTutors = new Tutor[tutorSize];
+
+    // copy elements into temporary tutor array
+    for (int i = 0, x = startIndex; x < endIndex + 1; i++, x++)
+      tempTutors[i] = sortTutors[x];
+
+    // deallocate memory
+    delete[] sortTutors;
+
+    // sort temporary tutor array by name
+    for (int i = 0; i < tutorSize - 1; i++) {
+      if (i + 1 < tutorSize && compareInsensitive(tempTutors[i].getTuitionCentreName(), tempTutors[i + 1].getTuitionCentreName()) == 0) {
+        int low = i, up = i + 1;
+        while (i + 2 < tutorSize && compareInsensitive(tempTutors[i + 1].getTuitionCentreName(), tempTutors[i + 2].getTuitionCentreName()) == 0) {
+          up++;
+          i++;
+        };
+        dualPivotQuicksortName(tempTutors, low, up);
+      };
+    };
+
+    // display sorted array
+    displayRecordsList(tempTutors, tutorSize, 0);
+
+    // deallocate memory
+    delete[] tempTutors;
   } else {
+    // deallocate memory
+    delete[] sortTutors;
     // if no results
     cout << "No results found" << endl << endl;
   };
-
-  // get tuition name
-  if (name1)
-    sinput = tempNames1[input - 1];
-  else
-    sinput = tempNames2[input - 1];
-
-  // binary search through a portion of the temporary tutor array
-  binarySearchTCName(sortTutors, size, sinput, &startIndex, &endIndex);
-  
-  // allocate memory
-  tutorSize = endIndex - startIndex + 1;
-  tempTutors = new Tutor[tutorSize];
-
-  // copy elements into temporary tutor array
-  for (int i = 0, x = startIndex; x < endIndex + 1; i++, x++)
-    tempTutors[i] = sortTutors[x];
-
-  // deallocate memory
-  delete[] sortTutors;
-
-  // sort temporary tutor array by name
-  for (int i = 0; i < tutorSize - 1; i++) {
-    if (i + 1 < tutorSize && compareInsensitive(tempTutors[i].getTuitionCentreName(), tempTutors[i + 1].getTuitionCentreName()) == 0) {
-      int low = i, up = i + 1;
-      while (i + 2 < tutorSize && compareInsensitive(tempTutors[i + 1].getTuitionCentreName(), tempTutors[i + 2].getTuitionCentreName()) == 0) {
-        up++;
-        i++;
-      };
-      dualPivotQuicksortName(tempTutors, low, up);
-    };
-  };
-
-  // display sorted array
-  displayRecordsList(tempTutors, tutorSize, 0);
-
-  // deallocate memory
-  delete[] tempTutors;
 };
 
 // binary search

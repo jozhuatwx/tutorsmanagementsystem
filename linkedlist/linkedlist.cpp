@@ -172,17 +172,17 @@ void deleteList(Tutor *head);
 // mergesort
 void split(Tutor *head, Tutor *&list1, Tutor *&list2);
 
-Tutor *mergeID(Tutor *list1, Tutor *list2);
 void mergesortID(Tutor *&head);
+Tutor *mergeID(Tutor *list1, Tutor *list2);
 
-Tutor *mergeRating(Tutor *list1, Tutor *list2);
 void mergesortRating(Tutor *&head);
+Tutor *mergeRating(Tutor *list1, Tutor *list2);
 
-Tutor *mergePayRate(Tutor *list1, Tutor *list2);
 void mergesortPayRate(Tutor *&head);
+Tutor *mergePayRate(Tutor *list1, Tutor *list2);
 
-Tutor *mergeTCName(Tutor *list1, Tutor *list2, string tcName);
 void mergesortTCName(Tutor *&head, string tcName);
+Tutor *mergeTCName(Tutor *list1, Tutor *list2, string tcName);
 
 
 int main() {
@@ -201,9 +201,9 @@ int main() {
 
   // menu
   do {
-    cout << "-------------------------------------" << endl;
-    cout << "Tutor Management System (Linked List)" << endl;
-    cout << "-------------------------------------" << endl;
+    cout << "-------------------------------------------" << endl;
+    cout << "Tutor Management System (Linked List 1.0.0)" << endl;
+    cout << "-------------------------------------------" << endl;
     cout << "(1) Add Tutor" << endl;
     cout << "(2) Modify Tutor" << endl;
     cout << "(3) Terminate Tutor" << endl;
@@ -261,7 +261,7 @@ int main() {
               cin.clear();
             // clear the input buffer
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-          } while (!validateDate(day, month, year));
+          } while (!validateDate(day, month, year) || difftime(intToTime(day, month, year), time(0)) > 0);
 
           // hourly pay rate
           do {
@@ -816,7 +816,7 @@ void deleteTutor(Tutor *&head, Tutor *&tail, int *size, int tutorID) {
       // check if terminated date has reached at least 6 months
       tm tmTerminated;
       time_t dateTerminated = current->getDateTerminated();
-      gmtime_s(&tmTerminated, &dateTerminated);
+      localtime_s(&tmTerminated, &dateTerminated);
 
       if (tmTerminated.tm_mon > 6) {
         tmTerminated.tm_mon -= 6;
@@ -1048,6 +1048,7 @@ void displayRecordsDetailed(Tutor *head, int size) {
 
   do {
     if (input == 2) {
+      found = false;
       // get user input
       do {
         do {
@@ -1288,65 +1289,65 @@ void searchTuitionName(Tutor *head, int size, string tcName) {
   };
 
   // get user input
-  if (nameHead->getNext()) {
+  if (nameHead) {
+    if (nameHead->getNext()) {
+      currentName = nameHead;
+      int i = 0;
+      for (; currentName; i++, currentName = currentName->getNext())
+        cout << "(" << i + 1 << ") " << currentName->getName() << endl;
+      do {
+        cout << "Please input (1-" << i << "): ";
+        // ignore enter key
+        if (cin.peek() != '\n')
+          cin >> input;
+        if (!cin)
+          // clear error state
+          cin.clear();
+        // clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      } while (input < 1 || input > i);
+    } else {
+      input = 1;
+    };
+    
+    // get tuition name
     currentName = nameHead;
-    int i = 0;
-    for (; currentName; i++, currentName = currentName->getNext())
-      cout << "(" << i + 1 << ") " << currentName->getName() << endl;
-    do {
-      cout << "Please input (1-" << i << "): ";
-      // ignore enter key
-      if (cin.peek() != '\n')
-        cin >> input;
-      if (!cin)
-        // clear error state
-        cin.clear();
-      // clear the input buffer
-      cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    } while (input < 1 || input > i);
-  } else if (nameHead) {
-    input = 1;
+    for (int i = 0; i < input - 1; i++)
+      currentName = currentName->getNext();
+    sinput = currentName->getName();
+
+    // deallocate non-searched results
+    current = tempHead;
+    while (current && compareInsensitive(current->getTuitionCentreName(), sinput) != 0) {
+      current = current->getNext();
+      // deallocate memory
+      delete tempHead;
+      tempHead = current;
+    };
+    while (current && compareInsensitive(current->getTuitionCentreName(), sinput) == 0) {
+      // increase temporary list size
+      tempSize++;
+      current = current->getNext();
+    };
+    if (current) {
+      // unlink list from to be deleted list
+      current->getPrevious()->setNext(NULL);
+      
+      // deallocate memory
+      deleteList(current);
+    };
+
+    // display sorted list
+    displayRecordsList(tempHead, tempSize, 0);
+
+    // deallocate memory
+    deleteList(tempHead);
   } else {
+    // deallocate memory
+    deleteList(tempHead);
     // if no results
     cout << "No results found" << endl << endl;
   };
-
-  // get tuition name
-  currentName = nameHead;
-  for (int i = 0; i < input - 1; i++)
-    currentName = currentName->getNext();
-  sinput = currentName->getName();
-
-  // deallocate non-searched results
-  current = tempHead;
-  while (current && compareInsensitive(current->getTuitionCentreName(), sinput) != 0) {
-    current = current->getNext();
-    // deallocate memory
-    delete tempHead;
-    tempHead = current;
-  };
-  while (current && compareInsensitive(current->getTuitionCentreName(), sinput) == 0) {
-    // increase temporary list size
-    tempSize++;
-    current = current->getNext();
-  };
-  if (current) {
-    // unlink list from to be deleted list
-    current->getPrevious()->setNext(NULL);
-    current = current->getNext();
-
-    while (current) {
-      // deallocate memory
-      delete current->getPrevious();
-      current = current->getNext();
-    };
-  };
-
-  // display sorted list
-  displayRecordsList(tempHead, tempSize, 0);
-
-  // deallocate memory
-  deleteList(tempHead);
 };
 
 // insert
@@ -1418,6 +1419,20 @@ void split(Tutor *head, Tutor *&list1, Tutor *&list2) {
   slow->setNext(NULL);
 };
 
+void mergesortID(Tutor *&head) {
+  // initialise
+  Tutor *current = head, *list1 = NULL, *list2 = NULL;
+
+  if (current && current->getNext()) {
+    split(current, list1, list2);
+    // sort sublist 1
+    mergesortID(list1);
+    // sort sublist 2
+    mergesortID(list2);
+    // merge sublists
+    head = mergeID(list1, list2);
+  };
+};
 Tutor *mergeID(Tutor *list1, Tutor *list2) {
   if (!list1)
     // return address of sublist 2 as sublist 1 is empty
@@ -1445,21 +1460,21 @@ Tutor *mergeID(Tutor *list1, Tutor *list2) {
     return list2;
   };
 };
-void mergesortID(Tutor *&head) {
+
+void mergesortRating(Tutor *&head) {
   // initialise
   Tutor *current = head, *list1 = NULL, *list2 = NULL;
 
   if (current && current->getNext()) {
     split(current, list1, list2);
     // sort sublist 1
-    mergesortID(list1);
+    mergesortRating(list1);
     // sort sublist 2
-    mergesortID(list2);
+    mergesortRating(list2);
     // merge sublists
-    head = mergeID(list1, list2);
+    head = mergeRating(list1, list2);
   };
 };
-
 Tutor *mergeRating(Tutor *list1, Tutor *list2) {
   if (!list1)
     // return address of sublist 2 as sublist 1 is empty
@@ -1487,21 +1502,21 @@ Tutor *mergeRating(Tutor *list1, Tutor *list2) {
     return list2;
   };
 };
-void mergesortRating(Tutor *&head) {
+
+void mergesortPayRate(Tutor *&head) {
   // initialise
   Tutor *current = head, *list1 = NULL, *list2 = NULL;
 
   if (current && current->getNext()) {
     split(current, list1, list2);
     // sort sublist 1
-    mergesortRating(list1);
+    mergesortPayRate(list1);
     // sort sublist 2
-    mergesortRating(list2);
+    mergesortPayRate(list2);
     // merge sublists
-    head = mergeRating(list1, list2);
+    head = mergePayRate(list1, list2);
   };
 };
-
 Tutor *mergePayRate(Tutor *list1, Tutor *list2) {
   if (!list1)
     // return address of sublist 2 as sublist 1 is empty
@@ -1529,26 +1544,32 @@ Tutor *mergePayRate(Tutor *list1, Tutor *list2) {
     return list2;
   };
 };
-void mergesortPayRate(Tutor *&head) {
+
+void mergesortTCName(Tutor *&head, string tcName) {
   // initialise
   Tutor *current = head, *list1 = NULL, *list2 = NULL;
 
   if (current && current->getNext()) {
     split(current, list1, list2);
     // sort sublist 1
-    mergesortPayRate(list1);
+    mergesortTCName(list1, tcName);
     // sort sublist 2
-    mergesortPayRate(list2);
+    mergesortTCName(list2, tcName);
     // merge sublists
-    head = mergePayRate(list1, list2);
+    head = mergeTCName(list1, list2, tcName);
   };
 };
-
 Tutor *mergeTCName(Tutor *list1, Tutor *list2, string tcName) {
+  Tutor *current = NULL;
   if (list1) {
+    // find tutors with searched tuition name
     if (findInsensitive(list1->getTuitionCentreName(), tcName) == string::npos) {
       // deallocate memory
-      delete list1;
+      deleteList(list1);
+      if (list2 && findInsensitive(list2->getTuitionCentreName(), tcName) == string::npos) {
+        deleteList(list2);
+        list2 = NULL;
+      };
       return list2;
     };
   } else {
@@ -1557,9 +1578,14 @@ Tutor *mergeTCName(Tutor *list1, Tutor *list2, string tcName) {
   };
 
   if (list2) {
+    // find tutors with searched tuition name
     if (findInsensitive(list2->getTuitionCentreName(), tcName) == string::npos) {
       // deallocate memory
-      delete list2;
+      deleteList(list2);
+      if (list1 && findInsensitive(list2->getTuitionCentreName(), tcName) == string::npos) {
+        deleteList(list1);
+        list1 = NULL;
+      };
       return list1;
     };
   } else {
@@ -1583,19 +1609,5 @@ Tutor *mergeTCName(Tutor *list1, Tutor *list2, string tcName) {
     list2->setPrevious(NULL);
     // return address of sublist 2
     return list2;
-  };
-};
-void mergesortTCName(Tutor *&head, string tcName) {
-  // initialise
-  Tutor *current = head, *list1 = NULL, *list2 = NULL;
-
-  if (current && current->getNext()) {
-    split(current, list1, list2);
-    // sort sublist 1
-    mergesortTCName(list1, tcName);
-    // sort sublist 2
-    mergesortTCName(list2, tcName);
-    // merge sublists
-    head = mergeTCName(list1, list2, tcName);
   };
 };
