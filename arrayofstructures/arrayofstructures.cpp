@@ -137,9 +137,6 @@ int binarySearchName(Tutor *tutors, int size, string name);
 bool binarySearchNames(string *names, int size, string tcName);
 void binarySearchTCName(Tutor *tutors, int size, string tcName, int *start, int *end);
 
-// counting sort
-void countingSortRating(Tutor *tutors, int size);
-
 // dual pivot quicksort
 void swap(Tutor *t1, Tutor *t2);
 
@@ -1089,15 +1086,26 @@ void sortTutorID(Tutor *tutors, int size) {
   delete[] tempTutors;
 };
 void sortRating(Tutor *tutors, int size) {
-  // allocate memory
+  // initialise
   Tutor *tempTutors = new Tutor[size];
+  
+  // counting sort
+  int max = 5;
+  int count[]{0,0,0,0,0,0,0};
 
-  // copy all elements into temporary tutor array
+  // count of each rating
   for (int i = 0; i < size; i++)
-    tempTutors[i] = tutors[i];
+    count[tutors[i].getRating()]++;
 
-  // sort the temporary tutor array by rating
-  countingSortRating(tempTutors, size);
+  // calculate cumulative sum
+  for (int i = 1; i <= max; i++)
+    count[i] += count[i - 1];
+
+  // arrange elements into the correct positions
+  for (int i = size - 1; i >= 0; i--) {
+    tempTutors[count[tutors[i].getRating()] - 1] = tutors[i];
+    count[tutors[i].getRating()]--;
+  };
 
   // display sorted array
   displayRecordsList(tempTutors, size, 0);
@@ -1441,34 +1449,6 @@ void binarySearchTCName(Tutor *tutors, int size, string tcName, int *start, int 
     };
   };
 }
-
-// counting sort
-void countingSortRating(Tutor *tutors, int size) {
-  // initialise
-  Tutor *output = new Tutor[size + 1];
-  int max = 5;
-  int count[]{0,0,0,0,0,0,0};
-
-  // count of each rating
-  for (int i = 0; i < size; i++)
-    count[tutors[i].getRating()]++;
-
-  // calculate cumulative sum
-  for (int i = 1; i <= max; i++)
-    count[i] += count[i - 1];
-
-  // arrange elements into the correct positions
-  for (int i = size - 1; i >= 0; i--) {
-    output[count[tutors[i].getRating()] - 1] = tutors[i];
-    count[tutors[i].getRating()]--;
-  };
-
-  // copy all elements into tutor array
-  for (int i = 0; i < size; i++)
-    tutors[i] = output[i];
-
-  delete[] output;
-};
 
 // dual pivot quicksort
 void swap(Tutor *t1, Tutor *t2) {
