@@ -202,7 +202,7 @@ int main() {
   // menu
   do {
     cout << "-------------------------------------------" << endl;
-    cout << "Tutor Management System (Linked List 1.0.1)" << endl;
+    cout << "Tutor Management System (Linked List 1.0.0)" << endl;
     cout << "-------------------------------------------" << endl;
     cout << "(1) Add Tutor" << endl;
     cout << "(2) Modify Tutor" << endl;
@@ -1582,7 +1582,7 @@ Tutor *mergeTCName(Tutor *list1, Tutor *list2, string tcName) {
     if (findInsensitive(list2->getTuitionCentreName(), tcName) == string::npos) {
       // deallocate memory
       deleteList(list2);
-      if (list1 && findInsensitive(list1->getTuitionCentreName(), tcName) == string::npos) {
+      if (list1 && findInsensitive(list2->getTuitionCentreName(), tcName) == string::npos) {
         deleteList(list1);
         list1 = NULL;
       };
