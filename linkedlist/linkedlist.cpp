@@ -1582,7 +1582,7 @@ Tutor *mergeTCName(Tutor *list1, Tutor *list2, string tcName) {
     if (findInsensitive(list2->getTuitionCentreName(), tcName) == string::npos) {
       // deallocate memory
       deleteList(list2);
-      if (list1 && findInsensitive(list2->getTuitionCentreName(), tcName) == string::npos) {
+      if (list1 && findInsensitive(list1->getTuitionCentreName(), tcName) == string::npos) {
         deleteList(list1);
         list1 = NULL;
       };
