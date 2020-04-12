@@ -202,7 +202,7 @@ int main() {
   // menu
   do {
     cout << "-------------------------------------------" << endl;
-    cout << "Tutor Management System (Linked List 1.0.0)" << endl;
+    cout << "Tutor Management System (Linked List 1.0.1)" << endl;
     cout << "-------------------------------------------" << endl;
     cout << "(1) Add Tutor" << endl;
     cout << "(2) Modify Tutor" << endl;
