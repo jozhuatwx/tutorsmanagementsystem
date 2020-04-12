@@ -1380,7 +1380,7 @@ int binarySearchName(Tutor *tutors, int size, string name) {
     int comp = compareInsensitive(tutors[mid].getName(), name);
     if (comp == 0) {
       // if exising name is same as new name
-      while (mid + 1 <= up && compareInsensitive(tutors[mid + 1].getName(), name))
+      while (mid + 1 <= up && compareInsensitive(tutors[mid + 1].getName(), name) == 0)
         mid++;
       return mid + 1;
     } else if (comp < 0) {
