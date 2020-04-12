@@ -137,9 +137,6 @@ int binarySearchName(Tutor *tutors, int size, string name);
 bool binarySearchNames(string *names, int size, string tcName);
 void binarySearchTCName(Tutor *tutors, int size, string tcName, int *start, int *end);
 
-// counting sort
-void countingSortRating(Tutor *tutors, int size);
-
 // dual pivot quicksort
 void swap(Tutor *t1, Tutor *t2);
 
@@ -148,6 +145,9 @@ void partitionName(Tutor *tutors, int low, int up, int *lp, int *rp);
 
 void dualPivotQuicksortID(Tutor *tutors, int low, int up);
 void partitionID(Tutor *tutors, int low, int up, int *lp, int *rp);
+
+void dualPivotQuicksortRating(Tutor *tutors, int low, int up);
+void partitionRating(Tutor *tutors, int low, int up, int *lp, int *rp);
 
 void dualPivotQuicksortPayRate(Tutor *tutors, int low, int up);
 void partitionPayRate(Tutor *tutors, int low, int up, int *lp, int *rp);
@@ -1097,7 +1097,19 @@ void sortRating(Tutor *tutors, int size) {
     tempTutors[i] = tutors[i];
 
   // sort the temporary tutor array by rating
-  countingSortRating(tempTutors, size);
+  dualPivotQuicksortRating(tempTutors, 0, size - 1);
+
+  // sort the temporary tutor array by name
+  for (int i = 0; i < size - 1; i++) {
+    if (i + 1 <= size && tempTutors[i].getRating() == tempTutors[i + 1].getRating()) {
+      int low = i, up = i + 1;
+      while (i + 2 <= size && tempTutors[i + 1].getRating() == tempTutors[i + 2].getRating()) {
+        up++;
+        i++;
+      };
+      dualPivotQuicksortName(tempTutors, low, up);
+    };
+  };
 
   // display sorted array
   displayRecordsList(tempTutors, size, 0);
@@ -1442,32 +1454,6 @@ void binarySearchTCName(Tutor *tutors, int size, string tcName, int *start, int 
   };
 }
 
-// counting sort
-void countingSortRating(Tutor *tutors, int size) {
-  // initialise
-  Tutor *output = new Tutor[size + 1];
-  int max = 5;
-  int count[6];
-
-  for (int i = 0; i <= max; i++)
-    count[i] = 0;
-
-  for (int i = 0; i < size; i++)
-    count[tutors[i].getRating()]++;
-
-  for (int i = 1; i <= max; i++)
-    count[i] += count[i - 1];
-
-  for (int i = size - 1; i >= 0; i--) {
-    output[count[tutors[i].getRating()] - 1] = tutors[i];
-    count[tutors[i].getRating()]--;
-  };
-
-  for (int i = 0; i < size; i++)
-    tutors[i] = output[i];
-
-  delete[] output;
-};
 
 // dual pivot quicksort
 void swap(Tutor *t1, Tutor *t2) {
@@ -1562,6 +1548,58 @@ void partitionID(Tutor *tutors, int low, int up, int *lPivot, int *rPivot) {
       swap(&tutors[i], &tutors[rIndex]);
       rIndex--;
       if (tutors[i].getTutorID() < lPiv) {
+        swap(&tutors[i], &tutors[lIndex]);
+        lIndex++;
+      };
+    };
+  };
+  // decrement left index
+  lIndex--;
+  // increment right index
+  rIndex++;
+
+  // swap pivots to their new positions
+  swap(&tutors[low], &tutors[lIndex]);
+  swap(&tutors[up], &tutors[rIndex]);
+
+  // return the indices of the pivots
+  *lPivot = lIndex;
+  *rPivot = rIndex;
+};
+
+void dualPivotQuicksortRating(Tutor *tutors, int low, int up) {
+  if (low < up) {
+    int lPivot, rPivot;
+    partitionRating(tutors, low, up, &lPivot, &rPivot);
+    // sort left subarray
+    dualPivotQuicksortRating(tutors, low, lPivot - 1);
+    // sort mid subarray
+    dualPivotQuicksortRating(tutors, lPivot + 1, rPivot - 1);
+    // sort right subarray
+    dualPivotQuicksortRating(tutors, rPivot + 1, up);
+  };
+};
+void partitionRating(Tutor *tutors, int low, int up, int *lPivot, int *rPivot) {
+  if (tutors[low].getRating() > tutors[up].getRating())
+    // swap between left and right pivots
+    swap(&tutors[low], &tutors[up]);
+
+  // initialise
+  int lIndex = low + 1, rIndex = up - 1;
+  int lPiv = tutors[low].getRating(), rPiv = tutors[up].getRating();
+
+  for (int i = lIndex; i <= rIndex; i++) {
+    if (tutors[i].getRating() < lPiv) {
+      // swap elements that are less than the left pivot
+      swap(&tutors[i], &tutors[lIndex]);
+      lIndex++;
+    } else if (tutors[i].getRating() >= rPiv) {
+      // swap elements are greater than or equal to the right pivot
+      while (tutors[rIndex].getRating() > rPiv && i < rIndex)
+        rIndex--;
+      swap(&tutors[i], &tutors[rIndex]);
+      rIndex--;
+      if (tutors[i].getRating() < lPiv) {
         swap(&tutors[i], &tutors[lIndex]);
         lIndex++;
       };
