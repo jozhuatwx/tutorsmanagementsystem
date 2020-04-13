@@ -882,18 +882,18 @@ void displayRecordsList(Tutor *tutors, int size, int index) {
   // display page
   do {
     if (input != 1) {
-      cout << "ID    Name             Pay    Tuition Centre       Rating" << endl;
-      cout << "---------------------------------------------------------" << endl;
+      cout << "ID    Name                  Pay    Tuition Centre        Rating" << endl;
+      cout << "---------------------------------------------------------------" << endl;
       for (int i = (page - 1) * 10; i < page * 10; i++) {
         // print list of tutors
         cout.width(4);
         cout << right << tutors[i].getTutorID() << "  ";
-        cout.width(15);
-        cout << left << tutors[i].getName() << "  ";
+        cout.width(20);
+        cout << left << truncate(tutors[i].getName(), 20) << "  ";
         cout.width(5);
         cout << tutors[i].getHourlyPayRate() << "  ";
-        cout.width(19);
-        cout << tutors[i].getTuitionCentreName() << "  ";
+        cout.width(20);
+        cout << truncate(tutors[i].getTuitionCentreName(), 20) << "  ";
         cout << tutors[i].getRating() << endl;
         // break when last element
         if (i == size - 1)

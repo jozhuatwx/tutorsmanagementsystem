@@ -33,3 +33,13 @@ void trim(std::string &str) {
   ltrim(str);
   rtrim(str);
 };
+
+std::string truncate(std::string str, int length, bool ellipsis) {
+  if (str.length() > length) {
+    if (ellipsis)
+      return str.substr(0, length - 3) += "...";
+    else
+      return str.substr(0, length);
+  };
+  return str;
+};
