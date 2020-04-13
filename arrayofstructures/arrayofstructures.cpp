@@ -140,14 +140,9 @@ void binarySearchTCName(Tutor *tutors, int size, string tcName, int *start, int 
 // radix sort with counting sort
 void countingSortPayRate(Tutor *tutors, int size, double place);
 
-// dual pivot quicksort
-void swap(Tutor *t1, Tutor *t2);
-
-void dualPivotQuicksortName(Tutor *tutors, int low, int up);
-void partitionName(Tutor *tutors, int low, int up, int *lp, int *rp);
-
-void dualPivotQuicksortTCName(Tutor *tutors, int low, int up);
-void partitionTCName(Tutor *tutors, int low, int up, int *lp, int *rp);
+// mergesort
+void mergesortTCName(Tutor *tutors, int low, int up);
+void mergeTCName(Tutor *tutors, int low, int mid, int up);
 
 
 int main() {
@@ -1269,7 +1264,7 @@ void searchTuitionName(Tutor *tutors, int size, string tcName) {
     sortTutors[i] = tutors[i];
 
   // sort the temporary tutor array by tuition name
-  dualPivotQuicksortTCName(sortTutors, 0, size - 1);
+  mergesortTCName(sortTutors, 0, size - 1);
 
   // linear search through the array
   for (int i = 0; i < size; i++) {
@@ -1277,6 +1272,7 @@ void searchTuitionName(Tutor *tutors, int size, string tcName) {
     if (findInsensitive(sortTutors[i].getTuitionCentreName(), tcName) != string::npos) {
       if (nameSize > 0) {
         if (name1) {
+          // binary insertion sort
           // binary search through the array
           if (!binarySearchNames(tempNames1, nameSize, sortTutors[i].getTuitionCentreName())) {
             // allocate memory
@@ -1294,6 +1290,7 @@ void searchTuitionName(Tutor *tutors, int size, string tcName) {
             name1 = false;
           };
         } else {
+          // binary insertion sort
           // binary search through the array
           if (!binarySearchNames(tempNames2, nameSize, sortTutors[i].getTuitionCentreName())) {
             // allocate memory
@@ -1369,18 +1366,6 @@ void searchTuitionName(Tutor *tutors, int size, string tcName) {
 
     // deallocate memory
     delete[] sortTutors;
-
-    // sort temporary tutor array by name
-    for (int i = 0; i < tutorSize - 1; i++) {
-      if (i + 1 < tutorSize && compareInsensitive(tempTutors[i].getTuitionCentreName(), tempTutors[i + 1].getTuitionCentreName()) == 0) {
-        int low = i, up = i + 1;
-        while (i + 2 < tutorSize && compareInsensitive(tempTutors[i + 1].getTuitionCentreName(), tempTutors[i + 2].getTuitionCentreName()) == 0) {
-          up++;
-          i++;
-        };
-        dualPivotQuicksortName(tempTutors, low, up);
-      };
-    };
 
     // display sorted array
     displayRecordsList(tempTutors, tutorSize, 0);
@@ -1507,114 +1492,51 @@ void countingSortPayRate(Tutor *tutors, int size, double place) {
   delete[] output;
 };
 
-// dual pivot quicksort
-void swap(Tutor *t1, Tutor *t2) {
-  // swap the elements' position
-  Tutor temp = *t1;
-  *t1 = *t2;
-  *t2 = temp;
-};
-
-void dualPivotQuicksortName(Tutor *tutors, int low, int up) {
+// mergesort
+void mergesortTCName(Tutor *tutors, int low, int up) {
   if (low < up) {
-    int lPivot, rPivot;
-    partitionName(tutors, low, up, &lPivot, &rPivot);
-    // sort left subarray
-    dualPivotQuicksortName(tutors, low, lPivot - 1);
-    // sort mid subarray
-    dualPivotQuicksortName(tutors, lPivot + 1, rPivot - 1);
-    // sort right subarray
-    dualPivotQuicksortName(tutors, rPivot + 1, up);
+    // calculate mid point
+    int mid = (up - low) / 2 + low;
+    // split lower subarray
+    mergesortTCName(tutors, low, mid);
+    // split upper subarray
+    mergesortTCName(tutors, mid + 1, up);
+
+    // merge sorted subarrays
+    mergeTCName(tutors, low, mid, up);
   };
 };
-void partitionName(Tutor *tutors, int low, int up, int *lPivot, int *rPivot) {
-  if (compareInsensitive(tutors[low].getName(), tutors[up].getName()) > 0)
-    // swap between left and right pivots
-    swap(&tutors[low], &tutors[up]);
-
+void mergeTCName(Tutor *tutors, int low, int mid, int up) {
   // initialise
-  int lIndex = low + 1, rIndex = up - 1;
-  string lPiv = tutors[low].getName(), rPiv = tutors[up].getName();
+  int size1 = mid - low + 1, size2 = up - mid;
+  int index = low, index1 = 0, index2 = 0;
 
-  for (int i = lIndex; i <= rIndex; i++) {
-    if (compareInsensitive(tutors[i].getName(), lPiv) < 0) {
-      // swap elements that are less than the left pivot
-      swap(&tutors[i], &tutors[lIndex]);
-      lIndex++;
-    } else if (compareInsensitive(tutors[i].getName(), rPiv) >= 0) {
-      // swap elements are greater than or equal to the right pivot
-      while (compareInsensitive(tutors[rIndex].getName(), rPiv) > 0 && i < rIndex)
-        rIndex--;
-      swap(&tutors[i], &tutors[rIndex]);
-      rIndex--;
-      if (compareInsensitive(tutors[i].getName(), lPiv) < 0) {
-        swap(&tutors[i], &tutors[lIndex]);
-        lIndex++;
-      };
+  // create two subarrays
+  Tutor *sub1 = new Tutor[size1], *sub2 = new Tutor[size2];
+
+  // copy elements into temporary tutors subarray
+  for (int i = 0; i < size1; i++)
+    sub1[i] = tutors[low + i];
+  for (int i = 0; i < size2; i++)
+    sub2[i] = tutors[mid + 1 + i];
+
+  // copy elements into tutors array sorted
+  for (; index1 < size1 && index2 < size2; index++) {
+    if (compareInsensitive(sub1[index1].getTuitionCentreName(), sub2[index2].getTuitionCentreName()) <= 0) {
+      tutors[index] = sub1[index1];
+      index1++;
+    } else {
+      tutors[index] = sub2[index2];
+      index2++;
     };
   };
-  // decrement left index
-  lIndex--;
-  // increment right index
-  rIndex++;
+  // copy remaining elements when either subarray is empty
+  for (; index1 < size1; index++, index1++)
+    tutors[index] = sub1[index1];
+  for (; index2 < size2; index++, index2++)
+    tutors[index] = sub2[index2];
 
-  // swap pivots to their new positions
-  swap(&tutors[low], &tutors[lIndex]);
-  swap(&tutors[up], &tutors[rIndex]);
-
-  // return the indices of the pivots
-  *lPivot = lIndex;
-  *rPivot = rIndex;
-};
-
-void dualPivotQuicksortTCName(Tutor *tutors, int low, int up) {
-  if (low < up) {
-    int lPivot, rPivot;
-    partitionTCName(tutors, low, up, &lPivot, &rPivot);
-    // sort left subarray
-    dualPivotQuicksortTCName(tutors, low, lPivot - 1);
-    // sort mid subarray
-    dualPivotQuicksortTCName(tutors, lPivot + 1, rPivot - 1);
-    // sort right subarray
-    dualPivotQuicksortTCName(tutors, rPivot + 1, up);
-  };
-};
-void partitionTCName(Tutor *tutors, int low, int up, int *lPivot, int *rPivot) {
-  if (compareInsensitive(tutors[low].getTuitionCentreName(), tutors[up].getTuitionCentreName()) > 0)
-    // swap between left and right pivots
-    swap(&tutors[low], &tutors[up]);
-
-  // initialise
-  int lIndex = low + 1, rIndex = up - 1;
-  string lPiv = tutors[low].getTuitionCentreName(), rPiv = tutors[up].getTuitionCentreName();
-
-  for (int i = lIndex; i <= rIndex; i++) {
-    if (compareInsensitive(tutors[i].getTuitionCentreName(), lPiv) < 0) {
-      // swap elements that are less than the left pivot
-      swap(&tutors[i], &tutors[lIndex]);
-      lIndex++;
-    } else if (compareInsensitive(tutors[i].getTuitionCentreName(), rPiv) >= 0) {
-      // swap elements are greater than or equal to the right pivot
-      while (compareInsensitive(tutors[rIndex].getTuitionCentreName(), rPiv) > 0 && i < rIndex)
-        rIndex--;
-      swap(&tutors[i], &tutors[rIndex]);
-      rIndex--;
-      if (compareInsensitive(tutors[i].getTuitionCentreName(), lPiv) < 0) {
-        swap(&tutors[i], &tutors[lIndex]);
-        lIndex++;
-      };
-    };
-  };
-  // decrement left index
-  lIndex--;
-  // increment right index
-  rIndex++;
-
-  // swap pivots to their new positions
-  swap(&tutors[low], &tutors[lIndex]);
-  swap(&tutors[up], &tutors[rIndex]);
-
-  // return the indices of the pivots
-  *lPivot = lIndex;
-  *rPivot = rIndex;
+  // deallocate memory
+  delete[] sub1;
+  delete[] sub2;
 };
