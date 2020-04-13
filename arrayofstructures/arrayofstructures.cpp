@@ -124,7 +124,7 @@ void displayRecord(Tutor tutor);
 void displayRecordsList(Tutor *tutors, int size, int index);
 void displayRecordsDetailed(Tutor *tutors, int size);
 
-void sortTutorID(Tutor *tutors, int size);
+void sortTutorID(Tutor *tutors, int size, int lastID);
 void sortRating(Tutor *tutors, int size);
 void sortPayRate(Tutor *tutors, int size);
 
@@ -142,9 +142,6 @@ void swap(Tutor *t1, Tutor *t2);
 
 void dualPivotQuicksortName(Tutor *tutors, int low, int up);
 void partitionName(Tutor *tutors, int low, int up, int *lp, int *rp);
-
-void dualPivotQuicksortID(Tutor *tutors, int low, int up);
-void partitionID(Tutor *tutors, int low, int up, int *lp, int *rp);
 
 void dualPivotQuicksortRating(Tutor *tutors, int low, int up);
 void partitionRating(Tutor *tutors, int low, int up, int *lp, int *rp);
@@ -403,7 +400,7 @@ int main() {
           case 1:
             cout << "Display Records (Tutor ID (Asc))" << endl;
             cout << "---------------------------------------" << endl;
-            sortTutorID(tutors, size);
+            sortTutorID(tutors, size, lastID);
             break;
 
             // sort by rating
@@ -1071,16 +1068,28 @@ void displayRecordsDetailed(Tutor *tutors, int size) {
     displayRecordsList(tutors, size, index);
 };
 
-void sortTutorID(Tutor *tutors, int size) {
-  // allocate memory
+void sortTutorID(Tutor *tutors, int size, int lastID) {
+  // initialise
   Tutor *tempTutors = new Tutor[size];
+  int *count = new int[lastID]{0};
 
-  // copy all elements into temporary tutor array
+  // counting sort
+  // count of each rating
   for (int i = 0; i < size; i++)
-    tempTutors[i] = tutors[i];
+    count[tutors[i].getTutorID() - 1]++;
 
-  // sort the temporary tutor array by id
-  dualPivotQuicksortID(tempTutors, 0, size - 1);
+  // calculate cumulative sum
+  for (int i = 1; i < lastID; i++)
+    count[i] += count[i - 1];
+
+  // arrange elements into the correct positions
+  for (int i = size - 1; i >= 0; i--) {
+    tempTutors[count[tutors[i].getTutorID() - 1] - 1] = tutors[i];
+    count[tutors[i].getTutorID() - 1]--;
+  };
+
+  // deallocate memory
+  delete[] count;
 
   // display sorted array
   displayRecordsList(tempTutors, size, 0);
@@ -1496,58 +1505,6 @@ void partitionName(Tutor *tutors, int low, int up, int *lPivot, int *rPivot) {
       swap(&tutors[i], &tutors[rIndex]);
       rIndex--;
       if (compareInsensitive(tutors[i].getName(), lPiv) < 0) {
-        swap(&tutors[i], &tutors[lIndex]);
-        lIndex++;
-      };
-    };
-  };
-  // decrement left index
-  lIndex--;
-  // increment right index
-  rIndex++;
-
-  // swap pivots to their new positions
-  swap(&tutors[low], &tutors[lIndex]);
-  swap(&tutors[up], &tutors[rIndex]);
-
-  // return the indices of the pivots
-  *lPivot = lIndex;
-  *rPivot = rIndex;
-};
-
-void dualPivotQuicksortID(Tutor *tutors, int low, int up) {
-  if (low < up) {
-    int lPivot, rPivot;
-    partitionID(tutors, low, up, &lPivot, &rPivot);
-    // sort left subarray
-    dualPivotQuicksortID(tutors, low, lPivot - 1);
-    // sort mid subarray
-    dualPivotQuicksortID(tutors, lPivot + 1, rPivot - 1);
-    // sort right subarray
-    dualPivotQuicksortID(tutors, rPivot + 1, up);
-  };
-};
-void partitionID(Tutor *tutors, int low, int up, int *lPivot, int *rPivot) {
-  if (tutors[low].getTutorID() > tutors[up].getTutorID())
-    // swap between left and right pivots
-    swap(&tutors[low], &tutors[up]);
-
-  // initialise
-  int lIndex = low + 1, rIndex = up - 1;
-  int lPiv = tutors[low].getTutorID(), rPiv = tutors[up].getTutorID();
-
-  for (int i = lIndex; i <= rIndex; i++) {
-    if (tutors[i].getTutorID() < lPiv) {
-      // swap elements that are less than the left pivot
-      swap(&tutors[i], &tutors[lIndex]);
-      lIndex++;
-    } else if (tutors[i].getTutorID() >= rPiv) {
-      // swap elements are greater than or equal to the right pivot
-      while (tutors[rIndex].getTutorID() > rPiv && i < rIndex)
-        rIndex--;
-      swap(&tutors[i], &tutors[rIndex]);
-      rIndex--;
-      if (tutors[i].getTutorID() < lPiv) {
         swap(&tutors[i], &tutors[lIndex]);
         lIndex++;
       };
