@@ -137,17 +137,14 @@ int binarySearchName(Tutor *tutors, int size, string name);
 bool binarySearchNames(string *names, int size, string tcName);
 void binarySearchTCName(Tutor *tutors, int size, string tcName, int *start, int *end);
 
+// radix sort with counting sort
+void countingSortPayRate(Tutor *tutors, int size, double place);
+
 // dual pivot quicksort
 void swap(Tutor *t1, Tutor *t2);
 
 void dualPivotQuicksortName(Tutor *tutors, int low, int up);
 void partitionName(Tutor *tutors, int low, int up, int *lp, int *rp);
-
-void dualPivotQuicksortRating(Tutor *tutors, int low, int up);
-void partitionRating(Tutor *tutors, int low, int up, int *lp, int *rp);
-
-void dualPivotQuicksortPayRate(Tutor *tutors, int low, int up);
-void partitionPayRate(Tutor *tutors, int low, int up, int *lp, int *rp);
 
 void dualPivotQuicksortTCName(Tutor *tutors, int low, int up);
 void partitionTCName(Tutor *tutors, int low, int up, int *lp, int *rp);
@@ -539,16 +536,16 @@ void generateTutors(Tutor *&tutors, int *lastID, int *size) {
   tutors = new Tutor[*size];
   *lastID = 10;
 
-  tutors[0] = Tutor(2, "Aaron", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
-  tutors[1] = Tutor(1, "Bill", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
-  tutors[2] = Tutor(4, "Charlie", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
-  tutors[3] = Tutor(3, "Edwin", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 4);
-  tutors[4] = Tutor(8, "George", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0001", "Taman Laksamana", "S0001", "Science", 2);
-  tutors[5] = Tutor(10, "Jamal", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 3);
-  tutors[6] = Tutor(5, "Kenny", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 3);
-  tutors[7] = Tutor(9, "Maria", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 3);
-  tutors[8] = Tutor(7, "Patricia", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
-  tutors[9] = Tutor(6, "Shelby", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0004", "Bukit Petaling", "S0001", "Science", 1);
+  tutors[0] = Tutor(2, "Aaron", 2, 3, 2000, 0, 0, 0, 79, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
+  tutors[1] = Tutor(1, "Bill", 2, 3, 2000, 0, 0, 0, 65.555, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
+  tutors[2] = Tutor(4, "Charlie", 2, 3, 2000, 0, 0, 0, 50.5, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 3);
+  tutors[3] = Tutor(3, "Edwin", 2, 3, 2000, 0, 0, 0, 65.551, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 4);
+  tutors[4] = Tutor(8, "George", 2, 3, 2000, 0, 0, 0, 45, "0123456789", "Somewhere", "C0001", "Taman Laksamana", "S0001", "Science", 2);
+  tutors[5] = Tutor(10, "Jamal", 2, 3, 2000, 0, 0, 0, 55.5, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 3);
+  tutors[6] = Tutor(5, "Kenny", 2, 3, 2000, 0, 0, 0, 65.559, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 4);
+  tutors[7] = Tutor(9, "Maria", 2, 3, 2000, 0, 0, 0, 55.05, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 3);
+  tutors[8] = Tutor(7, "Patricia", 2, 3, 2000, 0, 0, 0, 75, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
+  tutors[9] = Tutor(6, "Shelby", 2, 3, 2000, 0, 0, 0, 40, "0123456789", "Somewhere", "C0004", "Bukit Petaling", "S0001", "Science", 1);
 };
 void addTutor(Tutor *&tutors, int *lastID, int *size, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, string tcCode, string tcName, string subCode, string subName, int rating) {
   // initialise
@@ -1098,26 +1095,23 @@ void sortTutorID(Tutor *tutors, int size, int lastID) {
   delete[] tempTutors;
 };
 void sortRating(Tutor *tutors, int size) {
-  // allocate memory
+  // initialise
   Tutor *tempTutors = new Tutor[size];
+  int max = 5, count[5]{0};
 
-  // copy all elements into temporary tutor array
+  // counting sort
+  // count of each rating
   for (int i = 0; i < size; i++)
-    tempTutors[i] = tutors[i];
+    count[tutors[i].getRating() - 1]++;
 
-  // sort the temporary tutor array by rating
-  dualPivotQuicksortRating(tempTutors, 0, size - 1);
+  // calculate cumulative sum
+  for (int i = 1; i < max; i++)
+    count[i] += count[i - 1];
 
-  // sort the temporary tutor array by name
-  for (int i = 0; i < size - 1; i++) {
-    if (i + 1 <= size && tempTutors[i].getRating() == tempTutors[i + 1].getRating()) {
-      int low = i, up = i + 1;
-      while (i + 2 <= size && tempTutors[i + 1].getRating() == tempTutors[i + 2].getRating()) {
-        up++;
-        i++;
-      };
-      dualPivotQuicksortName(tempTutors, low, up);
-    };
+  // arrange elements into the correct positions
+  for (int i = size - 1; i >= 0; i--) {
+    tempTutors[count[tutors[i].getRating() - 1] - 1] = tutors[i];
+    count[tutors[i].getRating() - 1]--;
   };
 
   // display sorted array
@@ -1127,33 +1121,56 @@ void sortRating(Tutor *tutors, int size) {
   delete[] tempTutors;
 };
 void sortPayRate(Tutor *tutors, int size) {
-  // allocate memory
+  // initialise
   Tutor *tempTutors = new Tutor[size];
+  int count[10]{0};
 
-  // copy all elements into temporary tutor array
+  // radix sort with counting sort
+  // count of each digit
   for (int i = 0; i < size; i++)
-    tempTutors[i] = tutors[i];
+    count[((int) (tutors[i].getHourlyPayRate() / 0.001)) % 10]++;
 
-  // sort the temporary tutor array by hourly pay rate
-  dualPivotQuicksortPayRate(tempTutors, 0, size - 1);
+  // calculate cumulative sum
+  for (int i = 1; i < 10; i++)
+    count[i] += count[i - 1];
 
-  // sort the temporary tutor array by name
-  for (int i = 0; i < size - 1; i++) {
-    if (i + 1 <= size && tempTutors[i].getHourlyPayRate() == tempTutors[i + 1].getHourlyPayRate()) {
-      int low = i, up = i + 1;
-      while (i + 2 <= size && tempTutors[i + 1].getHourlyPayRate() == tempTutors[i + 2].getHourlyPayRate()) {
-        up++;
-        i++;
-      };
-      dualPivotQuicksortName(tempTutors, low, up);
-    };
+  // arrange elements into the correct positions
+  for (int i = size - 1; i >= 0; i--) {
+    tempTutors[count[((int) (tutors[i].getHourlyPayRate() / 0.001)) % 10] - 1] = tutors[i];
+    count[((int) (tutors[i].getHourlyPayRate() / 0.001)) % 10]--;
   };
 
-  // display sorted array
-  displayRecordsList(tempTutors, size, 0);
+  // sort the temporary tutor array by hourly pay rate
+  for (double place = 0.01; place <= 1; place *= 10)
+    countingSortPayRate(tempTutors, size, place);
+
+  // allocate memory
+  Tutor *output = new Tutor[size];
+  for (int i = 0; i < 10; i++)
+    count[i] = 0;
+
+  // count of each digit
+  for (int i = 0; i < size; i++)
+    count[((int) (tempTutors[i].getHourlyPayRate() / 10)) % 10]++;
+
+  // calculate cumulative sum
+  for (int i = 1; i < 10; i++)
+    count[i] += count[i - 1];
+
+  // arrange elements into the correct positions
+  for (int i = size - 1; i >= 0; i--) {
+    output[count[((int) (tempTutors[i].getHourlyPayRate() / 10)) % 10] - 1] = tempTutors[i];
+    count[((int) (tempTutors[i].getHourlyPayRate() / 10)) % 10]--;
+  };
 
   // deallocate memory
   delete[] tempTutors;
+
+  // display sorted array
+  displayRecordsList(output, size, 0);
+
+  // deallocate memory
+  delete[] output;
 };
 
 void searchTutorID(Tutor *tutors, int size, int tutorID) {
@@ -1389,7 +1406,7 @@ int binarySearchName(Tutor *tutors, int size, string name) {
     int comp = compareInsensitive(tutors[mid].getName(), name);
     if (comp == 0) {
       // if exising name is same as new name
-      while (mid + 1 <= up && compareInsensitive(tutors[mid + 1].getName(), name))
+      while (mid + 1 <= up && compareInsensitive(tutors[mid + 1].getName(), name) == 0)
         mid++;
       return mid + 1;
     } else if (comp < 0) {
@@ -1463,6 +1480,32 @@ void binarySearchTCName(Tutor *tutors, int size, string tcName, int *start, int 
   };
 }
 
+// radix sort with counting sort
+void countingSortPayRate(Tutor *tutors, int size, double place) {
+  // initialise
+  int base = 10, count[10]{0};
+  Tutor *output = new Tutor[size];
+
+  // count of each digit
+  for (int i = 0; i < size; i++)
+    count[((int) (tutors[i].getHourlyPayRate() / place)) % base]++;
+
+  // calculate cumulative sum
+  for (int i = 1; i < base; i++)
+    count[i] += count[i - 1];
+
+  // arrange elements into the correct positions
+  for (int i = size - 1; i >= 0; i--) {
+    output[count[((int) (tutors[i].getHourlyPayRate() / place)) % base] - 1] = tutors[i];
+    count[((int) (tutors[i].getHourlyPayRate() / place)) % base]--;
+  };
+
+  // copy all elements into temporary tutor array
+  for (int i = 0; i < size; i++)
+    tutors[i] = output[i];
+
+  delete[] output;
+};
 
 // dual pivot quicksort
 void swap(Tutor *t1, Tutor *t2) {
@@ -1505,110 +1548,6 @@ void partitionName(Tutor *tutors, int low, int up, int *lPivot, int *rPivot) {
       swap(&tutors[i], &tutors[rIndex]);
       rIndex--;
       if (compareInsensitive(tutors[i].getName(), lPiv) < 0) {
-        swap(&tutors[i], &tutors[lIndex]);
-        lIndex++;
-      };
-    };
-  };
-  // decrement left index
-  lIndex--;
-  // increment right index
-  rIndex++;
-
-  // swap pivots to their new positions
-  swap(&tutors[low], &tutors[lIndex]);
-  swap(&tutors[up], &tutors[rIndex]);
-
-  // return the indices of the pivots
-  *lPivot = lIndex;
-  *rPivot = rIndex;
-};
-
-void dualPivotQuicksortRating(Tutor *tutors, int low, int up) {
-  if (low < up) {
-    int lPivot, rPivot;
-    partitionRating(tutors, low, up, &lPivot, &rPivot);
-    // sort left subarray
-    dualPivotQuicksortRating(tutors, low, lPivot - 1);
-    // sort mid subarray
-    dualPivotQuicksortRating(tutors, lPivot + 1, rPivot - 1);
-    // sort right subarray
-    dualPivotQuicksortRating(tutors, rPivot + 1, up);
-  };
-};
-void partitionRating(Tutor *tutors, int low, int up, int *lPivot, int *rPivot) {
-  if (tutors[low].getRating() > tutors[up].getRating())
-    // swap between left and right pivots
-    swap(&tutors[low], &tutors[up]);
-
-  // initialise
-  int lIndex = low + 1, rIndex = up - 1;
-  int lPiv = tutors[low].getRating(), rPiv = tutors[up].getRating();
-
-  for (int i = lIndex; i <= rIndex; i++) {
-    if (tutors[i].getRating() < lPiv) {
-      // swap elements that are less than the left pivot
-      swap(&tutors[i], &tutors[lIndex]);
-      lIndex++;
-    } else if (tutors[i].getRating() >= rPiv) {
-      // swap elements are greater than or equal to the right pivot
-      while (tutors[rIndex].getRating() > rPiv && i < rIndex)
-        rIndex--;
-      swap(&tutors[i], &tutors[rIndex]);
-      rIndex--;
-      if (tutors[i].getRating() < lPiv) {
-        swap(&tutors[i], &tutors[lIndex]);
-        lIndex++;
-      };
-    };
-  };
-  // decrement left index
-  lIndex--;
-  // increment right index
-  rIndex++;
-
-  // swap pivots to their new positions
-  swap(&tutors[low], &tutors[lIndex]);
-  swap(&tutors[up], &tutors[rIndex]);
-
-  // return the indices of the pivots
-  *lPivot = lIndex;
-  *rPivot = rIndex;
-};
-
-void dualPivotQuicksortPayRate(Tutor *tutors, int low, int up) {
-  if (low < up) {
-    int lPivot, rPivot;
-    partitionPayRate(tutors, low, up, &lPivot, &rPivot);
-    // sort left subarray
-    dualPivotQuicksortPayRate(tutors, low, lPivot - 1);
-    // sort mid subarray
-    dualPivotQuicksortPayRate(tutors, lPivot + 1, rPivot - 1);
-    // sort right subarray
-    dualPivotQuicksortPayRate(tutors, rPivot + 1, up);
-  };
-};
-void partitionPayRate(Tutor *tutors, int low, int up, int *lPivot, int *rPivot) {
-  if (tutors[low].getHourlyPayRate() > tutors[up].getHourlyPayRate())
-    // swap between left and right pivots
-    swap(&tutors[low], &tutors[up]);
-
-  // initialise
-  int lIndex = low + 1, rIndex = up - 1;
-  double lPiv = tutors[low].getHourlyPayRate(), rPiv = tutors[up].getHourlyPayRate();
-
-  for (int i = lIndex; i <= rIndex; i++) {
-    if (tutors[i].getHourlyPayRate() < lPiv) {
-      // swap elements that are less than the left pivot
-      swap(&tutors[i], &tutors[lIndex]);
-      lIndex++;
-    } else if (tutors[i].getHourlyPayRate() >= rPiv) {
-      // swap elements are greater than or equal to the right pivot
-      while (tutors[rIndex].getHourlyPayRate() > rPiv && i < rIndex)
-        rIndex--;
-      swap(&tutors[i], &tutors[rIndex]);
-      rIndex--;
-      if (tutors[i].getHourlyPayRate() < lPiv) {
         swap(&tutors[i], &tutors[lIndex]);
         lIndex++;
       };
