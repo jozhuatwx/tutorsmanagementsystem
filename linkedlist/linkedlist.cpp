@@ -202,7 +202,7 @@ int main() {
   // menu
   do {
     cout << "-------------------------------------------" << endl;
-    cout << "Tutor Management System (Linked List 1.0.0)" << endl;
+    cout << "Tutor Management System (Linked List 1.0.1)" << endl;
     cout << "-------------------------------------------" << endl;
     cout << "(1) Add Tutor" << endl;
     cout << "(2) Modify Tutor" << endl;
@@ -570,16 +570,16 @@ void generateTutors(Tutor *&head, Tutor *&tail, int *lastID, int *size) {
   *lastID = 10;
   *size = 10;
 
-  insertToEnd(head, tail, 2, "Aaron", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
-  insertToEnd(head, tail, 1, "Bill", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
-  insertToEnd(head, tail, 4, "Charlie", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
-  insertToEnd(head, tail, 3, "Edwin", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 4);
-  insertToEnd(head, tail, 8, "George", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0001", "Taman Laksamana", "S0001", "Science", 2);
-  insertToEnd(head, tail, 10, "Jamal", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 3);
-  insertToEnd(head, tail, 5, "Kenny", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 3);
-  insertToEnd(head, tail, 9, "Maria", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 3);
-  insertToEnd(head, tail, 7, "Patricia", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
-  insertToEnd(head, tail, 6, "Shelby", 2, 3, 2000, 0, 0, 0, 50.00, "0123456789", "Somewhere", "C0004", "Bukit Petaling", "S0001", "Science", 1);
+  insertToEnd(head, tail, 2, "Aaron", 2, 3, 2000, 0, 0, 0, 79, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
+  insertToEnd(head, tail, 1, "Bill", 2, 3, 2000, 0, 0, 0, 65.555, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
+  insertToEnd(head, tail, 4, "Charlie", 2, 3, 2000, 0, 0, 0, 50.5, "0123456789", "Somewhere", "C0001", "Taman Durian", "S0001", "Science", 4);
+  insertToEnd(head, tail, 3, "Edwin", 2, 3, 2000, 0, 0, 0, 65.551, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 4);
+  insertToEnd(head, tail, 8, "George", 2, 3, 2000, 0, 0, 0, 45, "0123456789", "Somewhere", "C0001", "Taman Laksamana", "S0001", "Science", 2);
+  insertToEnd(head, tail, 10, "Jamal", 2, 3, 2000, 0, 0, 0, 55.5, "0123456789", "Somewhere", "C0004", "Sri Petaling", "S0001", "Science", 3);
+  insertToEnd(head, tail, 5, "Kenny", 2, 3, 2000, 0, 0, 0, 65.559, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 3);
+  insertToEnd(head, tail, 9, "Maria", 2, 3, 2000, 0, 0, 0, 55.05, "0123456789", "Somewhere", "C0003", "Bukit Bintang", "S0001", "Science", 3);
+  insertToEnd(head, tail, 7, "Patricia", 2, 3, 2000, 0, 0, 0, 75, "0123456789", "Somewhere", "C0002", "Bukit Jalil", "S0001", "Science", 5);
+  insertToEnd(head, tail, 6, "Shelby", 2, 3, 2000, 0, 0, 0, 40, "0123456789", "Somewhere", "C0004", "Bukit Petaling", "S0001", "Science", 1);
 };
 void addTutor(Tutor *&head, Tutor *&tail, int *lastID, int *size, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, string tcCode, string tcName, string subCode, string subName, int rating) {
   // initialise
@@ -932,18 +932,18 @@ void displayRecordsList(Tutor *head, int size, int index) {
   // display page
   do {
     if (input != 1) {
-      cout << "ID    Name             Pay    Tuition Centre       Rating" << endl;
-      cout << "---------------------------------------------------------" << endl;
+      cout << "ID    Name                  Pay    Tuition Centre        Rating" << endl;
+      cout << "---------------------------------------------------------------" << endl;
       for (i = 0; i < 10; i++) {
         // print list of tutors
         cout.width(4);
         cout << right << current->getTutorID() << "  ";
-        cout.width(15);
-        cout << left << current->getName() << "  ";
+        cout.width(20);
+        cout << left << truncate(current->getName(), 20) << "  ";
         cout.width(5);
         cout << current->getHourlyPayRate() << "  ";
-        cout.width(19);
-        cout << current->getTuitionCentreName() << "  ";
+        cout.width(20);
+        cout << truncate(current->getTuitionCentreName(), 20) << "  ";
         cout << current->getRating() << endl;
 
         if (current->getNext())
