@@ -1190,66 +1190,36 @@ void searchTutorID(Tutor *tutors, int size, int tutorID) {
 };
 void searchRating(Tutor *tutors, int size, int rating) {
   // initialise
-  int tutorSize = 0;
-  Tutor *tempTutors1 = NULL, *tempTutors2 = NULL;
-  bool tutor1 = true, found = false;
+  int tempSize = 0;
+  int *indices = new int[size];
 
   // linear search through the array
-  for (int i = 0; i < size; i++) {
-    // find tutors with searched rating
-    if (tutors[i].getRating() == rating) {
-      if (tutorSize > 0) {
-        if (tutor1) {
-          // allocate memory
-          tempTutors2 = new Tutor[tutorSize + 1];
-          // copy all elements into temporary tutor array 2
-          for (int x = 0; x < tutorSize; x++)
-            tempTutors2[x] = tempTutors1[x];
-          tempTutors2[tutorSize] = tutors[i];
-          // deallocate memory
-          delete[] tempTutors1;
-          // set tutor 1 as inactive
-          tutor1 = false;
-        } else {
-          // allocate memory
-          tempTutors1 = new Tutor[tutorSize + 1];
-          // copy all elements into temporary tutor array 1
-          for (int x = 0; x < tutorSize; x++)
-            tempTutors1[x] = tempTutors2[x];
-          tempTutors1[tutorSize] = tutors[i];
-          // deallocate memory
-          delete[] tempTutors2;
-          // set tutor 1 as active
-          tutor1 = true;
-        };
-        // increase temporary tutor array size
-        tutorSize++;
-      } else {
-        // allocate memory
-        tempTutors1 = new Tutor[1];
-        tempTutors1[0] = tutors[i];
-        // set tutor 1 as active
-        tutor1 = true;
-        // increase temporary tutor size
-        tutorSize++;
-      };
-    };
-  };
+  for (int i = 0; i < size; i++)
+    if (tutors[i].getRating() == rating)
+      indices[tempSize++] = i;
 
-  if (tutorSize > 0) {
-    // display all records
-    if (tutor1) {
-      displayRecordsList(tempTutors1, tutorSize, 0);
-      // deallocate memory
-      delete[] tempTutors1;
-    } else {
-      displayRecordsList(tempTutors2, tutorSize, 0);
-      // deallocate memory
-      delete[] tempTutors2;
-    };
+  if (tempSize > 0) {
+    // allocate memory
+    Tutor *tempTutors = new Tutor[tempSize];
+
+    // copy elements into temporary tutor array
+    for (int i = 0; i < tempSize; i++)
+      tempTutors[i] = tutors[indices[i]];
+
+    // deallocate memory
+    delete[] indices;
+
+    // display results
+    displayRecordsList(tempTutors, tempSize, 0);
+
+    // deallocate memory
+    delete[] tempTutors;
   } else {
+    // deallocate memory
+    delete[] indices;
+
     // if no results
-    cout << "No results found" << endl;
+    cout << "No results found" << endl << endl;
   };
 };
 void searchTuitionName(Tutor *tutors, int size, string tcName) {
