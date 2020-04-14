@@ -1223,11 +1223,10 @@ void searchRating(Tutor *tutors, int size, int rating) {
 };
 void searchTuitionName(Tutor *tutors, int size, string tcName) {
   // initialise
+  int tutorSize = 0, nameSize = 0, input = 0, startIndex = 0, endIndex = 0;
+  string *tempNames = new string[size], sinput = "";
   Tutor *sortTutors = new Tutor[size], *tempTutors = NULL;
-  string *tempNames1 = NULL, *tempNames2 = NULL, sinput = "";
-  int nameSize = 0, tutorSize = 0, input = 0, startIndex = 0, endIndex = 0;
-  bool name1 = false;
-  
+
   // copy all elements into temporary tutor array
   for (int i = 0; i < size; i++)
     sortTutors[i] = tutors[i];
@@ -1236,71 +1235,16 @@ void searchTuitionName(Tutor *tutors, int size, string tcName) {
   mergesortTCName(sortTutors, 0, size - 1);
 
   // linear search through the array
-  for (int i = 0; i < size; i++) {
-    // find tutors with searched tuition name
-    if (findInsensitive(sortTutors[i].getTuitionCentreName(), tcName) != string::npos) {
-      if (nameSize > 0) {
-        if (name1) {
-          // binary insertion sort
-          // binary search through the array
-          if (!binarySearchNames(tempNames1, nameSize, sortTutors[i].getTuitionCentreName())) {
-            // allocate memory
-            tempNames2 = new string[nameSize + 1];
-            // copy all elements into temporary name array
-            for (int x = 0; x < nameSize; x++)
-              tempNames2[x] = tempNames1[x];
-            // copy new tuition name into temporary name array
-            tempNames2[nameSize] = sortTutors[i].getTuitionCentreName();
-            // deallocate memory
-            delete[] tempNames1;
-            // increase name size
-            nameSize++;
-            // set name 1 as inactive
-            name1 = false;
-          };
-        } else {
-          // binary insertion sort
-          // binary search through the array
-          if (!binarySearchNames(tempNames2, nameSize, sortTutors[i].getTuitionCentreName())) {
-            // allocate memory
-            tempNames1 = new string[nameSize + 1];
-            // copy all elements into temporary name array
-            for (int x = 0; x < nameSize; x++)
-              tempNames1[x] = tempNames2[x];
-            // copy new tuition name into temporary name array
-            tempNames1[nameSize] = sortTutors[i].getTuitionCentreName();
-            // deallocate memory
-            delete[] tempNames2;
-            // increase name size
-            nameSize++;
-            // set name 1 as active
-            name1 = true;
-          };
-        };
-      } else {
-        // insert new tuition name as there are no existing tuition names
-        // allocate memory
-        tempNames1 = new string[1];
-        tempNames1[0] = sortTutors[i].getTuitionCentreName();
-        // increase name size
-        nameSize = 1;
-        // set name 1 as active
-        name1 = true;
-      };
-    };
-  };
+  for (int i = 0; i < size; i++)
+    if (findInsensitive(sortTutors[i].getTuitionCentreName(), tcName) != string::npos)
+      if (!binarySearchNames(tempNames, nameSize, sortTutors[i].getTuitionCentreName()))
+        tempNames[nameSize++] = sortTutors[i].getTuitionCentreName();
 
   // get user input
   if (nameSize > 0) {
     if (nameSize > 1) {
-      for (int i = 0; i < nameSize; i++) {
-        cout << "(" << i + 1 << ") ";
-        if (name1)
-          cout << tempNames1[i];
-        else
-          cout << tempNames2[i];
-        cout << endl;
-      };
+      for (int i = 0; i < nameSize; i++)
+        cout << "(" << i + 1 << ")" << tempNames[i] << endl;
       do {
         cout << "Please input (1-" << nameSize << "): ";
         // ignore enter key
@@ -1317,10 +1261,10 @@ void searchTuitionName(Tutor *tutors, int size, string tcName) {
     };
 
     // get tuition name
-    if (name1)
-      sinput = tempNames1[input - 1];
-    else
-      sinput = tempNames2[input - 1];
+    sinput = tempNames[input - 1];
+
+    // deallocate memory
+    delete[] tempNames;
 
     // binary search through a portion of the temporary tutor array
     binarySearchTCName(sortTutors, size, sinput, &startIndex, &endIndex);
@@ -1344,6 +1288,8 @@ void searchTuitionName(Tutor *tutors, int size, string tcName) {
   } else {
     // deallocate memory
     delete[] sortTutors;
+    delete[] tempNames;
+
     // if no results
     cout << "No results found" << endl << endl;
   };
