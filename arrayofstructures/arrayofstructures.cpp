@@ -1190,27 +1190,26 @@ void searchTutorID(Tutor *tutors, int size, int tutorID) {
 };
 void searchRating(Tutor *tutors, int size, int rating) {
   // initialise
-  int tempSize = 0;
-  int *indices = new int[size];
+  int tutorSize = 0, *indices = new int[size];
 
   // linear search through the array
   for (int i = 0; i < size; i++)
     if (tutors[i].getRating() == rating)
-      indices[tempSize++] = i;
+      indices[tutorSize++] = i;
 
-  if (tempSize > 0) {
+  if (tutorSize > 0) {
     // allocate memory
-    Tutor *tempTutors = new Tutor[tempSize];
+    Tutor *tempTutors = new Tutor[tutorSize];
 
     // copy elements into temporary tutor array
-    for (int i = 0; i < tempSize; i++)
+    for (int i = 0; i < tutorSize; i++)
       tempTutors[i] = tutors[indices[i]];
 
     // deallocate memory
     delete[] indices;
 
     // display results
-    displayRecordsList(tempTutors, tempSize, 0);
+    displayRecordsList(tempTutors, tutorSize, 0);
 
     // deallocate memory
     delete[] tempTutors;
