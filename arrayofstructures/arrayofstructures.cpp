@@ -52,16 +52,16 @@ class Subject {
   };
 
   // getters and setters
-  int getTuitionCentreCode() {
+  int getSubjectCode() {
     return subjectCode;
   };
-  void setTuitionCentreCode(int subjectCode) {
+  void setSubjectCode(int subjectCode) {
     this->subjectCode = subjectCode;
   };
-  string getTuitionCentreName() {
+  string getSubjectName() {
     return subjectName;
   };
-  void getTuitionCentreName(string subjectName) {
+  void getSubjectName(string subjectName) {
     this->subjectName = subjectName;
   };
 };
@@ -160,7 +160,7 @@ class Tutor {
     return subjectCode;
   };
   string getSubjectName(Subject *subjects) {
-    return subjects[subjectCode - 1].getTuitionCentreName();
+    return subjects[subjectCode - 1].getSubjectName();
   }
   int getRating() {
     return rating;
@@ -582,9 +582,8 @@ int main() {
 
 void generateTutors(Tutor *&tutors, int &lastID, int &size, TuitionCentre *&tuitions, int &lastTCCode, int &tcSize, Subject *&subjects, int &lastSubCode, int &subSize) {
   // generate tuition centres
-  tcSize = 6;
+  tcSize = lastTCCode = 6;
   tuitions = new TuitionCentre[tcSize];
-  lastTCCode = tcSize;
 
   string tcNames[]{"Bukit Bintang", "Sri Petaling", "Bukit Petaling", "Taman Laksamana", "Taman Durian", "Bukit Jalil"};
 
@@ -592,9 +591,8 @@ void generateTutors(Tutor *&tutors, int &lastID, int &size, TuitionCentre *&tuit
     tuitions[i] = TuitionCentre(i + 1, tcNames[i]);
   
   // generate subjects
-  subSize = 2;
+  subSize = lastSubCode = 2;
   subjects = new Subject[subSize];
-  lastSubCode = subSize;
 
   string subNames[]{"Malay", "English"};
 
@@ -602,9 +600,8 @@ void generateTutors(Tutor *&tutors, int &lastID, int &size, TuitionCentre *&tuit
     subjects[i] = Subject(i + 1, subNames[i]);
 
   // generate tutors
-  size = 10;
+  size = lastID = 10;
   tutors = new Tutor[size];
-  lastID = size;
 
   tutors[0] = Tutor(2, "Aaron", 2, 3, 2000, 0, 0, 0, 79, "0123456789", "Somewhere", 3, 1, 5);
   tutors[1] = Tutor(1, "Bill", 2, 3, 2000, 0, 0, 0, 65.555, "0123456789", "Somewhere", 5, 1, 4);
