@@ -192,6 +192,12 @@ int binarySearchName(Tutor *tutors, int size, string name);
 // radix sort with counting sort
 void countingSortPayRate(Tutor *&tutors, int size, double place);
 
+// dual pivot quick sort
+void swap(TuitionCentre *tc1, TuitionCentre *tc2);
+
+void quickSortTCName(TuitionCentre *tuitions, int low, int up);
+void partitionTCName(TuitionCentre *tuitions, int low, int up, int *lp, int *rp);
+
 
 int main() {
   // initialise
@@ -1299,6 +1305,10 @@ void searchTuitionName(Tutor *tutors, int size, string tcName, TuitionCentre *tu
     if (count[i] > 0 && findInsensitive(tuitions[i].getTuitionCentreName(), tcName) != string::npos)
       tempTuitions[tuitionSize++] = tuitions[i];
 
+  // quick sort tuition name
+  if (tuitionSize > 1)
+    quickSortTCName(tempTuitions, 0, tuitionSize - 1);
+
   // get user input
   if (tuitionSize > 0) {
     if (tuitionSize > 1) {
@@ -1408,4 +1418,64 @@ void countingSortPayRate(Tutor *&tutors, int size, double place) {
   // point to new memory
   tutors = output;
   output = nullptr;
+};
+
+// dual pivot quick sort
+void swap(TuitionCentre *tc1, TuitionCentre *tc2) {
+  // swap the elements' position
+  TuitionCentre temp = *tc1;
+  *tc1 = *tc2;
+  *tc2 = temp;
+};
+
+void quickSortTCName(TuitionCentre *tuitions, int low, int up) {
+  if (low < up) {
+    int lPivot, rPivot;
+    partitionTCName(tuitions, low, up, &lPivot, &rPivot);
+    // sort left subarray
+    quickSortTCName(tuitions, low, lPivot - 1);
+    // sort mid subarray
+    quickSortTCName(tuitions, lPivot + 1, rPivot - 1);
+    // sort right subarray
+    quickSortTCName(tuitions, rPivot + 1, up);
+  };
+};
+void partitionTCName(TuitionCentre *tuitions, int low, int up, int *lPivot, int *rPivot) {
+  if (compareInsensitive(tuitions[low].getTuitionCentreName(), tuitions[up].getTuitionCentreName()) > 0)
+    // swap between left and right pivots
+    swap(&tuitions[low], &tuitions[up]);
+
+  // initialise
+  int lIndex = low + 1, rIndex = up - 1;
+  string lPiv = tuitions[low].getTuitionCentreName(), rPiv = tuitions[up].getTuitionCentreName();
+
+  for (int i = lIndex; i <= rIndex; i++) {
+    if (compareInsensitive(tuitions[i].getTuitionCentreName(), lPiv) < 0) {
+      // swap elements that are less than the left pivot
+      swap(&tuitions[i], &tuitions[lIndex]);
+      lIndex++;
+    } else if (compareInsensitive(tuitions[i].getTuitionCentreName(), rPiv) >= 0) {
+      // swap elements are greater than or equal to the right pivot
+      while (compareInsensitive(tuitions[rIndex].getTuitionCentreName(), rPiv) > 0 && i < rIndex)
+        rIndex--;
+      swap(&tuitions[i], &tuitions[rIndex]);
+      rIndex--;
+      if (compareInsensitive(tuitions[i].getTuitionCentreName(), lPiv) < 0) {
+        swap(&tuitions[i], &tuitions[lIndex]);
+        lIndex++;
+      };
+    };
+  };
+  // decrement left index
+  lIndex--;
+  // increment right index
+  rIndex++;
+
+  // swap pivots to their new positions
+  swap(&tuitions[low], &tuitions[lIndex]);
+  swap(&tuitions[up], &tuitions[rIndex]);
+
+  // return the indices of the pivots
+  *lPivot = lIndex;
+  *rPivot = rIndex;
 };
