@@ -10,18 +10,15 @@ class TuitionCentre {
   int tuitionCentreCode;
   string tuitionCentreName;
   TuitionCentre *next;
+  TuitionCentre *previous;
 
   public:
   // constructor
-  TuitionCentre() {
-    this->tuitionCentreCode = -1;
-    this->tuitionCentreName = "";
-    this->next = nullptr;
-  };
   TuitionCentre(int tuitionCentreCode, string tuitionCentreName) {
     this->tuitionCentreCode = tuitionCentreCode;
     this->tuitionCentreName = tuitionCentreName;
     this->next = nullptr;
+    this->previous = nullptr;
   };
 
   // getters and setters
@@ -43,22 +40,27 @@ class TuitionCentre {
   void setNext(TuitionCentre *next) {
     this->next = next;
   };
+  TuitionCentre *getPrevious() {
+    return previous;
+  };
+  void setPrevious(TuitionCentre *previous) {
+    this->previous = previous;
+  };
 };
 class Subject {
   private:
   int subjectCode;
   string subjectName;
   Subject *next;
+  Subject *previous;
 
   public:
   // constructor
-  Subject() {
-    this->subjectCode = -1;
-    this->subjectName = "";
-  };
   Subject(int subjectCode, string subjectName) {
     this->subjectCode = subjectCode;
     this->subjectName = subjectName;
+    this->next = nullptr;
+    this->previous = nullptr;
   };
 
   // getters and setters
@@ -79,6 +81,12 @@ class Subject {
   };
   void setNext(Subject *next) {
     this->next = next;
+  };
+  Subject *getPrevious() {
+    return previous;
+  };
+  void setPrevious(Subject *previous) {
+    this->previous = previous;
   };
 };
 class Tutor {
@@ -161,19 +169,33 @@ class Tutor {
   int getTuitionCentreCode() {
     return tuitionCentreCode;
   };
-  string getTuitionCentreName(TuitionCentre *tcHead) {
-    TuitionCentre *current = tcHead;
-    for (int i = 0; i < tuitionCentreCode - 1; i++)
-      current = current->getNext();
+  string getTuitionCentreName(TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize) {
+    TuitionCentre *current = nullptr;
+    if (tuitionCentreCode < lastTCCode / 2) {
+      current = tcHead;
+      for (int i = 0; i < tuitionCentreCode - 1; i++)
+        current = current->getNext();
+    } else {
+      current = tcTail;
+      for (int i = tcSize; i > tuitionCentreCode; i--)
+        current = current->getPrevious();
+    };
     return current->getTuitionCentreName();
   };
   int getSubjectCode() {
     return subjectCode;
   };
-  string getSubjectName(Subject *subHead) {
-    Subject *current = subHead;
-    for (int i = 0; i < subjectCode - 1; i++)
-      current = current->getNext();
+  string getSubjectName(Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
+    Subject *current = nullptr;
+    if (subjectCode < lastSubCode / 2) {
+      current = subHead;
+      for (int i = 0; i < subjectCode - 1; i++)
+        current = current->getNext();
+    } else {
+      current = subTail;
+      for (int i = subSize; i > subjectCode; i--)
+        current = current->getPrevious();
+    };
     return current->getSubjectName();
   };
   int getRating() {
@@ -194,27 +216,27 @@ class Tutor {
 };
 
 // function headers
-void generateTutors(Tutor *&head, Tutor *&tail, int &lastID, int &size, TuitionCentre *&tcHead, int &lastTCCode, int &tcSize, Subject *&subHead, int &lastSubCode, int &subSize);
+void generateTutors(Tutor *&head, Tutor *&tail, int &lastID, int &size, TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int &tcSize, Subject *&subHead, Subject *&subTail, int &lastSubCode, int &subSize);
 void addTutor(Tutor *&head, Tutor *&tail, int &lastID, int &size, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, int tcCode, int subCode, int rating);
-void modifyTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, Subject *subHead);
-void terminateTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, Subject *subHead);
-void deleteTutor(Tutor *&head, Tutor *&tail, int &size, int tutorID, TuitionCentre *tcHead, Subject *subHead);
+void modifyTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize);
+void terminateTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize);
+void deleteTutor(Tutor *&head, Tutor *&tail, int &size, int tutorID, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize);
 
-void displayRecord(Tutor tutor, TuitionCentre *tcHead, Subject *subHead);
-void displayRecordsList(Tutor *head, int size, int index, TuitionCentre *tcHead, Subject *subHead);
-void displayRecordsDetailed(Tutor *tutors, int size, TuitionCentre *tcHead, Subject *subHead);
+void displayRecord(Tutor tutor, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize);
+void displayRecordsList(Tutor *head, int size, int index, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize);
+void displayRecordsDetailed(Tutor *tutors, int size, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize);
 
-void sortTutorID(Tutor *head, int size, TuitionCentre *tcHead, Subject *subHead);
-void sortRating(Tutor *head, int size, TuitionCentre *tcHead, Subject *subHead);
-void sortPayRate(Tutor *head, int size, TuitionCentre *tcHead, Subject *subHead);
+void sortTutorID(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize);
+void sortRating(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize);
+void sortPayRate(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize);
 
-void searchTutorID(Tutor *head, int tutorID, TuitionCentre *tcHead, Subject *subHead);
-void searchRating(Tutor *head, int rating, TuitionCentre *tcHead, Subject *subHead);
-void searchTuitionName(Tutor *head, int size, string tcName, TuitionCentre *tcHead, int tcSize, Subject *subHead);
+void searchTutorID(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize);
+void searchRating(Tutor *head, int rating, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize);
+void searchTuitionName(Tutor *head, int size, string tcName, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize);
 
 // insert
-void insertTCToEnd(TuitionCentre *&tcHead, int tcCode, string tcName);
-void insertSubToEnd(Subject *&subHead, int subCode, string subName);
+void insertTCToEnd(TuitionCentre *&tcHead, TuitionCentre *&tcTail, int tcCode, string tcName);
+void insertSubToEnd(Subject *&subHead, Subject *&subTail, int subCode, string subName);
 void insertTutorToEnd(Tutor *&head, Tutor *&tail, Tutor tutor);
 void insertTutorToEnd(Tutor *&head, Tutor *&tail, int tutorID, string name, int dayJoined, int monthJoined, int yearJoined, int dayTerminated, int monthTerminated, int yearTerminated, double hourlyPayRate, string phone, string address, int tuitionCentreCode, int subjectCode, int rating);
 
@@ -233,21 +255,21 @@ Tutor *mergeRating(Tutor *list1, Tutor *list2);
 void mergesortPayRate(Tutor *&head);
 Tutor *mergePayRate(Tutor *list1, Tutor *list2);
 
-void mergesortTCName(Tutor *&head, string tcName, TuitionCentre *tcHead);
-Tutor *mergeTCName(Tutor *list1, Tutor *list2, string tcName, TuitionCentre *tcHead);
+void mergesortTCName(Tutor *&head, string tcName, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize);
+Tutor *mergeTCName(Tutor *list1, Tutor *list2, string tcName, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize);
 
 
 int main() {
   // initialise
   int size = 0, lastID = 0, tcSize = 0, lastTCCode = 0, subSize = 0, lastSubCode = 0;
   Tutor *head = nullptr, *tail = nullptr;
-  TuitionCentre *tcHead = nullptr;
-  Subject *subHead = nullptr;
+  TuitionCentre *tcHead = nullptr, *tcTail = nullptr;
+  Subject *subHead = nullptr, *subTail = nullptr;
   int input = 0, subinput = 0;
   char cinput = ' ';
 
   // generate hardcoded data
-  generateTutors(head, tail, lastID, size, tcHead, lastTCCode, tcSize, subHead, lastSubCode, subSize);
+  generateTutors(head, tail, lastID, size, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
 
   // set cout to always display two decimals for doubles
   cout.setf(ios::fixed, ios::floatfield);
@@ -404,7 +426,7 @@ int main() {
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
           } while (tutorID < 0);
           cout << "---------------" << endl;
-          modifyTutor(head, tutorID, tcHead, subHead);
+          modifyTutor(head, tutorID, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
           break;
         };
 
@@ -426,7 +448,7 @@ int main() {
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
           } while (tutorID < 0);
           cout << "---------------" << endl;
-          terminateTutor(head, tutorID, tcHead, subHead);
+          terminateTutor(head, tutorID, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
           break;
         };
 
@@ -448,7 +470,7 @@ int main() {
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
           } while (tutorID < 0);
           cout << "---------------" << endl;
-          deleteTutor(head, tail, size, tutorID, tcHead, subHead);
+          deleteTutor(head, tail, size, tutorID, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
           break;
         };
 
@@ -456,7 +478,7 @@ int main() {
       case 5:
         cout << "Display Records (Name (Asc))" << endl;
         cout << "---------------------------------------" << endl;
-        displayRecordsList(head, size, 0, tcHead, subHead);
+        displayRecordsList(head, size, 0, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
         break;
 
         // sort and display records
@@ -484,21 +506,21 @@ int main() {
           case 1:
             cout << "Display Records (Tutor ID (Asc))" << endl;
             cout << "---------------------------------------" << endl;
-            sortTutorID(head, size, tcHead, subHead);
+            sortTutorID(head, size, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
             break;
 
             // sort by rating
           case 2:
             cout << "Display Records (Rating (Asc))" << endl;
             cout << "---------------------------------------" << endl;
-            sortRating(head, size, tcHead, subHead);
+            sortRating(head, size, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
             break;
 
             // sort by hourly pay rate
           default:
             cout << "Display Records (Hourly Pay Rate (Asc))" << endl;
             cout << "---------------------------------------" << endl;
-            sortPayRate(head, size, tcHead, subHead);
+            sortPayRate(head, size, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
             break;
         };
         break;
@@ -541,7 +563,7 @@ int main() {
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
               } while (tutorID < 0);
               cout << "-------------------------------------" << endl;
-              searchTutorID(head, tutorID, tcHead, subHead);
+              searchTutorID(head, tutorID, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
               break;
             };
 
@@ -563,7 +585,7 @@ int main() {
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
               } while (rating < 1 || rating > 5);
               cout << "-------------------------------------" << endl;
-              searchRating(head, rating, tcHead, subHead);
+              searchRating(head, rating, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
               break;
             };
 
@@ -579,7 +601,7 @@ int main() {
                 trim(tcName);
               } while (tcName == "");
               cout << "-------------------------------------" << endl;
-              searchTuitionName(head, size, tcName, tcHead, tcSize, subHead);
+              searchTuitionName(head, size, tcName, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
               break;
             };
         };
@@ -618,14 +640,14 @@ int main() {
 };
 
 
-void generateTutors(Tutor *&head, Tutor *&tail, int &lastID, int &size, TuitionCentre *&tcHead, int &lastTCCode, int &tcSize, Subject *&subHead, int &lastSubCode, int &subSize) {
+void generateTutors(Tutor *&head, Tutor *&tail, int &lastID, int &size, TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int &tcSize, Subject *&subHead, Subject *&subTail, int &lastSubCode, int &subSize) {
   // generate tuition centres
   tcSize = lastTCCode = 6;
 
   string tcNames[]{"Bukit Bintang", "Sri Petaling", "Bukit Petaling", "Taman Laksamana", "Taman Durian", "Bukit Jalil"};
 
   for (int i = 0; i < tcSize; i++)
-    insertTCToEnd(tcHead, i + 1, tcNames[i]);
+    insertTCToEnd(tcHead, tcTail, i + 1, tcNames[i]);
   
   // generate subjects
   subSize = lastSubCode = 2;
@@ -633,7 +655,7 @@ void generateTutors(Tutor *&head, Tutor *&tail, int &lastID, int &size, TuitionC
   string subNames[]{"Malay", "English"};
 
   for (int i = 0; i < subSize; i++)
-    insertSubToEnd(subHead, i + 1, subNames[i]);
+    insertSubToEnd(subHead, subTail, i + 1, subNames[i]);
 
   // generate tutors
   lastID = size = 10;
@@ -705,7 +727,7 @@ void addTutor(Tutor *&head, Tutor *&tail, int &lastID, int &size, string name, i
   // increase last id
   lastID++;
 };
-void modifyTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, Subject *subHead) {
+void modifyTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
   // initialise
   int input = 0;
   string phone = "", address = "";
@@ -726,7 +748,7 @@ void modifyTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, Subject *subHe
 
   if (found) {
     // display record
-    displayRecord(*current, tcHead, subHead);
+    displayRecord(*current, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
 
     // get user input
     cout << "Modify:" << endl;
@@ -774,7 +796,7 @@ void modifyTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, Subject *subHe
   };
   current = nullptr;
 };
-void terminateTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, Subject *subHead) {
+void terminateTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
   // initialise
   int day = 0, month = 0, year = 0;
   time_t dateTerminated = time(0);
@@ -796,7 +818,7 @@ void terminateTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, Subject *su
 
   if (found) {
     // display record
-    displayRecord(*current, tcHead, subHead);
+    displayRecord(*current, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
 
     // check if tutor is terminated
     if (current->getDateTerminated() != -1) {
@@ -864,7 +886,7 @@ void terminateTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, Subject *su
     cout << "No results found" << endl << endl;
   };
 };
-void deleteTutor(Tutor *&head, Tutor *&tail, int &size, int tutorID, TuitionCentre *tcHead, Subject *subHead) {
+void deleteTutor(Tutor *&head, Tutor *&tail, int &size, int tutorID, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
   // initialise
   char cinput = ' ';
   bool found = false;
@@ -884,7 +906,7 @@ void deleteTutor(Tutor *&head, Tutor *&tail, int &size, int tutorID, TuitionCent
 
   if (found) {
     // display record
-    displayRecord(*current, tcHead, subHead);
+    displayRecord(*current, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
 
     // check if tutor is terminated
     if (current->getDateTerminated() != -1) {
@@ -959,7 +981,7 @@ void deleteTutor(Tutor *&head, Tutor *&tail, int &size, int tutorID, TuitionCent
   };
 };
 
-void displayRecord(Tutor tutor, TuitionCentre *tcHead, Subject *subHead) {
+void displayRecord(Tutor tutor, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
   cout << "ID                 : " << tutor.getTutorID() << endl;
   cout << "Name               : " << tutor.getName() << endl;
   tm tmJoined;
@@ -981,12 +1003,12 @@ void displayRecord(Tutor tutor, TuitionCentre *tcHead, Subject *subHead) {
   cout << "Phone              : " << tutor.getPhone() << endl;
   cout << "Address            : " << tutor.getAddress() << endl;
   cout << "Tuition Centre Code: " << tutor.getTuitionCentreCode() << endl;
-  cout << "Tuition Centre Name: " << tutor.getTuitionCentreName(tcHead) << endl;
+  cout << "Tuition Centre Name: " << tutor.getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize) << endl;
   cout << "Subject Code       : " << tutor.getSubjectCode() << endl;
-  cout << "Subject Name       : " << tutor.getSubjectName(subHead) << endl;
+  cout << "Subject Name       : " << tutor.getSubjectName(subHead, subTail, lastSubCode, subSize) << endl;
   cout << "Rating             : " << tutor.getRating() << endl << endl;
 };
-void displayRecordsList(Tutor *head, int size, int index, TuitionCentre *tcHead, Subject *subHead) {
+void displayRecordsList(Tutor *head, int size, int index, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
   // initialise
   int page = 1, input = 0, i = 0;
   Tutor *current = head;
@@ -1016,7 +1038,7 @@ void displayRecordsList(Tutor *head, int size, int index, TuitionCentre *tcHead,
         cout.width(5);
         cout << current->getHourlyPayRate() << "  ";
         cout.width(20);
-        cout << truncate(current->getTuitionCentreName(tcHead), 20) << "  ";
+        cout << truncate(current->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), 20) << "  ";
         cout << current->getRating() << endl;
 
         if (current->getNext())
@@ -1111,9 +1133,9 @@ void displayRecordsList(Tutor *head, int size, int index, TuitionCentre *tcHead,
 
   // detailed view
   if (input == 1)
-    displayRecordsDetailed(head, size, tcHead, subHead);
+    displayRecordsDetailed(head, size, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
 };
-void displayRecordsDetailed(Tutor *head, int size, TuitionCentre *tcHead, Subject *subHead) {
+void displayRecordsDetailed(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
   // initialise
   Tutor *current = nullptr;
   int input = 2, tutorID = 0, index = 0;
@@ -1153,7 +1175,7 @@ void displayRecordsDetailed(Tutor *head, int size, TuitionCentre *tcHead, Subjec
 
     // display result
     cout << "-------------------------------------" << endl;
-    displayRecord(*current, tcHead, subHead);
+    displayRecord(*current, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
 
     cout << "(1) List view" << endl;
     cout << "(2) Jump to record";
@@ -1208,10 +1230,10 @@ void displayRecordsDetailed(Tutor *head, int size, TuitionCentre *tcHead, Subjec
 
   // list view
   if (input == 1)
-    displayRecordsList(head, size, index, tcHead, subHead);
+    displayRecordsList(head, size, index, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
 };
 
-void sortTutorID(Tutor *head, int size, TuitionCentre *tcHead, Subject *subHead) {
+void sortTutorID(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
   // initialise
   Tutor *current = head, *tempHead = nullptr, *tempTail = nullptr;
 
@@ -1225,12 +1247,12 @@ void sortTutorID(Tutor *head, int size, TuitionCentre *tcHead, Subject *subHead)
   mergesortID(tempHead);
 
   // display sorted list
-  displayRecordsList(tempHead, size, 0, tcHead, subHead);
+  displayRecordsList(tempHead, size, 0, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
 
   // deallocate memory
   deleteList(tempHead);
 };
-void sortRating(Tutor *head, int size, TuitionCentre *tcHead, Subject *subHead) {
+void sortRating(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
   // initialise
   Tutor *current = head, *tempHead = nullptr, *tempTail = nullptr;
 
@@ -1244,12 +1266,12 @@ void sortRating(Tutor *head, int size, TuitionCentre *tcHead, Subject *subHead) 
   mergesortRating(tempHead);
 
   // display sorted list
-  displayRecordsList(tempHead, size, 0, tcHead, subHead);
+  displayRecordsList(tempHead, size, 0, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
 
   // deallocate memory
   deleteList(tempHead);
 };
-void sortPayRate(Tutor *head, int size, TuitionCentre *tcHead, Subject *subHead) {
+void sortPayRate(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
   // initialise
   Tutor *current = head, *tempHead = nullptr, *tempTail = nullptr;
 
@@ -1263,13 +1285,13 @@ void sortPayRate(Tutor *head, int size, TuitionCentre *tcHead, Subject *subHead)
   mergesortPayRate(tempHead);
 
   // display sorted list
-  displayRecordsList(tempHead, size, 0, tcHead, subHead);
+  displayRecordsList(tempHead, size, 0, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
 
   // deallocate memory
   deleteList(tempHead);
 };
 
-void searchTutorID(Tutor *head, int tutorID, TuitionCentre *tcHead, Subject *subHead) {
+void searchTutorID(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
   // initialise
   Tutor *current = head;
   bool found = false;
@@ -1289,12 +1311,12 @@ void searchTutorID(Tutor *head, int tutorID, TuitionCentre *tcHead, Subject *sub
   // if no results
   if (found)
     // display result
-    displayRecord(*current, tcHead, subHead);
+    displayRecord(*current, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
   else
     cout << "No results found" << endl << endl;
   current = nullptr;
 };
-void searchRating(Tutor *head, int rating, TuitionCentre *tcHead, Subject *subHead) {
+void searchRating(Tutor *head, int rating, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
   // initialise
   int tempSize = 0;
   Tutor *current = head, *tempHead = nullptr, *tempTail = nullptr;
@@ -1313,7 +1335,7 @@ void searchRating(Tutor *head, int rating, TuitionCentre *tcHead, Subject *subHe
 
   if (tempHead) {
     // display all records
-    displayRecordsList(tempHead, tempSize, 0, tcHead, subHead);
+    displayRecordsList(tempHead, tempSize, 0, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
     // deallocate memory
     deleteList(tempHead);
   } else {
@@ -1321,7 +1343,7 @@ void searchRating(Tutor *head, int rating, TuitionCentre *tcHead, Subject *subHe
     cout << "No results found" << endl << endl;
   };
 };
-void searchTuitionName(Tutor *head, int size, string tcName, TuitionCentre *tcHead, int tcSize, Subject *subHead) {
+void searchTuitionName(Tutor *head, int size, string tcName, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
   // initialise
   Tutor *current = head, *tempHead = nullptr, *tempTail = nullptr;
   TuitionCentre *tempTuitions = nullptr, *tempTCHead = nullptr;
@@ -1334,7 +1356,7 @@ void searchTuitionName(Tutor *head, int size, string tcName, TuitionCentre *tcHe
   };
 
   // sort the temporary tutor list by tuition name
-  mergesortTCName(tempHead, tcName, tcHead);
+  mergesortTCName(tempHead, tcName, tcHead, tcTail, lastTCCode, tcSize);
 
   // linear search through the list
   current = tempHead;
@@ -1358,10 +1380,10 @@ void searchTuitionName(Tutor *head, int size, string tcName, TuitionCentre *tcHe
       };
       if (!exist)
         // link tuition name to new tuition name
-        tempTuitions->setNext(new TuitionCentre(current->getTuitionCentreCode(), current->getTuitionCentreName(tcHead)));
+        tempTuitions->setNext(new TuitionCentre(current->getTuitionCentreCode(), current->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize)));
     } else {
       // insert new tuition name as there are no existing tuition names
-      tempTCHead = new TuitionCentre(current->getTuitionCentreCode(), current->getTuitionCentreName(tcHead));
+      tempTCHead = new TuitionCentre(current->getTuitionCentreCode(), current->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize));
     };
     current = current->getNext();
   };
@@ -1415,7 +1437,7 @@ void searchTuitionName(Tutor *head, int size, string tcName, TuitionCentre *tcHe
     };
 
     // display sorted list
-    displayRecordsList(tempHead, tempSize, 0, tcHead, subHead);
+    displayRecordsList(tempHead, tempSize, 0, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
 
     // deallocate memory
     deleteList(tempHead);
@@ -1428,34 +1450,38 @@ void searchTuitionName(Tutor *head, int size, string tcName, TuitionCentre *tcHe
 };
 
 // insert
-void insertTCToEnd(TuitionCentre *&tcHead, int tcCode, string tcName) {
+void insertTCToEnd(TuitionCentre *&tcHead, TuitionCentre *&tcTail, int tcCode, string tcName) {
   // initialise
   TuitionCentre *newTuition = new TuitionCentre(tcCode, tcName);
 
   if (tcHead) {
-    TuitionCentre *current = tcHead;
-    while (current->getNext())
-      current = current->getNext();
-    // link last tuition to new tuition
-    current->setNext(newTuition);
+    // link new tutor to tail tutor
+    newTuition->setPrevious(tcTail);
+    // link tail tutor to new tutor
+    tcTail->setNext(newTuition);
+    // tail is new tutor
+    tcTail = newTuition;
   } else {
     // insert new tutor as there are no existing tutors
     tcHead = newTuition;
+    tcTail = newTuition;
   };
 };
-void insertSubToEnd(Subject *&subHead, int subCode, string subName) {
+void insertSubToEnd(Subject *&subHead, Subject *&subTail, int subCode, string subName) {
   // initialise
   Subject *newSubject = new Subject(subCode, subName);
 
   if (subHead) {
-    Subject *current = subHead;
-    while (current->getNext())
-      current = current->getNext();
-    // link last subject to new subject
-    current->setNext(newSubject);
+    // link new tutor to tail tutor
+    newSubject->setPrevious(subTail);
+    // link tail tutor to new tutor
+    subTail->setNext(newSubject);
+    // tail is new tutor
+    subTail = newSubject;
   } else {
     // insert new tutor as there are no existing tutors
     subHead = newSubject;
+    subTail = newSubject;
   };
 };
 void insertTutorToEnd(Tutor *&head, Tutor *&tail, Tutor tutor) {
@@ -1655,28 +1681,28 @@ Tutor *mergePayRate(Tutor *list1, Tutor *list2) {
   };
 };
 
-void mergesortTCName(Tutor *&head, string tcName, TuitionCentre *tcHead) {
+void mergesortTCName(Tutor *&head, string tcName, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize) {
   // initialise
   Tutor *current = head, *list1 = nullptr, *list2 = nullptr;
 
   if (current && current->getNext()) {
     split(current, list1, list2);
     // sort sublist 1
-    mergesortTCName(list1, tcName, tcHead);
+    mergesortTCName(list1, tcName, tcHead, tcTail, lastTCCode, tcSize);
     // sort sublist 2
-    mergesortTCName(list2, tcName, tcHead);
+    mergesortTCName(list2, tcName, tcHead, tcTail, lastTCCode, tcSize);
     // merge sublists
-    head = mergeTCName(list1, list2, tcName, tcHead);
+    head = mergeTCName(list1, list2, tcName, tcHead, tcTail, lastTCCode, tcSize);
   };
   current = nullptr;
 };
-Tutor *mergeTCName(Tutor *list1, Tutor *list2, string tcName, TuitionCentre *tcHead) {
+Tutor *mergeTCName(Tutor *list1, Tutor *list2, string tcName, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize) {
   if (list1) {
     // find tutors with searched tuition name
-    if (findInsensitive(list1->getTuitionCentreName(tcHead), tcName) == string::npos) {
+    if (findInsensitive(list1->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), tcName) == string::npos) {
       // deallocate memory
       deleteList(list1);
-      if (list2 && findInsensitive(list2->getTuitionCentreName(tcHead), tcName) == string::npos) {
+      if (list2 && findInsensitive(list2->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), tcName) == string::npos) {
         deleteList(list2);
         list2 = nullptr;
       };
@@ -1689,10 +1715,10 @@ Tutor *mergeTCName(Tutor *list1, Tutor *list2, string tcName, TuitionCentre *tcH
 
   if (list2) {
     // find tutors with searched tuition name
-    if (findInsensitive(list2->getTuitionCentreName(tcHead), tcName) == string::npos) {
+    if (findInsensitive(list2->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), tcName) == string::npos) {
       // deallocate memory
       deleteList(list2);
-      if (list1 && findInsensitive(list1->getTuitionCentreName(tcHead), tcName) == string::npos) {
+      if (list1 && findInsensitive(list1->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), tcName) == string::npos) {
         deleteList(list1);
         list1 = nullptr;
       };
@@ -1703,9 +1729,9 @@ Tutor *mergeTCName(Tutor *list1, Tutor *list2, string tcName, TuitionCentre *tcH
     return list1;
   };
 
-  if (compareInsensitive(list1->getTuitionCentreName(tcHead), list2->getTuitionCentreName(tcHead)) <= 0) {
+  if (compareInsensitive(list1->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), list2->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize)) <= 0) {
     // link sublist 1 to sublist 2
-    list1->setNext(mergeTCName(list1->getNext(), list2, tcName, tcHead));
+    list1->setNext(mergeTCName(list1->getNext(), list2, tcName, tcHead, tcTail, lastTCCode, tcSize));
     // link sublist 2 to sublist 1
     list1->getNext()->setPrevious(list1);
     list1->setPrevious(nullptr);
@@ -1713,7 +1739,7 @@ Tutor *mergeTCName(Tutor *list1, Tutor *list2, string tcName, TuitionCentre *tcH
     return list1;
   } else {
     // link sublist 2 to sublist 1
-    list2->setNext(mergeTCName(list1, list2->getNext(), tcName, tcHead));
+    list2->setNext(mergeTCName(list1, list2->getNext(), tcName, tcHead, tcTail, lastTCCode, tcSize));
     // link sublist 1 to sublist 2
     list2->getNext()->setPrevious(list2);
     list2->setPrevious(nullptr);
