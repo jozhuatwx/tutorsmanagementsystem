@@ -170,15 +170,21 @@ class Tutor {
     return tuitionCentreCode;
   };
   string getTuitionCentreName(TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize) {
+    // initialise
     TuitionCentre *current = nullptr;
+    // guess which end is faster
     if (tuitionCentreCode < lastTCCode / 2) {
+      // linear search from beginning
       current = tcHead;
-      for (int i = 0; i < tuitionCentreCode - 1; i++)
-        current = current->getNext();
+      for (int i = 0; i < tcSize - 1; i++, current = current->getNext())
+        if (current->getTuitionCentreCode() == tuitionCentreCode)
+          break;
     } else {
+      // linear search from end
       current = tcTail;
-      for (int i = tcSize; i > tuitionCentreCode; i--)
-        current = current->getPrevious();
+      for (int i = tcSize - 1; i >= 0; i--, current = current->getPrevious())
+        if (current->getTuitionCentreCode() == tuitionCentreCode)
+          break;
     };
     return current->getTuitionCentreName();
   };
@@ -186,15 +192,21 @@ class Tutor {
     return subjectCode;
   };
   string getSubjectName(Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
+    // initialise
     Subject *current = nullptr;
+    // guess which end is faster
     if (subjectCode < lastSubCode / 2) {
+      // linear search from beginning
       current = subHead;
-      for (int i = 0; i < subjectCode - 1; i++)
-        current = current->getNext();
+      for (int i = 0; i < subSize - 1; i++, current = current->getNext())
+        if (current->getSubjectCode() == subjectCode)
+          break;
     } else {
+      // linear search from end
       current = subTail;
-      for (int i = subSize; i > subjectCode; i--)
-        current = current->getPrevious();
+      for (int i = subSize - 1; i >= 0; i--, current = current->getPrevious())
+        if (current->getSubjectCode() == subjectCode)
+          break;
     };
     return current->getSubjectName();
   };
@@ -216,6 +228,9 @@ class Tutor {
 };
 
 // function headers
+bool validateTuitionCentre(int tcCode, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize);
+bool validateSubject(int subCode, Subject *subHead, Subject *subTail, int lastSubCode, int subSize);
+
 void generateTutors(Tutor *&head, Tutor *&tail, int &lastID, int &size, TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int &tcSize, Subject *&subHead, Subject *&subTail, int &lastSubCode, int &subSize);
 void addTutor(Tutor *&head, Tutor *&tail, int &lastID, int &size, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, int tcCode, int subCode, int rating);
 void modifyTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize);
@@ -377,7 +392,7 @@ int main() {
               cin.clear();
             // clear the input buffer
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-          } while (tcCode < 0);
+          } while (tcCode < 0 || !validateTuitionCentre(tcCode, tcHead, tcTail, lastTCCode, tcSize));
 
           // subject code
           do {
@@ -390,7 +405,7 @@ int main() {
               cin.clear();
             // clear the input buffer
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-          } while (subCode < 0);
+          } while (subCode < 0 || !validateSubject(subCode, subHead, subTail, lastSubCode, subSize));
 
           // rating
           do {
@@ -639,6 +654,44 @@ int main() {
   return 0;
 };
 
+bool validateTuitionCentre(int tcCode, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize) {
+  // initialise
+  TuitionCentre *current = nullptr;
+  // guess which end is faster
+  if (tcCode < lastTCCode / 2) {
+    // linear search from beginning
+    current = tcHead;
+    for (int i = 0; i < tcSize - 1; i++, current = current->getNext())
+      if (current->getTuitionCentreCode() == tcCode)
+        return true;
+  } else {
+    // linear search from end
+    current = tcTail;
+    for (int i = tcSize; i > 0; i--, current = current->getPrevious())
+      if (current->getTuitionCentreCode() == tcCode)
+        return true;
+  };
+  return false;
+};
+bool validateSubject(int subCode, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
+  // initialise
+  Subject *current = nullptr;
+  // guess which end is faster
+  if (subCode < lastSubCode / 2) {
+    // linear search from beginning
+    current = subHead;
+    for (int i = 0; i < subSize - 1; i++, current = current->getNext())
+      if (current->getSubjectCode() == subCode)
+        return true;
+  } else {
+    // linear search from end
+    current = subTail;
+    for (int i = subSize; i > 0; i--, current = current->getPrevious())
+      if (current->getSubjectCode() == subCode)
+        return true;
+  };
+  return false;
+};
 
 void generateTutors(Tutor *&head, Tutor *&tail, int &lastID, int &size, TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int &tcSize, Subject *&subHead, Subject *&subTail, int &lastSubCode, int &subSize) {
   // generate tuition centres
