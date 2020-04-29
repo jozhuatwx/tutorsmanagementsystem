@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.0] - 30/4/2020
+### Added
+- Validates tuition centre code and subject code
+
+### Changed
+- Updated to separate tuition centres and subjects from tutors
+
 ## [1.0.1] - 13/4/2020
 ### Changed
 - [#15](../../issues/15) Displaying in list view now shows longer tutor and tuition names, exceeded length are truncated
