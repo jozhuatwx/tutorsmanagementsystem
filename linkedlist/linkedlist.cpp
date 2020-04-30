@@ -711,9 +711,9 @@ void generateTutors(Tutor *&head, Tutor *&tail, int &lastID, int &size, TuitionC
     insertSubToEnd(subHead, subTail, i + 1, subNames[i]);
 
   // generate tutors
-  lastID = size = 10;
+  lastID = size = 0;
 
-  insertTutorToEnd(head, tail, 2, "Aaron", 2, 3, 2000, 0, 0, 0, 79, "0123456789", "Somewhere", 3, 1, 5);
+  /*insertTutorToEnd(head, tail, 2, "Aaron", 2, 3, 2000, 0, 0, 0, 79, "0123456789", "Somewhere", 3, 1, 5);
   insertTutorToEnd(head, tail, 1, "Bill", 2, 3, 2000, 0, 0, 0, 65.555, "0123456789", "Somewhere", 5, 1, 4);
   insertTutorToEnd(head, tail, 4, "Charlie", 2, 3, 2000, 0, 0, 0, 50.5, "0123456789", "Somewhere", 5, 2, 3);
   insertTutorToEnd(head, tail, 3, "Edwin", 2, 3, 2000, 0, 0, 0, 65.551, "0123456789", "Somewhere", 2, 1, 4);
@@ -722,7 +722,7 @@ void generateTutors(Tutor *&head, Tutor *&tail, int &lastID, int &size, TuitionC
   insertTutorToEnd(head, tail, 5, "Kenny", 2, 3, 2000, 0, 0, 0, 65.559, "0123456789", "Somewhere", 3, 1, 4);
   insertTutorToEnd(head, tail, 9, "Maria", 2, 3, 2000, 0, 0, 0, 55.05, "0123456789", "Somewhere", 1, 2, 3);
   insertTutorToEnd(head, tail, 7, "Patricia", 2, 3, 2000, 0, 0, 0, 75, "0123456789", "Somewhere", 3, 2, 5);
-  insertTutorToEnd(head, tail, 6, "Shelby", 2, 3, 2000, 0, 0, 0, 40, "0123456789", "Somewhere", 6, 2, 1);
+  insertTutorToEnd(head, tail, 6, "Shelby", 2, 3, 2000, 0, 0, 0, 40, "0123456789", "Somewhere", 6, 2, 1);*/
 };
 void addTutor(Tutor *&head, Tutor *&tail, int &lastID, int &size, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, int tcCode, int subCode, int rating) {
   // initialise
@@ -1062,286 +1062,311 @@ void displayRecord(Tutor tutor, TuitionCentre *tcHead, TuitionCentre *tcTail, in
   cout << "Rating             : " << tutor.getRating() << endl << endl;
 };
 void displayRecordsList(Tutor *head, int size, int index, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
-  // initialise
-  int page = 1, input = 0, i = 0;
-  Tutor *current = head;
+  if (size > 0) {
+    // initialise
+    int page = 1, input = 0, i = 0;
+    Tutor *current = head;
 
-  for (; index >= 10; index -= 10) {
-    for (int i = 0; i < 10; i++)
-      current = current->getNext();
-    page++;
-  };
-
-  // calculate total page numbers
-  int total = size / 10;
-  if (size % 10 > 0)
-    total++;
-
-  // display page
-  do {
-    if (input != 1) {
-      cout << "ID    Name                  Pay    Tuition Centre        Rating" << endl;
-      cout << "---------------------------------------------------------------" << endl;
-      for (i = 0; i < 10; i++) {
-        // print list of tutors
-        cout.width(4);
-        cout << right << current->getTutorID() << "  ";
-        cout.width(20);
-        cout << left << truncate(current->getName(), 20) << "  ";
-        cout.width(5);
-        cout << current->getHourlyPayRate() << "  ";
-        cout.width(20);
-        cout << truncate(current->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), 20) << "  ";
-        cout << current->getRating() << endl;
-
-        if (current->getNext())
-          current = current->getNext();
-        else
-          // break when last element
-          break;
-      };
-      // display page number
-      cout << endl << "Page " << page << endl << endl;
+    for (; index >= 10; index -= 10) {
+      for (int i = 0; i < 10; i++)
+        current = current->getNext();
+      page++;
     };
 
-    cout << "(1) Detailed view" << endl;
-    cout << "(2) Jump to page";
-    if (total == 1)
-      cout << " (disabled)";
-    cout << endl << "(3) Next page";
-    if (page >= total)
-      cout << " (disabled)";
-    cout << endl << "(4) Previous page";
-    if (page <= 1)
-      cout << " (disabled)";
-    cout << endl << "(5) Exit" << endl;
-    // get user input
+    // calculate total page numbers
+    int total = size / 10;
+    if (size % 10 > 0)
+      total++;
+
+    // display page
     do {
-      cout << "Please select (1-5): ";
-      // ignore enter key
-      if (cin.peek() != '\n')
-        cin >> input;
-      // clear error state
-      if (!cin)
-        cin.clear();
-      // clear the input buffer
-      cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    } while (input < 1 || input > 5 || (total == 1 && input == 2) || (page >= total && input == 3) || (page <= 1 && input == 4));
+      if (input != 1) {
+        cout << "ID    Name                  Pay    Tuition Centre        Rating" << endl;
+        cout << "---------------------------------------------------------------" << endl;
+        for (i = 0; i < 10; i++) {
+          // print list of tutors
+          cout.width(4);
+          cout << right << current->getTutorID() << "  ";
+          cout.width(20);
+          cout << left << truncate(current->getName(), 20) << "  ";
+          cout.width(5);
+          cout << current->getHourlyPayRate() << "  ";
+          cout.width(20);
+          cout << truncate(current->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), 20) << "  ";
+          cout << current->getRating() << endl;
 
-    // determine outcome
-    switch (input) {
-        // jump to page
-      case 2:
-        {
-          int oldPage = page;
-
-          if (total > 1) {
-            do {
-              cout << "Page (1-" << total << "): ";
-              // ignore enter key
-              if (cin.peek() != '\n')
-                cin >> page;
-              // clear error state
-              if (!cin)
-                cin.clear();
-              // clear the input buffer
-              cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            } while (page < 1 || page > total);
-            if (oldPage >= page) {
-              // go to previous tutors
-              for (int x = 0; x < 10 * (oldPage - page + 1) - (10 - i); x++)
-                current = current->getPrevious();
-            } else {
-              // go to next tutors
-              for (int x = 0; x < 10 * (page - oldPage - 1); x++)
-                current = current->getNext();
-            };
-          };
-          break;
+          if (current->getNext())
+            current = current->getNext();
+          else
+            // break when last element
+            break;
         };
+        // display page number
+        cout << endl << "Page " << page << endl << endl;
+      };
 
-        // next page
-      case 3:
-        if (page < total)
-          page++;
-        break;
-
-        // previous page
-      case 4:
-        if (page > 1)
-          page--;
-        // go to previous tutors
-        for (int x = 0; x < 10 + i; x++)
-          current = current->getPrevious();
-        break;
-
-        // do nothing
-      default:
-        break;
-    };
-    cout << endl;
-  } while (input > 1 && input < 5);
-
-  current = nullptr;
-
-  // detailed view
-  if (input == 1)
-    displayRecordsDetailed(head, size, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
-};
-void displayRecordsDetailed(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
-  // initialise
-  Tutor *current = nullptr;
-  int input = 2, tutorID = 0, index = 0;
-  bool found = false;
-
-  do {
-    if (input == 2) {
-      found = false;
+      cout << "(1) Detailed view" << endl;
+      cout << "(2) Jump to page";
+      if (total == 1)
+        cout << " (disabled)";
+      cout << endl << "(3) Next page";
+      if (page >= total)
+        cout << " (disabled)";
+      cout << endl << "(4) Previous page";
+      if (page <= 1)
+        cout << " (disabled)";
+      cout << endl << "(5) Exit" << endl;
       // get user input
       do {
-        do {
-          cout << "Tutor ID: ";
-          // ignore enter key
-          if (cin.peek() != '\n')
-            cin >> tutorID;
-          // clear error state
-          if (!cin)
-            cin.clear();
-          // clear the input buffer
-          cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        } while (tutorID < 0);
+        cout << "Please select (1-5): ";
+        // ignore enter key
+        if (cin.peek() != '\n')
+          cin >> input;
+        // clear error state
+        if (!cin)
+          cin.clear();
+        // clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      } while (input < 1 || input > 5 || (total == 1 && input == 2) || (page >= total && input == 3) || (page <= 1 && input == 4));
 
-        // linear search through the array
-        current = head;
-        for (index = 0; current; index++) {
-          // find tutor with searched id
-          if (current->getTutorID() == tutorID) {
-            // set as found
-            found = true;
-            // stop iteration
+      // determine outcome
+      switch (input) {
+        // jump to page
+        case 2:
+          {
+            int oldPage = page;
+
+            if (total > 1) {
+              do {
+                cout << "Page (1-" << total << "): ";
+                // ignore enter key
+                if (cin.peek() != '\n')
+                  cin >> page;
+                // clear error state
+                if (!cin)
+                  cin.clear();
+                // clear the input buffer
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+              } while (page < 1 || page > total);
+              if (oldPage >= page) {
+                // go to previous tutors
+                for (int x = 0; x < 10 * (oldPage - page + 1) - (10 - i); x++)
+                  current = current->getPrevious();
+              } else {
+                // go to next tutors
+                for (int x = 0; x < 10 * (page - oldPage - 1); x++)
+                  current = current->getNext();
+              };
+            };
             break;
           };
-          current = current->getNext();
-        };
-      } while (!found);
-    };
 
-    // display result
-    cout << "-------------------------------------" << endl;
-    displayRecord(*current, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
+          // next page
+        case 3:
+          if (page < total)
+            page++;
+          break;
 
-    cout << "(1) List view" << endl;
-    cout << "(2) Jump to record";
-    if (size == 1)
-      cout << " (disabled)";
-    cout << endl << "(3) Next record";
-    if (index >= size - 1)
-      cout << " (disabled)";
-    cout << endl << "(4) Previous record";
-    if (index <= 0)
-      cout << " (disabled)";
-    cout << endl << "(5) Exit" << endl;
-    // get user input
+          // previous page
+        case 4:
+          if (page > 1)
+            page--;
+          // go to previous tutors
+          for (int x = 0; x < 10 + i; x++)
+            current = current->getPrevious();
+          break;
+
+          // do nothing
+        default:
+          break;
+      };
+      cout << endl;
+    } while (input > 1 && input < 5);
+
+    current = nullptr;
+
+    // detailed view
+    if (input == 1)
+      displayRecordsDetailed(head, size, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
+  } else {
+    // if no results
+    cout << "No results found" << endl << endl;
+  };
+};
+void displayRecordsDetailed(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
+  if (size > 0) {
+    // initialise
+    Tutor *current = nullptr;
+    int input = 2, tutorID = 0, index = 0;
+    bool found = false;
+
     do {
-      cout << "Please select (1-5): ";
-      // ignore enter key
-      if (cin.peek() != '\n')
-        cin >> input;
-      // clear error state
-      if (!cin)
-        cin.clear();
-      // clear the input buffer
-      cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    } while (input < 1 || input > 5 || (size == 1 && input == 2) || (index >= size - 1 && input == 3) || (index <= 0 && input == 4));
+      if (input == 2) {
+        found = false;
+        // get user input
+        do {
+          do {
+            cout << "Tutor ID: ";
+            // ignore enter key
+            if (cin.peek() != '\n')
+              cin >> tutorID;
+            // clear error state
+            if (!cin)
+              cin.clear();
+            // clear the input buffer
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+          } while (tutorID < 0);
 
-    // determine outcome
-    switch (input) {
-      // next record
-      case 3:
-        if (index < size - 1) {
-          current = current->getNext();
-          index++;
-        };
-        break;
+          // linear search through the array
+          current = head;
+          for (index = 0; current; index++) {
+            // find tutor with searched id
+            if (current->getTutorID() == tutorID) {
+              // set as found
+              found = true;
+              // stop iteration
+              break;
+            };
+            current = current->getNext();
+          };
+        } while (!found);
+      };
 
-        // previous record
-      case 4:
-        if (index > 0) {
-          current = current->getPrevious();
-          index--;
-        };
-        break;
+      // display result
+      cout << "-------------------------------------" << endl;
+      displayRecord(*current, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
 
-        // do nothing
-      default:
-        break;
-    };
-    cout << endl;
-  } while (input > 1 && input < 5);
+      cout << "(1) List view" << endl;
+      cout << "(2) Jump to record";
+      if (size == 1)
+        cout << " (disabled)";
+      cout << endl << "(3) Next record";
+      if (index >= size - 1)
+        cout << " (disabled)";
+      cout << endl << "(4) Previous record";
+      if (index <= 0)
+        cout << " (disabled)";
+      cout << endl << "(5) Exit" << endl;
+      // get user input
+      do {
+        cout << "Please select (1-5): ";
+        // ignore enter key
+        if (cin.peek() != '\n')
+          cin >> input;
+        // clear error state
+        if (!cin)
+          cin.clear();
+        // clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      } while (input < 1 || input > 5 || (size == 1 && input == 2) || (index >= size - 1 && input == 3) || (index <= 0 && input == 4));
 
-  current = nullptr;
+      // determine outcome
+      switch (input) {
+        // next record
+        case 3:
+          if (index < size - 1) {
+            current = current->getNext();
+            index++;
+          };
+          break;
 
-  // list view
-  if (input == 1)
-    displayRecordsList(head, size, index, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
+          // previous record
+        case 4:
+          if (index > 0) {
+            current = current->getPrevious();
+            index--;
+          };
+          break;
+
+          // do nothing
+        default:
+          break;
+      };
+      cout << endl;
+    } while (input > 1 && input < 5);
+
+    current = nullptr;
+
+    // list view
+    if (input == 1)
+      displayRecordsList(head, size, index, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
+  } else {
+    // if no results
+    cout << "No results found" << endl << endl;
+  };
 };
 
 void sortTutorID(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
-  // initialise
-  Tutor *current = head, *tempHead = nullptr, *tempTail = nullptr;
+  if (size > 0) {
+    // initialise
+    Tutor *current = head, *tempHead = nullptr, *tempTail = nullptr;
 
-  // copy all elements into temporary tutor list
-  while (current) {
-    insertTutorToEnd(tempHead, tempTail, *current);
-    current = current->getNext();
+    // copy all elements into temporary tutor list
+    while (current) {
+      insertTutorToEnd(tempHead, tempTail, *current);
+      current = current->getNext();
+    };
+
+    // sort the temporary tutor list by id
+    mergesortID(tempHead);
+
+    // display sorted list
+    displayRecordsList(tempHead, size, 0, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
+
+    // deallocate memory
+    deleteList(tempHead);
+  } else {
+    // if no results
+    cout << "No results found" << endl << endl;
   };
-
-  // sort the temporary tutor list by id
-  mergesortID(tempHead);
-
-  // display sorted list
-  displayRecordsList(tempHead, size, 0, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
-
-  // deallocate memory
-  deleteList(tempHead);
 };
 void sortRating(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
-  // initialise
-  Tutor *current = head, *tempHead = nullptr, *tempTail = nullptr;
+  if (size > 0) {
+    // initialise
+    Tutor *current = head, *tempHead = nullptr, *tempTail = nullptr;
 
-  // copy all elements into temporary tutor list
-  while (current) {
-    insertTutorToEnd(tempHead, tempTail, *current);
-    current = current->getNext();
+    // copy all elements into temporary tutor list
+    while (current) {
+      insertTutorToEnd(tempHead, tempTail, *current);
+      current = current->getNext();
+    };
+
+    // sort the temporary tutor list by rating
+    mergesortRating(tempHead);
+
+    // display sorted list
+    displayRecordsList(tempHead, size, 0, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
+
+    // deallocate memory
+    deleteList(tempHead);
+  } else {
+    // if no results
+    cout << "No results found" << endl << endl;
   };
-
-  // sort the temporary tutor list by rating
-  mergesortRating(tempHead);
-
-  // display sorted list
-  displayRecordsList(tempHead, size, 0, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
-
-  // deallocate memory
-  deleteList(tempHead);
 };
 void sortPayRate(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
-  // initialise
-  Tutor *current = head, *tempHead = nullptr, *tempTail = nullptr;
+  if (size > 0) {
+    // initialise
+    Tutor *current = head, *tempHead = nullptr, *tempTail = nullptr;
 
-  // copy all elements into temporary tutor list
-  while (current) {
-    insertTutorToEnd(tempHead, tempTail, *current);
-    current = current->getNext();
+    // copy all elements into temporary tutor list
+    while (current) {
+      insertTutorToEnd(tempHead, tempTail, *current);
+      current = current->getNext();
+    };
+
+    // sort the temporary tutor list by id
+    mergesortPayRate(tempHead);
+
+    // display sorted list
+    displayRecordsList(tempHead, size, 0, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
+
+    // deallocate memory
+    deleteList(tempHead);
+  } else {
+    // if no results
+    cout << "No results found" << endl << endl;
   };
-
-  // sort the temporary tutor list by id
-  mergesortPayRate(tempHead);
-
-  // display sorted list
-  displayRecordsList(tempHead, size, 0, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
-
-  // deallocate memory
-  deleteList(tempHead);
 };
 
 void searchTutorID(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
