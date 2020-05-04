@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.2.0] - 5/5/2020
+### Added
+- [#33](../../issues/33) Function to modify tuition centres and subjects
+- [#34](../../issues/34) Function to delete tuition centres and subjects
+
+### Changed
+- Updated display menu to ask to select function
+
+### Fixed
+- Fixed modify tutor menu to ask to select function
+- Fixed wrong setter function for tuition centre name and subject name
+- **LS:** Fixed occasional crashes when tuition centre name or subject name is unavailable
+
 ## [2.1.0] - 4/5/2020
 ### Added
 - [#31](../../issues/31) Function to add new tuition centres and subjects

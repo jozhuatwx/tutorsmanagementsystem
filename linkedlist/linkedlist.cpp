@@ -33,7 +33,7 @@ class TuitionCentre {
   string getTuitionCentreName() {
     return tuitionCentreName;
   };
-  void getTuitionCentreName(string tuitionCentreName) {
+  void setTuitionCentreName(string tuitionCentreName) {
     this->tuitionCentreName = tuitionCentreName;
   };
   TuitionCentre *getNext() {
@@ -75,7 +75,7 @@ class Subject {
   string getSubjectName() {
     return subjectName;
   };
-  void getSubjectName(string subjectName) {
+  void setSubjectName(string subjectName) {
     this->subjectName = subjectName;
   };
   Subject *getNext() {
@@ -178,13 +178,13 @@ class Tutor {
     if (tuitionCentreCode < lastTCCode / 2) {
       // linear search from beginning
       current = tcHead;
-      for (int i = 0; i < tcSize - 1; i++, current = current->getNext())
+      for (int i = 0; i < tcSize - 1 && current; i++, current = current->getNext())
         if (current->getTuitionCentreCode() == tuitionCentreCode)
           break;
     } else {
       // linear search from end
       current = tcTail;
-      for (int i = tcSize - 1; i >= 0; i--, current = current->getPrevious())
+      for (int i = tcSize - 1; i >= 0 && current; i--, current = current->getPrevious())
         if (current->getTuitionCentreCode() == tuitionCentreCode)
           break;
     };
@@ -203,13 +203,13 @@ class Tutor {
     if (subjectCode < lastSubCode / 2) {
       // linear search from beginning
       current = subHead;
-      for (int i = 0; i < subSize - 1; i++, current = current->getNext())
+      for (int i = 0; i < subSize - 1 && current; i++, current = current->getNext())
         if (current->getSubjectCode() == subjectCode)
           break;
     } else {
       // linear search from end
       current = subTail;
-      for (int i = subSize - 1; i >= 0; i--, current = current->getPrevious())
+      for (int i = subSize - 1; i >= 0 && current; i--, current = current->getPrevious())
         if (current->getSubjectCode() == subjectCode)
           break;
     };
@@ -266,7 +266,7 @@ bool validateTuitionCentre(int tcCode, TuitionCentre *tcHead, TuitionCentre *tcT
 
 void addTuitionCentre(TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int &tcSize, string tcName);
 void modifyTuitionCentre(TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, int tcCode);
-void deleteTuitionCentre(TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int tcSize, int tcCode);
+void deleteTuitionCentre(Tutor *head, TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int tcSize, int tcCode);
 
 void displayTC(TuitionCentre tuition);
 void displayTCList(TuitionCentre *tcHead, int tcSize);
@@ -276,7 +276,7 @@ bool validateSubject(int subCode, Subject *subHead, Subject *subTail, int lastSu
 
 void addSubject(Subject *&subHead, Subject *&subTail, int &lastSubCode, int &subSize, string subName);
 void modifySubject(Subject *subHead, Subject *subTail, int lastSubCode, int subSize, int subCode);
-void deleteSubject(Subject *&subHead, Subject *&subTail, int &lastSubCode, int subSize, int subCode);
+void deleteSubject(Tutor *head, Subject *&subHead, Subject *&subTail, int &lastSubCode, int subSize, int subCode);
 
 void displaySub(Subject subject);
 void displaySubList(Subject *subHead, int subSize);
@@ -723,7 +723,7 @@ int main() {
               int tcCode = 0;
               // get user input
               do {
-                cout << "Modify Tuition Centre (Code): " << endl;
+                cout << "Modify Tuition Centre (Code): ";
                 // ignore enter key
                 if (cin.peek() != '\n')
                   cin >> tcCode;
@@ -745,7 +745,7 @@ int main() {
               int tcCode = 0;
               // get user input
               do {
-                cout << "Delete Tuition Centre (Code): " << endl;
+                cout << "Delete Tuition Centre (Code): ";
                 // ignore enter key
                 if (cin.peek() != '\n')
                   cin >> tcCode;
@@ -756,7 +756,7 @@ int main() {
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
               } while (tcCode < 0);
               cout << "----------------------------" << endl;
-              deleteTuitionCentre(tcHead, tcTail, lastTCCode, tcSize, tcCode);
+              deleteTuitionCentre(head, tcHead, tcTail, lastTCCode, tcSize, tcCode);
               break;
             };
 
@@ -824,7 +824,7 @@ int main() {
               int subCode = 0;
               // get user input
               do {
-                cout << "Modify Subject (Code): " << endl;
+                cout << "Modify Subject (Code): ";
                 // ignore enter key
                 if (cin.peek() != '\n')
                   cin >> subCode;
@@ -846,7 +846,7 @@ int main() {
               int subCode = 0;
               // get user input
               do {
-                cout << "Delete Subject (Code): " << endl;
+                cout << "Delete Subject (Code): ";
                 // ignore enter key
                 if (cin.peek() != '\n')
                   cin >> subCode;
@@ -857,7 +857,7 @@ int main() {
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
               } while (subCode < 0);
               cout << "----------------------------" << endl;
-              deleteSubject(subHead, subTail, lastSubCode, subSize, subCode);
+              deleteSubject(head, subHead, subTail, lastSubCode, subSize, subCode);
               break;
             };
 
@@ -1023,7 +1023,7 @@ void modifyTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCentre 
     cout << "(2) Address" << endl;
     cout << "(3) Both" << endl;
     do {
-      cout << "Sort by (1-3): ";
+      cout << "Select function (1-3): ";
       // ignore enter key
       if (cin.peek() != '\n')
         cin >> input;
@@ -1055,8 +1055,7 @@ void modifyTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCentre 
     };
 
     // display success message
-    if (input >= 1)
-      cout << "Modified Successfully" << endl << endl;
+    cout << "Modified Successfully" << endl << endl;
   } else {
     // if no results
     cout << "No results found" << endl << endl;
@@ -1330,7 +1329,7 @@ void displayRecordsList(Tutor *head, int size, int index, TuitionCentre *tcHead,
       cout << endl << "(5) Exit" << endl;
       // get user input
       do {
-        cout << "Please select (1-5): ";
+        cout << "Select function (1-5): ";
         // ignore enter key
         if (cin.peek() != '\n')
           cin >> input;
@@ -1461,7 +1460,7 @@ void displayRecordsDetailed(Tutor *head, int size, TuitionCentre *tcHead, Tuitio
       cout << endl << "(5) Exit" << endl;
       // get user input
       do {
-        cout << "Please select (1-5): ";
+        cout << "Select function (1-5): ";
         // ignore enter key
         if (cin.peek() != '\n')
           cin >> input;
@@ -1785,8 +1784,150 @@ void addTuitionCentre(TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastT
   // increase last tuition code
   lastTCCode++;
 };
-void modifyTuitionCentre(TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, int tcCode) {};
-void deleteTuitionCentre(TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int tcSize, int tcCode) {};
+void modifyTuitionCentre(TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, int tcCode) {
+  // initialise
+  int input = 0;
+  string tcName = "";
+  TuitionCentre *current = nullptr;
+
+  // guess which end is faster
+  if (tcCode < lastTCCode / 2) {
+    // linear search from beginning
+    current = tcHead;
+    for (int i = 0; i < tcSize - 1 && current; i++, current = current->getNext())
+      if (current->getTuitionCentreCode() == tcCode)
+        // stop iteration
+        break;
+  } else {
+    // linear search from end
+    current = tcTail;
+    for (int i = tcSize - 1; i >= 0 && current; i--, current = current->getPrevious())
+      if (current->getTuitionCentreCode() == tcCode)
+        // stop iteration
+        break;
+  };
+
+  if (current) {
+    // display record
+    displayTC(*current);
+
+    do {
+      cout << "New Tuition Name: ";
+      getline(cin, tcName);
+      trim(tcName);
+    } while (tcName == "");
+    current->setTuitionCentreName(tcName);
+
+    // display success message
+    cout << "Modified Successfully" << endl << endl;
+  } else {
+    // if no results
+    cout << "No results found" << endl << endl;
+  };
+  current = nullptr;
+};
+void deleteTuitionCentre(Tutor *head, TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int tcSize, int tcCode) {
+  // initialise
+  char cinput = ' ';
+  TuitionCentre *current = tcHead;
+
+  // guess which end is faster
+  if (tcCode < lastTCCode / 2) {
+    // linear search from beginning
+    current = tcHead;
+    for (int i = 0; i < tcSize - 1 && current; i++, current = current->getNext())
+      if (current->getTuitionCentreCode() == tcCode)
+        // stop iteration
+        break;
+  } else {
+    // linear search from end
+    current = tcTail;
+    for (int i = tcSize - 1; i >= 0 && current; i--, current = current->getPrevious())
+      if (current->getTuitionCentreCode() == tcCode)
+        // stop iteration
+        break;
+  };
+
+  if (current) {
+    // display record
+    displayTC(*current);
+
+    // ask for confirmation
+    do {
+      cout << "Permanently delete tuition? (Y/N): ";
+      cin >> cinput;
+      // clear the input buffer
+      cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    } while (cinput != 'y' && cinput != 'Y' && cinput != 'n' && cinput != 'N');
+
+    // determine outcome
+    switch (cinput) {
+      // delete tutor
+      case 'y':
+      case 'Y':
+        {
+          // initilise
+          Tutor *temp = head;
+
+          // check if record is in use
+          while (temp) {
+            if (temp->getTuitionCentreCode() == tcCode)
+              // stop iteration
+              break;
+            temp = temp->getNext();
+          };
+
+          if (temp) {
+            do {
+              cout << "Warning record is in use. Proceed? (Y/N): ";
+              cin >> cinput;
+              // clear the input buffer
+              cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            } while (cinput != 'y' && cinput != 'Y' && cinput != 'n' && cinput != 'N');
+          };
+
+          if (!temp || (temp && (cinput == 'y' || cinput == 'Y'))) {
+            temp = nullptr;
+
+            if (current->getNext())
+              // link next tuition to previous tuition
+              current->getNext()->setPrevious(current->getPrevious());
+            else
+              // tail is previous tuition
+              tcTail = current->getPrevious();
+
+            if (current->getPrevious())
+              // link previous tuition to next tuition
+              current->getPrevious()->setNext(current->getNext());
+            else
+              // head is next tuition
+              tcHead = current->getNext();
+
+            // deallocate memory
+            delete current;
+
+            // display success message
+            cout << "Deleted Successfully" << endl << endl;
+            // decrease tuition size
+            tcSize--;
+          } else {
+            // display cancelled message
+            cout << "Cancelled" << endl << endl;
+          };
+          break;
+        };
+        
+        // cancel delete
+      default:
+        // display cancelled message
+        cout << "Cancelled" << endl << endl;
+        break;
+    };
+  } else {
+    // if no results
+    cout << "No results found" << endl << endl;
+  };
+};
 
 void displayTC(TuitionCentre tuition) {
   cout << "Tuition Centre Code: " << tuition.getTuitionCentreCode() << endl;
@@ -1835,7 +1976,7 @@ void displayTCList(TuitionCentre *tcHead, int tcSize) {
       cout << endl << "(4) Exit" << endl;
       // get user input
       do {
-        cout << "Please select (1-4): ";
+        cout << "Select function (1-4): ";
         // ignore enter key
         if (cin.peek() != '\n')
           cin >> input;
@@ -1953,8 +2094,150 @@ void addSubject(Subject *&subHead, Subject *&subTail, int &lastSubCode, int &sub
   // increase last subject code
   lastSubCode++;
 };
-void modifySubject(Subject * subHead, Subject * subTail, int lastSubCode, int subSize, int subCode) {};
-void deleteSubject(Subject *&subHead, Subject *&subTail, int &lastSubCode, int subSize, int subCode) {};
+void modifySubject(Subject *subHead, Subject *subTail, int lastSubCode, int subSize, int subCode) {
+  // initialise
+  int input = 0;
+  string tcName = "";
+  Subject *current = nullptr;
+
+  // guess which end is faster
+  if (subCode < lastSubCode / 2) {
+    // linear search from beginning
+    current = subHead;
+    for (int i = 0; i < subSize - 1 && current; i++, current = current->getNext())
+      if (current->getSubjectCode() == subCode)
+        // stop iteration
+        break;
+  } else {
+    // linear search from end
+    current = subTail;
+    for (int i = subSize - 1; i >= 0 && current; i--, current = current->getPrevious())
+      if (current->getSubjectCode() == subCode)
+        // stop iteration
+        break;
+  };
+
+  if (current) {
+    // display record
+    displaySub(*current);
+
+    do {
+      cout << "New Subject Name: ";
+      getline(cin, tcName);
+      trim(tcName);
+    } while (tcName == "");
+    current->setSubjectName(tcName);
+
+    // display success message
+    cout << "Modified Successfully" << endl << endl;
+  } else {
+    // if no results
+    cout << "No results found" << endl << endl;
+  };
+  current = nullptr;
+};
+void deleteSubject(Tutor *head, Subject *&subHead, Subject *&subTail, int &lastSubCode, int subSize, int subCode) {
+  // initialise
+  char cinput = ' ';
+  Subject *current = subHead;
+
+  // guess which end is faster
+  if (subCode < lastSubCode / 2) {
+    // linear search from beginning
+    current = subHead;
+    for (int i = 0; i < subSize - 1 && current; i++, current = current->getNext())
+      if (current->getSubjectCode() == subCode)
+        // stop iteration
+        break;
+  } else {
+    // linear search from end
+    current = subTail;
+    for (int i = subSize - 1; i >= 0 && current; i--, current = current->getPrevious())
+      if (current->getSubjectCode() == subCode)
+        // stop iteration
+        break;
+  };
+
+  if (current) {
+    // display record
+    displaySub(*current);
+
+    // ask for confirmation
+    do {
+      cout << "Permanently delete subject? (Y/N): ";
+      cin >> cinput;
+      // clear the input buffer
+      cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    } while (cinput != 'y' && cinput != 'Y' && cinput != 'n' && cinput != 'N');
+
+    // determine outcome
+    switch (cinput) {
+      // delete tutor
+      case 'y':
+      case 'Y':
+        {
+          // initilise
+          Tutor *temp = head;
+
+          // check if record is in use
+          while (temp) {
+            if (temp->getSubjectCode() == subCode)
+              // stop iteration
+              break;
+            temp = temp->getNext();
+          };
+
+          if (temp) {
+            do {
+              cout << "Warning record is in use. Proceed? (Y/N): ";
+              cin >> cinput;
+              // clear the input buffer
+              cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            } while (cinput != 'y' && cinput != 'Y' && cinput != 'n' && cinput != 'N');
+          };
+
+          if (!temp || (temp && (cinput == 'y' || cinput == 'Y'))) {
+            temp = nullptr;
+
+            if (current->getNext())
+              // link next subject to previous subject
+              current->getNext()->setPrevious(current->getPrevious());
+            else
+              // tail is previous subject
+              subTail = current->getPrevious();
+
+            if (current->getPrevious())
+              // link previous subject to next subject
+              current->getPrevious()->setNext(current->getNext());
+            else
+              // head is next subject
+              subHead = current->getNext();
+
+            // deallocate memory
+            delete current;
+
+            // display success message
+            cout << "Deleted Successfully" << endl << endl;
+            // decrease subject size
+            subSize--;
+          } else {
+            // display cancelled message
+            cout << "Cancelled" << endl << endl;
+          };
+          break;
+        };
+
+        // cancel delete
+      default:
+        // display cancelled message
+        cout << "Cancelled" << endl << endl;
+        break;
+    };
+  } else {
+    // if no results
+    cout << "No results found" << endl << endl;
+  };
+};
 
 void displaySub(Subject subject) {
   cout << "Subject Code: " << subject.getSubjectCode() << endl;
@@ -2003,7 +2286,7 @@ void displaySubList(Subject *subHead, int subSize) {
       cout << endl << "(4) Exit" << endl;
       // get user input
       do {
-        cout << "Please select (1-4): ";
+        cout << "Select function (1-4): ";
         // ignore enter key
         if (cin.peek() != '\n')
           cin >> input;
