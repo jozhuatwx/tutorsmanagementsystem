@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.1.0] - 4/5/2020
+### Added
+- [#31](../../issues/31) Function to add new tuition centres and subjects
+- [#32](../../issues/32) Function to display list of tuition centres and subjects
+
+### Changed
+- Added more hardcoded data for tuition centres and subjects
+
+### Fixed
+- [#35](../../issues/35) Getting non-existent tuition centre names or subjects crashes the system
+
 ## [2.0.2] - 4/5/2020
 ### Changed
 - [#29](../../issues/29) Display limit of tuition centres and subjects when adding tutor

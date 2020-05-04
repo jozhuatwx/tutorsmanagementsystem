@@ -188,7 +188,10 @@ class Tutor {
         if (current->getTuitionCentreCode() == tuitionCentreCode)
           break;
     };
-    return current->getTuitionCentreName();
+    if (current)
+      return current->getTuitionCentreName();
+    else
+      return "Record missing";
   };
   int getSubjectCode() {
     return subjectCode;
@@ -210,7 +213,10 @@ class Tutor {
         if (current->getSubjectCode() == subjectCode)
           break;
     };
-    return current->getSubjectName();
+    if (current)
+      return current->getSubjectName();
+    else
+      return "Record missing";
   };
   int getRating() {
     return rating;
@@ -230,10 +236,8 @@ class Tutor {
 };
 
 // function headers
-bool validateTuitionCentre(int tcCode, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize);
-bool validateSubject(int subCode, Subject *subHead, Subject *subTail, int lastSubCode, int subSize);
-
-void generateTutors(Tutor *&head, Tutor *&tail, int &lastID, int &size, TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int &tcSize, Subject *&subHead, Subject *&subTail, int &lastSubCode, int &subSize);
+void generateData(Tutor *&head, Tutor *&tail, int &lastID, int &size, TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int &tcSize, Subject *&subHead, Subject *&subTail, int &lastSubCode, int &subSize);
+// tutors
 void addTutor(Tutor *&head, Tutor *&tail, int &lastID, int &size, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, int tcCode, int subCode, int rating);
 void modifyTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize);
 void terminateTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize);
@@ -256,6 +260,27 @@ void insertTCToEnd(TuitionCentre *&tcHead, TuitionCentre *&tcTail, int tcCode, s
 void insertSubToEnd(Subject *&subHead, Subject *&subTail, int subCode, string subName);
 void insertTutorToEnd(Tutor *&head, Tutor *&tail, Tutor tutor);
 void insertTutorToEnd(Tutor *&head, Tutor *&tail, int tutorID, string name, int dayJoined, int monthJoined, int yearJoined, int dayTerminated, int monthTerminated, int yearTerminated, double hourlyPayRate, string phone, string address, int tuitionCentreCode, int subjectCode, int rating);
+
+// tuition centres
+bool validateTuitionCentre(int tcCode, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize);
+
+void addTuitionCentre(TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int &tcSize, string tcName);
+void modifyTuitionCentre(TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, int tcCode);
+void deleteTuitionCentre(TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int tcSize, int tcCode);
+
+void displayTC(TuitionCentre tuition);
+void displayTCList(TuitionCentre *tcHead, int tcSize);
+
+// subjects
+bool validateSubject(int subCode, Subject *subHead, Subject *subTail, int lastSubCode, int subSize);
+
+void addSubject(Subject *&subHead, Subject *&subTail, int &lastSubCode, int &subSize, string subName);
+void modifySubject(Subject *subHead, Subject *subTail, int lastSubCode, int subSize, int subCode);
+void deleteSubject(Subject *&subHead, Subject *&subTail, int &lastSubCode, int subSize, int subCode);
+
+void displaySub(Subject subject);
+void displaySubList(Subject *subHead, int subSize);
+
 
 // delete
 void deleteList(Tutor *head);
@@ -286,7 +311,7 @@ int main() {
   char cinput = ' ';
 
   // generate hardcoded data
-  generateTutors(head, tail, lastID, size, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
+  generateData(head, tail, lastID, size, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
 
   // set cout to always display two decimals for doubles
   cout.setf(ios::fixed, ios::floatfield);
@@ -295,20 +320,22 @@ int main() {
   // menu
   do {
     cout << "-------------------------------------------" << endl;
-    cout << "Tutor Management System (Linked List 2.0.2)" << endl;
+    cout << "Tutor Management System (Linked List 2.2.0)" << endl;
     cout << "-------------------------------------------" << endl;
-    cout << "(1) Add Tutor" << endl;
-    cout << "(2) Modify Tutor" << endl;
-    cout << "(3) Terminate Tutor" << endl;
-    cout << "(4) Delete Tutor" << endl;
-    cout << "(5) Display Records" << endl;
-    cout << "(6) Sort and Display Records" << endl;
-    cout << "(7) Search Tutors" << endl;
-    cout << "(8) Exit" << endl;
+    cout << " (1) Add Tutor" << endl;
+    cout << " (2) Modify Tutor" << endl;
+    cout << " (3) Terminate Tutor" << endl;
+    cout << " (4) Delete Tutor" << endl;
+    cout << " (5) Display Records" << endl;
+    cout << " (6) Sort and Display Records" << endl;
+    cout << " (7) Search Tutors" << endl;
+    cout << " (8) Manage Tuition Centres" << endl;
+    cout << " (9) Manage Subjects" << endl;
+    cout << "(10) Exit" << endl;
 
     // get user input
     do {
-      cout << "Select function (1-8): ";
+      cout << "Select function (1-10): ";
       cin >> input;
       // ignore enter key
       if (cin.peek() != '\n')
@@ -318,7 +345,7 @@ int main() {
         cin.clear();
       // clear the input buffer
       cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    } while (input < 1 || input > 8);
+    } while (input < 1 || input > 10);
     cout << endl;
 
     // determine outcome
@@ -406,7 +433,7 @@ int main() {
                 cin.clear();
               // clear the input buffer
               cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            } while (tcCode < 0 || !validateTuitionCentre(tcCode, tcHead, tcTail, lastTCCode, tcSize));
+            } while (tcCode < 0 || tcCode > lastTCCode || !validateTuitionCentre(tcCode, tcHead, tcTail, lastTCCode, tcSize));
 
             // subject code
             do {
@@ -421,7 +448,7 @@ int main() {
                 cin.clear();
               // clear the input buffer
               cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            } while (subCode < 0 || !validateSubject(subCode, subHead, subTail, lastSubCode, subSize));
+            } while (subCode < 0 || subCode > lastSubCode || !validateSubject(subCode, subHead, subTail, lastSubCode, subSize));
 
             // rating
             do {
@@ -646,8 +673,209 @@ int main() {
         };
         break;
 
-        // exit program
+        // manage tuition centres
       case 8:
+        cout << "(1) Add Tuition Centre" << endl;
+        cout << "(2) Modify Tuition Centre" << endl;
+        cout << "(3) Delete Tuition Centre" << endl;
+        cout << "(4) Display Tuition Centres" << endl;
+        cout << "(5) Exit" << endl;
+
+        // get user input
+        do {
+          cout << "Select function (1-5): ";
+          // ignore enter key
+          if (cin.peek() != '\n')
+            cin >> subinput;
+          // clear error state
+          if (!cin)
+            cin.clear();
+          // clear the input buffer
+          cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        } while (subinput < 1 || subinput > 5);
+        cout << endl;
+
+        // determine outcome
+        switch (subinput) {
+            // add tuition centre
+          case 1:
+            {
+              cout << "Add Tuition Centre" << endl;
+              cout << "----------------------------" << endl;
+
+              // initialise
+              string tcName = "";
+
+              do {
+                cout << "Tuition Centre Name: ";
+                getline(cin, tcName);
+                trim(tcName);
+              } while (tcName == "");
+              addTuitionCentre(tcHead, tcTail, lastTCCode, tcSize, tcName);
+              break;
+            };
+
+
+            // modify tuition centre
+          case 2:
+            {
+              // initialise
+              int tcCode = 0;
+              // get user input
+              do {
+                cout << "Modify Tuition Centre (Code): " << endl;
+                // ignore enter key
+                if (cin.peek() != '\n')
+                  cin >> tcCode;
+                // clear error state
+                if (!cin)
+                  cin.clear();
+                // clear the input buffer
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+              } while (tcCode < 0);
+              cout << "----------------------------" << endl;
+              modifyTuitionCentre(tcHead, tcTail, lastTCCode, tcSize, tcCode);
+              break;
+            };
+
+            // delete tuition centre
+          case 3:
+            {
+              // initialise
+              int tcCode = 0;
+              // get user input
+              do {
+                cout << "Delete Tuition Centre (Code): " << endl;
+                // ignore enter key
+                if (cin.peek() != '\n')
+                  cin >> tcCode;
+                // clear error state
+                if (!cin)
+                  cin.clear();
+                // clear the input buffer
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+              } while (tcCode < 0);
+              cout << "----------------------------" << endl;
+              deleteTuitionCentre(tcHead, tcTail, lastTCCode, tcSize, tcCode);
+              break;
+            };
+
+            // display tuition centres
+          case 4:
+            cout << "Display Tuition Centres" << endl;
+            cout << "----------------------------" << endl;
+            displayTCList(tcHead, tcSize);
+            break;
+
+
+          default:
+            // do nothing
+            break;
+        };
+        break;
+
+        // manage subjects
+      case 9:
+        cout << "(1) Add Subject" << endl;
+        cout << "(2) Modify Subject" << endl;
+        cout << "(3) Delete Subject" << endl;
+        cout << "(4) Display Subjects" << endl;
+        cout << "(5) Exit" << endl;
+
+        // get user input
+        do {
+          cout << "Select function (1-5): ";
+          // ignore enter key
+          if (cin.peek() != '\n')
+            cin >> subinput;
+          // clear error state
+          if (!cin)
+            cin.clear();
+          // clear the input buffer
+          cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        } while (subinput < 1 || subinput > 5);
+        cout << endl;
+
+        // determine outcome
+        switch (subinput) {
+            // add subject
+          case 1:
+            {
+              cout << "Add Subject" << endl;
+              cout << "----------------------------" << endl;
+
+              // initialise
+              string subName = "";
+
+              do {
+                cout << "Subject Name: ";
+                getline(cin, subName);
+                trim(subName);
+              } while (subName == "");
+              addSubject(subHead, subTail, lastSubCode, subSize, subName);
+              break;
+            };
+
+
+            // modify subject
+          case 2:
+            {
+              // initialise
+              int subCode = 0;
+              // get user input
+              do {
+                cout << "Modify Subject (Code): " << endl;
+                // ignore enter key
+                if (cin.peek() != '\n')
+                  cin >> subCode;
+                // clear error state
+                if (!cin)
+                  cin.clear();
+                // clear the input buffer
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+              } while (subCode < 0);
+              cout << "----------------------------" << endl;
+              modifySubject(subHead, subTail, lastSubCode, subSize, subCode);
+              break;
+            };
+
+            // delete subject
+          case 3:
+            {
+              // initialise
+              int subCode = 0;
+              // get user input
+              do {
+                cout << "Delete Subject (Code): " << endl;
+                // ignore enter key
+                if (cin.peek() != '\n')
+                  cin >> subCode;
+                // clear error state
+                if (!cin)
+                  cin.clear();
+                // clear the input buffer
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+              } while (subCode < 0);
+              cout << "----------------------------" << endl;
+              deleteSubject(subHead, subTail, lastSubCode, subSize, subCode);
+              break;
+            };
+
+            // display subjects
+          case 4:
+            cout << "Display Subjects" << endl;
+            cout << "----------------------------" << endl;
+            displaySubList(subHead, subSize);
+            break;
+
+          default:
+            // do nothing
+            break;
+        };
+        break;
+
+        // exit program
+      case 10:
         // ask for confirmation
         do {
           cout << "Exit program? (Y/N): ";
@@ -674,60 +902,21 @@ int main() {
         };
         break;
     };
-  } while (input != 8);
+  } while (input != 10);
   return 0;
 };
 
-bool validateTuitionCentre(int tcCode, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize) {
-  // initialise
-  TuitionCentre *current = nullptr;
-  // guess which end is faster
-  if (tcCode < lastTCCode / 2) {
-    // linear search from beginning
-    current = tcHead;
-    for (int i = 0; i < tcSize - 1; i++, current = current->getNext())
-      if (current->getTuitionCentreCode() == tcCode)
-        return true;
-  } else {
-    // linear search from end
-    current = tcTail;
-    for (int i = tcSize; i > 0; i--, current = current->getPrevious())
-      if (current->getTuitionCentreCode() == tcCode)
-        return true;
-  };
-  return false;
-};
-bool validateSubject(int subCode, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
-  // initialise
-  Subject *current = nullptr;
-  // guess which end is faster
-  if (subCode < lastSubCode / 2) {
-    // linear search from beginning
-    current = subHead;
-    for (int i = 0; i < subSize - 1; i++, current = current->getNext())
-      if (current->getSubjectCode() == subCode)
-        return true;
-  } else {
-    // linear search from end
-    current = subTail;
-    for (int i = subSize; i > 0; i--, current = current->getPrevious())
-      if (current->getSubjectCode() == subCode)
-        return true;
-  };
-  return false;
-};
-
-void generateTutors(Tutor *&head, Tutor *&tail, int &lastID, int &size, TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int &tcSize, Subject *&subHead, Subject *&subTail, int &lastSubCode, int &subSize) {
+void generateData(Tutor *&head, Tutor *&tail, int &lastID, int &size, TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int &tcSize, Subject *&subHead, Subject *&subTail, int &lastSubCode, int &subSize) {
   // generate tuition centres
-  tcSize = lastTCCode = 6;
+  tcSize = lastTCCode = 10;
 
   string tcNames[]{"Bukit Bintang", "Sri Petaling", "Bukit Petaling", "Taman Laksamana", "Taman Durian", "Bukit Jalil", "Taman Mutiara", "Pandan Perdana", "Taman Midah", "Pandan Indah"};
 
   for (int i = 0; i < tcSize; i++)
     insertTCToEnd(tcHead, tcTail, i + 1, tcNames[i]);
-  
+
   // generate subjects
-  subSize = lastSubCode = 2;
+  subSize = lastSubCode = 10;
 
   string subNames[]{"Malay", "English", "Mathematics", "Additional Mathematics", "Biology", "Chemistry", "Physics", "Geography", "History", "Accounting", "Economics"};
 
@@ -748,6 +937,7 @@ void generateTutors(Tutor *&head, Tutor *&tail, int &lastID, int &size, TuitionC
   insertTutorToEnd(head, tail, 7, "Patricia", 2, 3, 2000, 0, 0, 0, 75, "0123456789", "Somewhere", 3, 2, 5);
   insertTutorToEnd(head, tail, 6, "Shelby", 2, 3, 2000, 0, 0, 0, 40, "0123456789", "Somewhere", 6, 2, 1);
 };
+// tutors
 void addTutor(Tutor *&head, Tutor *&tail, int &lastID, int &size, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, int tcCode, int subCode, int rating) {
   // initialise
   int tutorID = lastID + 1;
@@ -1104,30 +1294,28 @@ void displayRecordsList(Tutor *head, int size, int index, TuitionCentre *tcHead,
 
     // display page
     do {
-      if (input != 1) {
-        cout << "ID    Name                  Pay    Tuition Centre        Rating" << endl;
-        cout << "---------------------------------------------------------------" << endl;
-        for (i = 0; i < 10; i++) {
-          // print list of tutors
-          cout.width(4);
-          cout << right << current->getTutorID() << "  ";
-          cout.width(20);
-          cout << left << truncate(current->getName(), 20) << "  ";
-          cout.width(5);
-          cout << current->getHourlyPayRate() << "  ";
-          cout.width(20);
-          cout << truncate(current->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), 20) << "  ";
-          cout << current->getRating() << endl;
+      cout << "ID    Name                  Pay    Tuition Centre        Rating" << endl;
+      cout << "---------------------------------------------------------------" << endl;
+      for (i = 0; i < 10; i++) {
+        // print list of tutors
+        cout.width(4);
+        cout << right << current->getTutorID() << "  ";
+        cout.width(20);
+        cout << left << truncate(current->getName(), 20) << "  ";
+        cout.width(5);
+        cout << current->getHourlyPayRate() << "  ";
+        cout.width(20);
+        cout << truncate(current->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), 20) << "  ";
+        cout << current->getRating() << endl;
 
-          if (current->getNext())
-            current = current->getNext();
-          else
-            // break when last element
-            break;
-        };
-        // display page number
-        cout << endl << "Page " << page << endl << endl;
+        if (current->getNext())
+          current = current->getNext();
+        else
+          // break when last element
+          break;
       };
+      // display page number
+      cout << endl << "Page " << page << endl << endl;
 
       cout << "(1) Detailed view" << endl;
       cout << "(2) Jump to page";
@@ -1551,20 +1739,357 @@ void searchTuitionName(Tutor *head, int size, string tcName, TuitionCentre *tcHe
   };
 };
 
+// tuition centres
+bool validateTuitionCentre(int tcCode, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize) {
+  // initialise
+  TuitionCentre *current = nullptr;
+  // guess which end is faster
+  if (tcCode < lastTCCode / 2) {
+    // linear search from beginning
+    current = tcHead;
+    for (int i = 0; i < tcSize - 1; i++, current = current->getNext())
+      if (current->getTuitionCentreCode() == tcCode)
+        return true;
+  } else {
+    // linear search from end
+    current = tcTail;
+    for (int i = tcSize; i > 0; i--, current = current->getPrevious())
+      if (current->getTuitionCentreCode() == tcCode)
+        return true;
+  };
+  return false;
+};
+
+void addTuitionCentre(TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int &tcSize, string tcName) {
+  // initialise
+  int tcCode = lastTCCode + 1;
+
+  TuitionCentre *newTuition = new TuitionCentre(tcCode, tcName);
+
+  if (tcHead) {
+    // link new tuition to tail tuition
+    newTuition->setPrevious(tcTail);
+    // link tail tuition to new tuition
+    tcTail->setNext(newTuition);
+    // tail is new tuition
+    tcTail = newTuition;
+  } else {
+    // insert new tuition as there are no existing tuitions
+    tcHead = newTuition;
+    tcTail = newTuition;
+  };
+  // display success message
+  cout << "Added Successfully" << endl << endl;
+  // increase tuition size
+  tcSize++;
+  // increase last tuition code
+  lastTCCode++;
+};
+void modifyTuitionCentre(TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, int tcCode) {};
+void deleteTuitionCentre(TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int tcSize, int tcCode) {};
+
+void displayTC(TuitionCentre tuition) {
+  cout << "Tuition Centre Code: " << tuition.getTuitionCentreCode() << endl;
+  cout << "Tuition Centre Name: " << tuition.getTuitionCentreName() << endl;
+};
+void displayTCList(TuitionCentre *tcHead, int tcSize) {
+  if (tcSize > 0) {
+    // initialise
+    int page = 1, input = 0, i = 0;
+    TuitionCentre *current = tcHead;
+
+    // calculate total page numbers
+    int total = tcSize / 10;
+    if (tcSize % 10 > 0)
+      total++;
+
+    // display page
+    do {
+      cout << "Code    Tuition Centre Name             " << endl;
+      cout << "----------------------------------------" << endl;
+      for (int i = (page - 1) * 10; i < page * 10; i++) {
+        // print list of tuitions
+        cout.width(6);
+        cout << right << current->getTuitionCentreCode() << "  ";
+        cout.width(30);
+        cout << left << truncate(current->getTuitionCentreName(), 30) << endl;
+        
+        if (current->getNext())
+          current = current->getNext();
+        else
+          // break when last element
+          break;
+      };
+      // display page number
+      cout << endl << "Page " << page << endl << endl;
+
+      cout << "(1) Jump to page";
+      if (total == 1)
+        cout << " (disabled)";
+      cout << endl << "(2) Next page";
+      if (page >= total)
+        cout << " (disabled)";
+      cout << endl << "(3) Previous page";
+      if (page <= 1)
+        cout << " (disabled)";
+      cout << endl << "(4) Exit" << endl;
+      // get user input
+      do {
+        cout << "Please select (1-4): ";
+        // ignore enter key
+        if (cin.peek() != '\n')
+          cin >> input;
+        // clear error state
+        if (!cin)
+          cin.clear();
+        // clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      } while (input < 1 || input > 4 || (total == 1 && input == 1) || (page >= total && input == 2) || (page <= 1 && input == 3));
+
+      // determine outcome
+      switch (input) {
+        // jump to page
+        case 1:
+          {
+            int oldPage = page;
+
+            if (total > 1) {
+              do {
+                cout << "Page (1-" << total << "): ";
+                // ignore enter key
+                if (cin.peek() != '\n')
+                  cin >> page;
+                // clear error state
+                if (!cin)
+                  cin.clear();
+                // clear the input buffer
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+              } while (page < 1 || page > total);
+              if (oldPage >= page) {
+                // go to previous tuitions
+                for (int x = 0; x < 10 * (oldPage - page + 1) - (10 - i); x++)
+                  current = current->getPrevious();
+              } else {
+                // go to next tuitions
+                for (int x = 0; x < 10 * (page - oldPage - 1); x++)
+                  current = current->getNext();
+              };
+            };
+            break;
+          };
+
+          // next page
+        case 2:
+          if (page < total)
+            page++;
+          break;
+
+          // previous page
+        case 3:
+          if (page > 1)
+            page--;
+          // go to previous tuitions
+          for (int x = 0; x < 10 + i; x++)
+            current = current->getPrevious();
+          break;
+
+          // do nothing
+        default:
+          break;
+      };
+      cout << endl;
+    } while (input > 0 && input < 4);
+
+    current = nullptr;
+  } else {
+    // if no results
+    cout << "No results found" << endl << endl;
+  };
+};
+
+// subjects
+bool validateSubject(int subCode, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
+  // initialise
+  Subject *current = nullptr;
+  // guess which end is faster
+  if (subCode < lastSubCode / 2) {
+    // linear search from beginning
+    current = subHead;
+    for (int i = 0; i < subSize - 1; i++, current = current->getNext())
+      if (current->getSubjectCode() == subCode)
+        return true;
+  } else {
+    // linear search from end
+    current = subTail;
+    for (int i = subSize; i > 0; i--, current = current->getPrevious())
+      if (current->getSubjectCode() == subCode)
+        return true;
+  };
+  return false;
+};
+
+void addSubject(Subject *&subHead, Subject *&subTail, int &lastSubCode, int &subSize, string subName) {
+  // initialise
+  int subCode = lastSubCode + 1;
+
+  Subject *newSubject = new Subject(subCode, subName);
+
+  if (subHead) {
+    // link new subject to tail subject
+    newSubject->setPrevious(subTail);
+    // link tail subject to new subject
+    subTail->setNext(newSubject);
+    // tail is new subject
+    subTail = newSubject;
+  } else {
+    // insert new subject as there are no existing subjects
+    subHead = newSubject;
+    subTail = newSubject;
+  };
+  // display success message
+  cout << "Added Successfully" << endl << endl;
+  // increase subject size
+  subSize++;
+  // increase last subject code
+  lastSubCode++;
+};
+void modifySubject(Subject * subHead, Subject * subTail, int lastSubCode, int subSize, int subCode) {};
+void deleteSubject(Subject *&subHead, Subject *&subTail, int &lastSubCode, int subSize, int subCode) {};
+
+void displaySub(Subject subject) {
+  cout << "Subject Code: " << subject.getSubjectCode() << endl;
+  cout << "Subject Name: " << subject.getSubjectName() << endl;
+};
+void displaySubList(Subject *subHead, int subSize) {
+  if (subSize > 0) {
+    // initialise
+    int page = 1, input = 0, i = 0;
+    Subject *current = subHead;
+
+    // calculate total page numbers
+    int total = subSize / 10;
+    if (subSize % 10 > 0)
+      total++;
+
+    // display page
+    do {
+      cout << "Code    Subject Name                    " << endl;
+      cout << "----------------------------------------" << endl;
+      for (int i = (page - 1) * 10; i < page * 10; i++) {
+        // print list of subjects
+        cout.width(6);
+        cout << right << current->getSubjectCode() << "  ";
+        cout.width(30);
+        cout << left << truncate(current->getSubjectName(), 30) << endl;
+
+        if (current->getNext())
+          current = current->getNext();
+        else
+          // break when last element
+          break;
+      };
+      // display page number
+      cout << endl << "Page " << page << endl << endl;
+
+      cout << "(1) Jump to page";
+      if (total == 1)
+        cout << " (disabled)";
+      cout << endl << "(2) Next page";
+      if (page >= total)
+        cout << " (disabled)";
+      cout << endl << "(3) Previous page";
+      if (page <= 1)
+        cout << " (disabled)";
+      cout << endl << "(4) Exit" << endl;
+      // get user input
+      do {
+        cout << "Please select (1-4): ";
+        // ignore enter key
+        if (cin.peek() != '\n')
+          cin >> input;
+        // clear error state
+        if (!cin)
+          cin.clear();
+        // clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      } while (input < 1 || input > 4 || (total == 1 && input == 1) || (page >= total && input == 2) || (page <= 1 && input == 3));
+
+      // determine outcome
+      switch (input) {
+        // jump to page
+        case 1:
+          {
+            int oldPage = page;
+
+            if (total > 1) {
+              do {
+                cout << "Page (1-" << total << "): ";
+                // ignore enter key
+                if (cin.peek() != '\n')
+                  cin >> page;
+                // clear error state
+                if (!cin)
+                  cin.clear();
+                // clear the input buffer
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+              } while (page < 1 || page > total);
+              if (oldPage >= page) {
+                // go to previous subjects
+                for (int x = 0; x < 10 * (oldPage - page + 1) - (10 - i); x++)
+                  current = current->getPrevious();
+              } else {
+                // go to next subjects
+                for (int x = 0; x < 10 * (page - oldPage - 1); x++)
+                  current = current->getNext();
+              };
+            };
+            break;
+          };
+
+          // next page
+        case 2:
+          if (page < total)
+            page++;
+          break;
+
+          // previous page
+        case 3:
+          if (page > 1)
+            page--;
+          // go to previous subjects
+          for (int x = 0; x < 10 + i; x++)
+            current = current->getPrevious();
+          break;
+
+          // do nothing
+        default:
+          break;
+      };
+      cout << endl;
+    } while (input > 0 && input < 4);
+
+    current = nullptr;
+  } else {
+    // if no results
+    cout << "No results found" << endl << endl;
+  };
+};
+
+
 // insert
 void insertTCToEnd(TuitionCentre *&tcHead, TuitionCentre *&tcTail, int tcCode, string tcName) {
   // initialise
   TuitionCentre *newTuition = new TuitionCentre(tcCode, tcName);
 
   if (tcHead) {
-    // link new tutor to tail tutor
+    // link new tuition to tail tuition
     newTuition->setPrevious(tcTail);
-    // link tail tutor to new tutor
+    // link tail tuition to new tuition
     tcTail->setNext(newTuition);
-    // tail is new tutor
+    // tail is new tuition
     tcTail = newTuition;
   } else {
-    // insert new tutor as there are no existing tutors
+    // insert new tuition as there are no existing tuitions
     tcHead = newTuition;
     tcTail = newTuition;
   };
@@ -1574,14 +2099,14 @@ void insertSubToEnd(Subject *&subHead, Subject *&subTail, int subCode, string su
   Subject *newSubject = new Subject(subCode, subName);
 
   if (subHead) {
-    // link new tutor to tail tutor
+    // link new subject to tail subject
     newSubject->setPrevious(subTail);
-    // link tail tutor to new tutor
+    // link tail subject to new subject
     subTail->setNext(newSubject);
-    // tail is new tutor
+    // tail is new subject
     subTail = newSubject;
   } else {
-    // insert new tutor as there are no existing tutors
+    // insert new subject as there are no existing subjects
     subHead = newSubject;
     subTail = newSubject;
   };
