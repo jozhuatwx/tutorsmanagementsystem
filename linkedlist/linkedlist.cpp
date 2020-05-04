@@ -293,7 +293,7 @@ int main() {
   // menu
   do {
     cout << "-------------------------------------------" << endl;
-    cout << "Tutor Management System (Linked List 2.0.0)" << endl;
+    cout << "Tutor Management System (Linked List 2.0.1)" << endl;
     cout << "-------------------------------------------" << endl;
     cout << "(1) Add Tutor" << endl;
     cout << "(2) Modify Tutor" << endl;
@@ -711,9 +711,9 @@ void generateTutors(Tutor *&head, Tutor *&tail, int &lastID, int &size, TuitionC
     insertSubToEnd(subHead, subTail, i + 1, subNames[i]);
 
   // generate tutors
-  lastID = size = 0;
+  lastID = size = 10;
 
-  /*insertTutorToEnd(head, tail, 2, "Aaron", 2, 3, 2000, 0, 0, 0, 79, "0123456789", "Somewhere", 3, 1, 5);
+  insertTutorToEnd(head, tail, 2, "Aaron", 2, 3, 2000, 0, 0, 0, 79, "0123456789", "Somewhere", 3, 1, 5);
   insertTutorToEnd(head, tail, 1, "Bill", 2, 3, 2000, 0, 0, 0, 65.555, "0123456789", "Somewhere", 5, 1, 4);
   insertTutorToEnd(head, tail, 4, "Charlie", 2, 3, 2000, 0, 0, 0, 50.5, "0123456789", "Somewhere", 5, 2, 3);
   insertTutorToEnd(head, tail, 3, "Edwin", 2, 3, 2000, 0, 0, 0, 65.551, "0123456789", "Somewhere", 2, 1, 4);
@@ -722,7 +722,7 @@ void generateTutors(Tutor *&head, Tutor *&tail, int &lastID, int &size, TuitionC
   insertTutorToEnd(head, tail, 5, "Kenny", 2, 3, 2000, 0, 0, 0, 65.559, "0123456789", "Somewhere", 3, 1, 4);
   insertTutorToEnd(head, tail, 9, "Maria", 2, 3, 2000, 0, 0, 0, 55.05, "0123456789", "Somewhere", 1, 2, 3);
   insertTutorToEnd(head, tail, 7, "Patricia", 2, 3, 2000, 0, 0, 0, 75, "0123456789", "Somewhere", 3, 2, 5);
-  insertTutorToEnd(head, tail, 6, "Shelby", 2, 3, 2000, 0, 0, 0, 40, "0123456789", "Somewhere", 6, 2, 1);*/
+  insertTutorToEnd(head, tail, 6, "Shelby", 2, 3, 2000, 0, 0, 0, 40, "0123456789", "Somewhere", 6, 2, 1);
 };
 void addTutor(Tutor *&head, Tutor *&tail, int &lastID, int &size, string name, int day, int month, int year, double hourlyPayRate, string phone, string address, int tcCode, int subCode, int rating) {
   // initialise

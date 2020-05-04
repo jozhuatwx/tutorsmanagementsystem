@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1] - 4/5/2020
+### Changed
+- **AS:** [#27](../../issues/27) Update to binary search tuition centres and subjects
+
+### Fixed
+- Fixed [#28](../../issues/28) Hardcoded data is missing
+
 ## [2.0.0] - 30/4/2020
 ### Added
 - Validates tuition centre code and subject code
