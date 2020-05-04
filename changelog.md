@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2] - 4/5/2020
+### Changed
+- [#29](../../issues/29) Display limit of tuition centres and subjects when adding tutor
+
+### Fixed
+- [#30](../../issues/30) Prevent addition of tutors when there is no tuition centre or subject
+
 ## [2.0.1] - 4/5/2020
 ### Changed
 - **AS:** [#27](../../issues/27) Update to binary search tuition centres and subjects

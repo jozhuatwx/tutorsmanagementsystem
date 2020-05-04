@@ -1,7 +1,9 @@
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <time.h>
 #include "../datec.h"
+#include "../digitc.h"
 #include "../stringc.h"
 using namespace std;
 
@@ -293,7 +295,7 @@ int main() {
   // menu
   do {
     cout << "-------------------------------------------" << endl;
-    cout << "Tutor Management System (Linked List 2.0.1)" << endl;
+    cout << "Tutor Management System (Linked List 2.0.2)" << endl;
     cout << "-------------------------------------------" << endl;
     cout << "(1) Add Tutor" << endl;
     cout << "(2) Modify Tutor" << endl;
@@ -327,99 +329,121 @@ int main() {
           cout << "Add Tutor" << endl;
           cout << "---------------" << endl;
 
-          // initialise
-          string name = "", phone = "", address = "";
-          int day = 0, month = 0, year = 0, rating = 0, tcCode = 0, subCode = 0;
-          double hourlyPayRate = 0.0;
-          char sp = ' ';
+          if (tcSize > 0 && subSize > 0) {
+            // initialise
+            string name = "", phone = "", address = "";
+            int day = 0, month = 0, year = 0, rating = 0, tcCode = 0, subCode = 0;
+            double hourlyPayRate = 0.0;
+            char sp = ' ';
+            int tcDigits = countDigits(lastTCCode);
+            int subDigits = countDigits(lastSubCode);
 
-          // get tutor details
-          // name
-          do {
-            cout << "Name               : ";
-            getline(cin, name);
-            trim(name);
-          } while (name == "");
+            int width = 24 + max(tcDigits, subDigits - 7);
 
-          // date joined
-          do {
-            cout << "Date Joined (d/m/y): ";
-            // ignore enter key
-            if (cin.peek() != '\n')
-              cin >> day >> sp >> month >> sp >> year;
-            // clear error state
-            if (!cin)
-              cin.clear();
-            // clear the input buffer
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-          } while (!validateDate(day, month, year) || difftime(intToTime(day, month, year), time(0)) > 0);
+            // get tutor details
+            // name
+            do {
+              cout.width(width);
+              cout << left << "Name" << ": ";
+              getline(cin, name);
+              trim(name);
+            } while (name == "");
 
-          // hourly pay rate
-          do {
-            cout << "Hourly Pay (40-80) : ";
-            // ignore enter key
-            if (cin.peek() != '\n')
-              cin >> hourlyPayRate;
-            // clear error state
-            if (!cin)
-              cin.clear();
-            // clear the input buffer
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-          } while (hourlyPayRate < 40 || hourlyPayRate > 80);
+            // date joined
+            do {
+              cout.width(width);
+              cout << left << "Date Joined (d/m/y)" << ": ";
+              // ignore enter key
+              if (cin.peek() != '\n')
+                cin >> day >> sp >> month >> sp >> year;
+              // clear error state
+              if (!cin)
+                cin.clear();
+              // clear the input buffer
+              cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            } while (!validateDate(day, month, year) || difftime(intToTime(day, month, year), time(0)) > 0);
 
-          // phone
-          do {
-            cout << "Phone              : ";
-            getline(cin, phone);
-            trim(phone);
-          } while (phone == "");
+            // hourly pay rate
+            do {
+              cout.width(width);
+              cout << left << "Hourly Pay (40-80)" << ": ";
+              // ignore enter key
+              if (cin.peek() != '\n')
+                cin >> hourlyPayRate;
+              // clear error state
+              if (!cin)
+                cin.clear();
+              // clear the input buffer
+              cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            } while (hourlyPayRate < 40 || hourlyPayRate > 80);
 
-          // address
-          do {
-            cout << "Address            : ";
-            getline(cin, address);
-            trim(address);
-          } while (address == "");
+            // phone
+            do {
+              cout.width(width);
+              cout << left << "Phone" << ": ";
+              getline(cin, phone);
+              trim(phone);
+            } while (phone == "");
 
-          // tuition centre code
-          do {
-            cout << "Tuition Centre Code: ";
-            // ignore enter key
-            if (cin.peek() != '\n')
-              cin >> tcCode;
-            // clear error state
-            if (!cin)
-              cin.clear();
-            // clear the input buffer
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-          } while (tcCode < 0 || !validateTuitionCentre(tcCode, tcHead, tcTail, lastTCCode, tcSize));
+            // address
+            do {
+              cout.width(width);
+              cout << left << "Address" << ": ";
+              getline(cin, address);
+              trim(address);
+            } while (address == "");
 
-          // subject code
-          do {
-            cout << "Subject Code       : ";
-            // ignore enter key
-            if (cin.peek() != '\n')
-              cin >> subCode;
-            // clear error state
-            if (!cin)
-              cin.clear();
-            // clear the input buffer
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-          } while (subCode < 0 || !validateSubject(subCode, subHead, subTail, lastSubCode, subSize));
+            // tuition centre code
+            do {
+              cout << "Tuition Centre Code (1-" << lastTCCode << ")";
+              cout.width(width - (__int64) 24 - tcDigits + (__int64) 2);
+              cout << right << ": ";
+              // ignore enter key
+              if (cin.peek() != '\n')
+                cin >> tcCode;
+              // clear error state
+              if (!cin)
+                cin.clear();
+              // clear the input buffer
+              cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            } while (tcCode < 0 || !validateTuitionCentre(tcCode, tcHead, tcTail, lastTCCode, tcSize));
 
-          // rating
-          do {
-            cout << "Rating (1-5)       : ";
-            // ignore enter key
-            if (cin.peek() != '\n')
-              cin >> rating;
-            // clear error state
-            if (!cin)
-              cin.clear();
-            // clear the input buffer
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-          } while (rating < 1 || rating > 5);
-          addTutor(head, tail, lastID, size, name, day, month, year, hourlyPayRate, phone, address, tcCode, subCode, rating);
+            // subject code
+            do {
+              cout << "Subject Code (1-" << lastSubCode << ")";
+              cout.width(width - (__int64) 17 - subDigits + (__int64) 2);
+              cout << right << ": ";
+              // ignore enter key
+              if (cin.peek() != '\n')
+                cin >> subCode;
+              // clear error state
+              if (!cin)
+                cin.clear();
+              // clear the input buffer
+              cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            } while (subCode < 0 || !validateSubject(subCode, subHead, subTail, lastSubCode, subSize));
+
+            // rating
+            do {
+              cout.width(width);
+              cout << left << "Rating (1-5)" << ": ";
+              // ignore enter key
+              if (cin.peek() != '\n')
+                cin >> rating;
+              // clear error state
+              if (!cin)
+                cin.clear();
+              // clear the input buffer
+              cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            } while (rating < 1 || rating > 5);
+            addTutor(head, tail, lastID, size, name, day, month, year, hourlyPayRate, phone, address, tcCode, subCode, rating);
+          } else {
+            if (tcSize <= 0)
+              cout << "No tuition centres found" << endl;
+            if (subSize <= 0)
+              cout << "No subjects found" << endl;
+            cout << endl;
+          };
           break;
         };
 
@@ -697,7 +721,7 @@ void generateTutors(Tutor *&head, Tutor *&tail, int &lastID, int &size, TuitionC
   // generate tuition centres
   tcSize = lastTCCode = 6;
 
-  string tcNames[]{"Bukit Bintang", "Sri Petaling", "Bukit Petaling", "Taman Laksamana", "Taman Durian", "Bukit Jalil"};
+  string tcNames[]{"Bukit Bintang", "Sri Petaling", "Bukit Petaling", "Taman Laksamana", "Taman Durian", "Bukit Jalil", "Taman Mutiara", "Pandan Perdana", "Taman Midah", "Pandan Indah"};
 
   for (int i = 0; i < tcSize; i++)
     insertTCToEnd(tcHead, tcTail, i + 1, tcNames[i]);
@@ -705,7 +729,7 @@ void generateTutors(Tutor *&head, Tutor *&tail, int &lastID, int &size, TuitionC
   // generate subjects
   subSize = lastSubCode = 2;
 
-  string subNames[]{"Malay", "English"};
+  string subNames[]{"Malay", "English", "Mathematics", "Additional Mathematics", "Biology", "Chemistry", "Physics", "Geography", "History", "Accounting", "Economics"};
 
   for (int i = 0; i < subSize; i++)
     insertSubToEnd(subHead, subTail, i + 1, subNames[i]);

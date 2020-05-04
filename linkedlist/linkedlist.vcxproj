@@ -148,11 +148,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\datec.cpp" />
+    <ClCompile Include="..\digitc.cpp" />
     <ClCompile Include="..\stringc.cpp" />
     <ClCompile Include="linkedlist.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\datec.h" />
+    <ClInclude Include="..\digitc.h" />
     <ClInclude Include="..\stringc.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
