@@ -279,7 +279,7 @@ int main() {
   // menu
   do {
     cout << "---------------------------------------------------" << endl;
-    cout << "Tutor Management System (Array of Structures 2.2.1)" << endl;
+    cout << "Tutor Management System (Array of Structures 2.2.2)" << endl;
     cout << "---------------------------------------------------" << endl;
     cout << " (1) Add Tutor" << endl;
     cout << " (2) Modify Tutor" << endl;
@@ -1767,10 +1767,32 @@ void modifyTuitionCentre(TuitionCentre *&tuitions, int tcSize, int tcCode) {
       getline(cin, tcName);
       trim(tcName);
     } while (tcName == "");
-    tuitions[index].setTuitionCentreName(tcName);
 
-    // display success message
-    cout << "Modified Successfully" << endl << endl;
+    int temp = 0;
+    bool exist = false;
+
+    // linear search through the array
+    for (temp = 0; temp < tcSize; temp++)
+      // find tuitions with new tuition name
+      if (compareInsensitive(tuitions[temp].getTuitionCentreName(), tcName) == 0) {
+        // set as found
+        exist = true;
+        // stop iteration
+        break;
+      };
+
+    if (!exist || temp == index) {
+      tuitions[index].setTuitionCentreName(tcName);
+      // display success message
+      cout << "Modified Successfully" << endl << endl;
+    } else {
+      // display failed message
+      cout << "Modification Failed" << endl << endl;
+      // display record
+      displayTC(tuitions[temp]);
+      // display exist message
+      cout << "Tuition centre already exists" << endl << endl;
+    };
   } else {
     // if no results
     cout << "No results found" << endl << endl;
@@ -2051,7 +2073,7 @@ void addSubject(Subject *&subjects, int &lastSubCode, int &subSize, string subNa
 void modifySubject(Subject *&subjects, int subSize, int subCode) {
   // initialise
   int index = 0, input = 0;
-  string tcName = "";
+  string subName = "";
   bool found = false;
 
   // binary search through the array
@@ -2081,13 +2103,35 @@ void modifySubject(Subject *&subjects, int subSize, int subCode) {
 
     do {
       cout << "New Tuition Name: ";
-      getline(cin, tcName);
-      trim(tcName);
-    } while (tcName == "");
-    subjects[index].setSubjectName(tcName);
+      getline(cin, subName);
+      trim(subName);
+    } while (subName == "");
 
-    // display success message
-    cout << "Modified Successfully" << endl << endl;
+    int temp = 0;
+    bool exist = false;
+
+    // linear search through the array
+    for (temp = 0; temp < subSize; temp++)
+      // find subjects with new subject name
+      if (compareInsensitive(subjects[temp].getSubjectName(), subName) == 0) {
+        // set as found
+        exist = true;
+        // stop iteration
+        break;
+      };
+
+    if (!exist || temp == index) {
+      subjects[index].setSubjectName(subName);
+      // display success message
+      cout << "Modified Successfully" << endl << endl;
+    } else {
+      // display failed message
+      cout << "Modification Failed" << endl << endl;
+      // display record
+      displaySub(subjects[temp]);
+      // display exist message
+      cout << "Subject already exists" << endl << endl;
+    };
   } else {
     // if no results
     cout << "No results found" << endl << endl;

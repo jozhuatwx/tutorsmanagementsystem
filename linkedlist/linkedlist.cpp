@@ -319,7 +319,7 @@ int main() {
   // menu
   do {
     cout << "-------------------------------------------" << endl;
-    cout << "Tutor Management System (Linked List 2.2.1)" << endl;
+    cout << "Tutor Management System (Linked List 2.2.2)" << endl;
     cout << "-------------------------------------------" << endl;
     cout << " (1) Add Tutor" << endl;
     cout << " (2) Modify Tutor" << endl;
@@ -1828,10 +1828,29 @@ void modifyTuitionCentre(TuitionCentre *tcHead, TuitionCentre *tcTail, int lastT
       getline(cin, tcName);
       trim(tcName);
     } while (tcName == "");
-    current->setTuitionCentreName(tcName);
 
-    // display success message
-    cout << "Modified Successfully" << endl << endl;
+    TuitionCentre *temp = tcHead;
+
+    // linear search through the list
+    while (temp) {
+      if (compareInsensitive(temp->getTuitionCentreName(), tcName) == 0)
+        // stop iteration
+        break;
+      temp = temp->getNext();
+    };
+
+    if (!temp || temp->getTuitionCentreCode() == current->getTuitionCentreCode()) {
+      current->setTuitionCentreName(tcName);
+      // display success message
+      cout << "Modified Successfully" << endl << endl;
+    } else {
+      // display failed message
+      cout << "Modification Failed" << endl << endl;
+      // display record
+      displayTC(*temp);
+      // display exist message
+      cout << "Tuition centre already exists" << endl << endl;
+    };
   } else {
     // if no results
     cout << "No results found" << endl << endl;
@@ -2114,7 +2133,7 @@ void addSubject(Subject *&subHead, Subject *&subTail, int &lastSubCode, int &sub
 void modifySubject(Subject *subHead, Subject *subTail, int lastSubCode, int subSize, int subCode) {
   // initialise
   int input = 0;
-  string tcName = "";
+  string subName = "";
   Subject *current = nullptr;
 
   // guess which end is faster
@@ -2140,13 +2159,32 @@ void modifySubject(Subject *subHead, Subject *subTail, int lastSubCode, int subS
 
     do {
       cout << "New Subject Name: ";
-      getline(cin, tcName);
-      trim(tcName);
-    } while (tcName == "");
-    current->setSubjectName(tcName);
+      getline(cin, subName);
+      trim(subName);
+    } while (subName == "");
 
-    // display success message
-    cout << "Modified Successfully" << endl << endl;
+    Subject *temp = subHead;
+
+    // linear search through the list
+    while (temp) {
+      if (compareInsensitive(temp->getSubjectName(), subName) == 0)
+        // stop iteration
+        break;
+      temp = temp->getNext();
+    };
+
+    if (!temp || temp->getSubjectCode() == current->getSubjectCode()) {
+      current->setSubjectName(subName);
+      // display success message
+      cout << "Modified Successfully" << endl << endl;
+    } else {
+      // display failed message
+      cout << "Modification Failed" << endl << endl;
+      // display record
+      displaySub(*temp);
+      // display exist message
+      cout << "Subject already exists" << endl << endl;
+    };
   } else {
     // if no results
     cout << "No results found" << endl << endl;

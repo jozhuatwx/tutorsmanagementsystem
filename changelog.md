@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.2.2] - 5/5/2020
+### Fixed
+- [#39](../../issues/39) Prevent modification of tuitions and subjects to same names
+
 ## [2.2.1] - 5/5/2020
 ### Changed
 - Prevent tuition and subjects from being deleted if it is in use
@@ -8,7 +12,7 @@
 - Removed menu from suggesting the range for tuition code and subject code
 
 ### Fixed
-- [#38](../../issues/38) Prevent addition of tuition and subjects with the same name
+- [#38](../../issues/38) Prevent addition of tuitions and subjects with the same name
 - **LS:** [#36](../../issues/36) Jump list skips the first page under certain conditions
 - **LS:** [#37](../../issues/37) Deleting tuition centre or subject does not update the size
 
