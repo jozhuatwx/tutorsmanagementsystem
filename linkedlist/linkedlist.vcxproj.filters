@@ -24,14 +24,8 @@
     <ClCompile Include="..\stringc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\digitc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\datec.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\stringc.h">
       <Filter>Header Files</Filter>
     </ClInclude>

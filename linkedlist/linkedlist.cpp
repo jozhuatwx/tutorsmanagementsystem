@@ -3,7 +3,6 @@
 #include <string>
 #include <time.h>
 #include "../datec.h"
-#include "../digitc.h"
 #include "../stringc.h"
 using namespace std;
 
@@ -266,7 +265,7 @@ bool validateTuitionCentre(int tcCode, TuitionCentre *tcHead, TuitionCentre *tcT
 
 void addTuitionCentre(TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int &tcSize, string tcName);
 void modifyTuitionCentre(TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, int tcCode);
-void deleteTuitionCentre(Tutor *head, TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int tcSize, int tcCode);
+void deleteTuitionCentre(Tutor *head, TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int &tcSize, int tcCode);
 
 void displayTC(TuitionCentre tuition);
 void displayTCList(TuitionCentre *tcHead, int tcSize);
@@ -276,7 +275,7 @@ bool validateSubject(int subCode, Subject *subHead, Subject *subTail, int lastSu
 
 void addSubject(Subject *&subHead, Subject *&subTail, int &lastSubCode, int &subSize, string subName);
 void modifySubject(Subject *subHead, Subject *subTail, int lastSubCode, int subSize, int subCode);
-void deleteSubject(Tutor *head, Subject *&subHead, Subject *&subTail, int &lastSubCode, int subSize, int subCode);
+void deleteSubject(Tutor *head, Subject *&subHead, Subject *&subTail, int &lastSubCode, int &subSize, int subCode);
 
 void displaySub(Subject subject);
 void displaySubList(Subject *subHead, int subSize);
@@ -320,7 +319,7 @@ int main() {
   // menu
   do {
     cout << "-------------------------------------------" << endl;
-    cout << "Tutor Management System (Linked List 2.2.0)" << endl;
+    cout << "Tutor Management System (Linked List 2.2.1)" << endl;
     cout << "-------------------------------------------" << endl;
     cout << " (1) Add Tutor" << endl;
     cout << " (2) Modify Tutor" << endl;
@@ -362,10 +361,7 @@ int main() {
             int day = 0, month = 0, year = 0, rating = 0, tcCode = 0, subCode = 0;
             double hourlyPayRate = 0.0;
             char sp = ' ';
-            int tcDigits = countDigits(lastTCCode);
-            int subDigits = countDigits(lastSubCode);
-
-            int width = 24 + max(tcDigits, subDigits - 7);
+            int width = 19;
 
             // get tutor details
             // name
@@ -422,9 +418,8 @@ int main() {
 
             // tuition centre code
             do {
-              cout << "Tuition Centre Code (1-" << lastTCCode << ")";
-              cout.width(width - (__int64) 24 - tcDigits + (__int64) 2);
-              cout << right << ": ";
+              cout.width(width);
+              cout << left << "Tuition Centre Code" << ": ";
               // ignore enter key
               if (cin.peek() != '\n')
                 cin >> tcCode;
@@ -437,9 +432,8 @@ int main() {
 
             // subject code
             do {
-              cout << "Subject Code (1-" << lastSubCode << ")";
-              cout.width(width - (__int64) 17 - subDigits + (__int64) 2);
-              cout << right << ": ";
+              cout.width(width);
+              cout << left << "Subject Code" << ": ";
               // ignore enter key
               if (cin.peek() != '\n')
                 cin >> subCode;
@@ -1763,26 +1757,44 @@ void addTuitionCentre(TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastT
   // initialise
   int tcCode = lastTCCode + 1;
 
-  TuitionCentre *newTuition = new TuitionCentre(tcCode, tcName);
+  TuitionCentre *current = tcHead;
 
-  if (tcHead) {
-    // link new tuition to tail tuition
-    newTuition->setPrevious(tcTail);
-    // link tail tuition to new tuition
-    tcTail->setNext(newTuition);
-    // tail is new tuition
-    tcTail = newTuition;
-  } else {
-    // insert new tuition as there are no existing tuitions
-    tcHead = newTuition;
-    tcTail = newTuition;
+  // linear search through the list
+  while (current) {
+    if (compareInsensitive(current->getTuitionCentreName(), tcName) == 0)
+      // stop iteration
+      break;
+    current = current->getNext();
   };
-  // display success message
-  cout << "Added Successfully" << endl << endl;
-  // increase tuition size
-  tcSize++;
-  // increase last tuition code
-  lastTCCode++;
+
+  if (!current) {
+    TuitionCentre *newTuition = new TuitionCentre(tcCode, tcName);
+
+    if (tcHead) {
+      // link new tuition to tail tuition
+      newTuition->setPrevious(tcTail);
+      // link tail tuition to new tuition
+      tcTail->setNext(newTuition);
+      // tail is new tuition
+      tcTail = newTuition;
+    } else {
+      // insert new tuition as there are no existing tuitions
+      tcHead = newTuition;
+      tcTail = newTuition;
+    };
+    // display success message
+    cout << "Added Successfully" << endl << endl;
+    // increase tuition size
+    tcSize++;
+    // increase last tuition code
+    lastTCCode++;
+  } else {
+    cout << endl;
+    // display record
+    displayTC(*current);
+    // display exist message
+    cout << "Tuition centre already exists" << endl << endl;
+  };
 };
 void modifyTuitionCentre(TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, int tcCode) {
   // initialise
@@ -1826,7 +1838,7 @@ void modifyTuitionCentre(TuitionCentre *tcHead, TuitionCentre *tcTail, int lastT
   };
   current = nullptr;
 };
-void deleteTuitionCentre(Tutor *head, TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int tcSize, int tcCode) {
+void deleteTuitionCentre(Tutor *head, TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastTCCode, int &tcSize, int tcCode) {
   // initialise
   char cinput = ' ';
   TuitionCentre *current = tcHead;
@@ -1852,76 +1864,63 @@ void deleteTuitionCentre(Tutor *head, TuitionCentre *&tcHead, TuitionCentre *&tc
     // display record
     displayTC(*current);
 
-    // ask for confirmation
-    do {
-      cout << "Permanently delete tuition? (Y/N): ";
-      cin >> cinput;
-      // clear the input buffer
-      cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    } while (cinput != 'y' && cinput != 'Y' && cinput != 'n' && cinput != 'N');
+    Tutor *temp = head;
 
-    // determine outcome
-    switch (cinput) {
-      // delete tutor
-      case 'y':
-      case 'Y':
-        {
-          // initilise
-          Tutor *temp = head;
-
-          // check if record is in use
-          while (temp) {
-            if (temp->getTuitionCentreCode() == tcCode)
-              // stop iteration
-              break;
-            temp = temp->getNext();
-          };
-
-          if (temp) {
-            do {
-              cout << "Warning record is in use. Proceed? (Y/N): ";
-              cin >> cinput;
-              // clear the input buffer
-              cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            } while (cinput != 'y' && cinput != 'Y' && cinput != 'n' && cinput != 'N');
-          };
-
-          if (!temp || (temp && (cinput == 'y' || cinput == 'Y'))) {
-            temp = nullptr;
-
-            if (current->getNext())
-              // link next tuition to previous tuition
-              current->getNext()->setPrevious(current->getPrevious());
-            else
-              // tail is previous tuition
-              tcTail = current->getPrevious();
-
-            if (current->getPrevious())
-              // link previous tuition to next tuition
-              current->getPrevious()->setNext(current->getNext());
-            else
-              // head is next tuition
-              tcHead = current->getNext();
-
-            // deallocate memory
-            delete current;
-
-            // display success message
-            cout << "Deleted Successfully" << endl << endl;
-            // decrease tuition size
-            tcSize--;
-          } else {
-            // display cancelled message
-            cout << "Cancelled" << endl << endl;
-          };
-          break;
-        };
-        
-        // cancel delete
-      default:
-        // display cancelled message
-        cout << "Cancelled" << endl << endl;
+    // check if record is in use
+    while (temp) {
+      if (temp->getTuitionCentreCode() == tcCode)
+        // stop iteration
         break;
+      temp = temp->getNext();
+    };
+
+    if (!temp) {
+      // ask for confirmation
+      do {
+        cout << "Permanently delete tuition? (Y/N): ";
+        cin >> cinput;
+        // clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      } while (cinput != 'y' && cinput != 'Y' && cinput != 'n' && cinput != 'N');
+
+      // determine outcome
+      switch (cinput) {
+        // delete tutor
+        case 'y':
+        case 'Y':
+          if (current->getNext())
+            // link next tuition to previous tuition
+            current->getNext()->setPrevious(current->getPrevious());
+          else
+            // tail is previous tuition
+            tcTail = current->getPrevious();
+
+          if (current->getPrevious())
+            // link previous tuition to next tuition
+            current->getPrevious()->setNext(current->getNext());
+          else
+            // head is next tuition
+            tcHead = current->getNext();
+
+          // deallocate memory
+          delete current;
+
+          // display success message
+          cout << "Deleted Successfully" << endl << endl;
+          // decrease tuition size
+          tcSize--;
+          break;
+
+          // cancel delete
+        default:
+          // display cancelled message
+          cout << "Cancelled" << endl << endl;
+          break;
+      };
+    } else {
+      temp = nullptr;
+      // display in use message
+      cout << "Tuition centre has tutor(s), please delete tutor(s) first" << endl << endl;
     };
   } else {
     // if no results
@@ -1948,7 +1947,7 @@ void displayTCList(TuitionCentre *tcHead, int tcSize) {
     do {
       cout << "Code    Tuition Centre Name             " << endl;
       cout << "----------------------------------------" << endl;
-      for (int i = (page - 1) * 10; i < page * 10; i++) {
+      for (i = 0; i < 10; i++) {
         // print list of tuitions
         cout.width(6);
         cout << right << current->getTuitionCentreCode() << "  ";
@@ -2073,26 +2072,44 @@ void addSubject(Subject *&subHead, Subject *&subTail, int &lastSubCode, int &sub
   // initialise
   int subCode = lastSubCode + 1;
 
-  Subject *newSubject = new Subject(subCode, subName);
+  Subject *current = subHead;
 
-  if (subHead) {
-    // link new subject to tail subject
-    newSubject->setPrevious(subTail);
-    // link tail subject to new subject
-    subTail->setNext(newSubject);
-    // tail is new subject
-    subTail = newSubject;
-  } else {
-    // insert new subject as there are no existing subjects
-    subHead = newSubject;
-    subTail = newSubject;
+  // linear search through the list
+  while (current) {
+    if (compareInsensitive(current->getSubjectName(), subName) == 0)
+      // stop iteration
+      break;
+    current = current->getNext();
   };
-  // display success message
-  cout << "Added Successfully" << endl << endl;
-  // increase subject size
-  subSize++;
-  // increase last subject code
-  lastSubCode++;
+
+  if (!current) {
+    Subject *newSubject = new Subject(subCode, subName);
+    
+    if (subHead) {
+      // link new subject to tail subject
+      newSubject->setPrevious(subTail);
+      // link tail subject to new subject
+      subTail->setNext(newSubject);
+      // tail is new subject
+      subTail = newSubject;
+    } else {
+      // insert new subject as there are no existing subjects
+      subHead = newSubject;
+      subTail = newSubject;
+    };
+    // display success message
+    cout << "Added Successfully" << endl << endl;
+    // increase subject size
+    subSize++;
+    // increase last subject code
+    lastSubCode++;
+  } else {
+    cout << endl;
+    // display record
+    displaySub(*current);
+    // display exist message
+    cout << "Subject already exists" << endl << endl;
+  };
 };
 void modifySubject(Subject *subHead, Subject *subTail, int lastSubCode, int subSize, int subCode) {
   // initialise
@@ -2136,7 +2153,7 @@ void modifySubject(Subject *subHead, Subject *subTail, int lastSubCode, int subS
   };
   current = nullptr;
 };
-void deleteSubject(Tutor *head, Subject *&subHead, Subject *&subTail, int &lastSubCode, int subSize, int subCode) {
+void deleteSubject(Tutor *head, Subject *&subHead, Subject *&subTail, int &lastSubCode, int &subSize, int subCode) {
   // initialise
   char cinput = ' ';
   Subject *current = subHead;
@@ -2162,76 +2179,63 @@ void deleteSubject(Tutor *head, Subject *&subHead, Subject *&subTail, int &lastS
     // display record
     displaySub(*current);
 
-    // ask for confirmation
-    do {
-      cout << "Permanently delete subject? (Y/N): ";
-      cin >> cinput;
-      // clear the input buffer
-      cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    } while (cinput != 'y' && cinput != 'Y' && cinput != 'n' && cinput != 'N');
+    Tutor *temp = head;
 
-    // determine outcome
-    switch (cinput) {
-      // delete tutor
-      case 'y':
-      case 'Y':
-        {
-          // initilise
-          Tutor *temp = head;
-
-          // check if record is in use
-          while (temp) {
-            if (temp->getSubjectCode() == subCode)
-              // stop iteration
-              break;
-            temp = temp->getNext();
-          };
-
-          if (temp) {
-            do {
-              cout << "Warning record is in use. Proceed? (Y/N): ";
-              cin >> cinput;
-              // clear the input buffer
-              cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            } while (cinput != 'y' && cinput != 'Y' && cinput != 'n' && cinput != 'N');
-          };
-
-          if (!temp || (temp && (cinput == 'y' || cinput == 'Y'))) {
-            temp = nullptr;
-
-            if (current->getNext())
-              // link next subject to previous subject
-              current->getNext()->setPrevious(current->getPrevious());
-            else
-              // tail is previous subject
-              subTail = current->getPrevious();
-
-            if (current->getPrevious())
-              // link previous subject to next subject
-              current->getPrevious()->setNext(current->getNext());
-            else
-              // head is next subject
-              subHead = current->getNext();
-
-            // deallocate memory
-            delete current;
-
-            // display success message
-            cout << "Deleted Successfully" << endl << endl;
-            // decrease subject size
-            subSize--;
-          } else {
-            // display cancelled message
-            cout << "Cancelled" << endl << endl;
-          };
-          break;
-        };
-
-        // cancel delete
-      default:
-        // display cancelled message
-        cout << "Cancelled" << endl << endl;
+    // check if record is in use
+    while (temp) {
+      if (temp->getSubjectCode() == subCode)
+        // stop iteration
         break;
+      temp = temp->getNext();
+    };
+
+    if (!temp) {
+      // ask for confirmation
+      do {
+        cout << "Permanently delete subject? (Y/N): ";
+        cin >> cinput;
+        // clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      } while (cinput != 'y' && cinput != 'Y' && cinput != 'n' && cinput != 'N');
+
+      // determine outcome
+      switch (cinput) {
+        // delete tutor
+        case 'y':
+        case 'Y':
+          if (current->getNext())
+            // link next subject to previous subject
+            current->getNext()->setPrevious(current->getPrevious());
+          else
+            // tail is previous subject
+            subTail = current->getPrevious();
+
+          if (current->getPrevious())
+            // link previous subject to next subject
+            current->getPrevious()->setNext(current->getNext());
+          else
+            // head is next subject
+            subHead = current->getNext();
+
+          // deallocate memory
+          delete current;
+
+          // display success message
+          cout << "Deleted Successfully" << endl << endl;
+          // decrease subject size
+          subSize--;
+          break;
+
+          // cancel delete
+        default:
+          // display cancelled message
+          cout << "Cancelled" << endl << endl;
+          break;
+      };
+    } else {
+      temp = nullptr;
+      // display in use message
+      cout << "Subject has tutor(s), please delete tutor(s) first" << endl << endl;
     };
   } else {
     // if no results
@@ -2258,7 +2262,7 @@ void displaySubList(Subject *subHead, int subSize) {
     do {
       cout << "Code    Subject Name                    " << endl;
       cout << "----------------------------------------" << endl;
-      for (int i = (page - 1) * 10; i < page * 10; i++) {
+      for (i = 0; i < 10; i++) {
         // print list of subjects
         cout.width(6);
         cout << right << current->getSubjectCode() << "  ";
