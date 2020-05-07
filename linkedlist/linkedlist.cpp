@@ -319,7 +319,7 @@ int main() {
   // menu
   do {
     cout << "-------------------------------------------" << endl;
-    cout << "Tutor Management System (Linked List 2.2.2)" << endl;
+    cout << "Tutor Management System (Linked List 2.2.3)" << endl;
     cout << "-------------------------------------------" << endl;
     cout << " (1) Add Tutor" << endl;
     cout << " (2) Modify Tutor" << endl;
@@ -335,7 +335,6 @@ int main() {
     // get user input
     do {
       cout << "Select function (1-10): ";
-      cin >> input;
       // ignore enter key
       if (cin.peek() != '\n')
         cin >> input;
@@ -484,7 +483,7 @@ int main() {
               cin.clear();
             // clear the input buffer
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-          } while (tutorID < 0);
+          } while (tutorID <= 0);
           cout << "---------------" << endl;
           modifyTutor(head, tutorID, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
           break;
@@ -506,7 +505,7 @@ int main() {
               cin.clear();
             // clear the input buffer
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-          } while (tutorID < 0);
+          } while (tutorID <= 0);
           cout << "---------------" << endl;
           terminateTutor(head, tutorID, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
           break;
@@ -528,7 +527,7 @@ int main() {
               cin.clear();
             // clear the input buffer
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-          } while (tutorID < 0);
+          } while (tutorID <= 0);
           cout << "---------------" << endl;
           deleteTutor(head, tail, size, tutorID, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
           break;
@@ -621,7 +620,7 @@ int main() {
                   cin.clear();
                 // clear the input buffer
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
-              } while (tutorID < 0);
+              } while (tutorID <= 0);
               cout << "-------------------------------------" << endl;
               searchTutorID(head, tutorID, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
               break;
@@ -755,15 +754,10 @@ int main() {
             };
 
             // display tuition centres
-          case 4:
+          default:
             cout << "Display Tuition Centres" << endl;
             cout << "----------------------------" << endl;
             displayTCList(tcHead, tcSize);
-            break;
-
-
-          default:
-            // do nothing
             break;
         };
         break;
@@ -856,14 +850,10 @@ int main() {
             };
 
             // display subjects
-          case 4:
+          default:
             cout << "Display Subjects" << endl;
             cout << "----------------------------" << endl;
             displaySubList(subHead, subSize);
-            break;
-
-          default:
-            // do nothing
             break;
         };
         break;
@@ -1176,7 +1166,7 @@ void deleteTutor(Tutor *&head, Tutor *&tail, int &size, int tutorID, TuitionCent
       localtime_s(&tmTerminated, &dateTerminated);
 
       // add 6 months to terminated date
-      if (tmTerminated.tm_mon > 6) {
+      if (tmTerminated.tm_mon >= 6) {
         tmTerminated.tm_mon -= 6;
         tmTerminated.tm_year += 1;
       } else {
@@ -1420,7 +1410,7 @@ void displayRecordsDetailed(Tutor *head, int size, TuitionCentre *tcHead, Tuitio
               cin.clear();
             // clear the input buffer
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-          } while (tutorID < 0);
+          } while (tutorID <= 0);
 
           // linear search through the array
           current = head;

@@ -77,7 +77,6 @@ class Tutor {
   string address;
   int tuitionCentreCode;
   int subjectCode;
-  string subjectName;
   int rating;
 
   public:
@@ -92,20 +91,7 @@ class Tutor {
     this->address = "";
     this->tuitionCentreCode = -1;
     this->subjectCode = -1;
-    this->subjectName = "";
     this->rating = -1;
-  };
-  Tutor(int tutorID, string name, time_t dateJoined, time_t dateTerminated, double hourlyPayRate, string phone, string address, int tuitionCentreCode, int subjectCode, int rating) {
-    this->tutorID = tutorID;
-    this->name = name;
-    this->dateJoined = dateJoined;
-    this->dateTerminated = dateTerminated;
-    this->hourlyPayRate = hourlyPayRate;
-    this->phone = phone;
-    this->address = address;
-    this->tuitionCentreCode = tuitionCentreCode;
-    this->subjectCode = subjectCode;
-    this->rating = rating;
   };
   Tutor(int tutorID, string name, int dayJoined, int monthJoined, int yearJoined, int dayTerminated, int monthTerminated, int yearTerminated, double hourlyPayRate, string phone, string address, int tuitionCentreCode, int subjectCode, int rating) {
     this->tutorID = tutorID;
@@ -156,7 +142,7 @@ class Tutor {
   };
   string getTuitionCentreName(TuitionCentre *tuitions, int tcSize) {
     // initialise
-    int low = 0, mid = 0, up = tcSize - 1, comp = 0;
+    int low = 0, mid = 0, up = tcSize - 1;
     // binary search through the array
     while (up >= low) {
       // get mid point
@@ -181,7 +167,7 @@ class Tutor {
   };
   string getSubjectName(Subject *subjects, int subSize) {
     // initialise
-    int low = 0, mid = 0, up = subSize - 1, comp = 0;
+    int low = 0, mid = 0, up = subSize - 1;
     // binary search through the array
     while (up >= low) {
       // get mid point
@@ -279,7 +265,7 @@ int main() {
   // menu
   do {
     cout << "---------------------------------------------------" << endl;
-    cout << "Tutor Management System (Array of Structures 2.2.2)" << endl;
+    cout << "Tutor Management System (Array of Structures 2.2.3)" << endl;
     cout << "---------------------------------------------------" << endl;
     cout << " (1) Add Tutor" << endl;
     cout << " (2) Modify Tutor" << endl;
@@ -295,7 +281,6 @@ int main() {
     // get user input
     do {
       cout << "Select function (1-10): ";
-      cin >> input;
       // ignore enter key
       if (cin.peek() != '\n')
         cin >> input;
@@ -444,7 +429,7 @@ int main() {
               cin.clear();
             // clear the input buffer
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-          } while (tutorID < 0);
+          } while (tutorID <= 0);
           cout << "---------------" << endl;
           modifyTutor(tutors, size, tutorID, tuitions, tcSize, subjects, subSize);
           break;
@@ -466,7 +451,7 @@ int main() {
               cin.clear();
             // clear the input buffer
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-          } while (tutorID < 0);
+          } while (tutorID <= 0);
           cout << "---------------" << endl;
           terminateTutor(tutors, size, tutorID, tuitions, tcSize, subjects, subSize);
           break;
@@ -488,7 +473,7 @@ int main() {
               cin.clear();
             // clear the input buffer
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-          } while (tutorID < 0);
+          } while (tutorID <= 0);
           cout << "---------------" << endl;
           deleteTutor(tutors, size, tutorID, tuitions, tcSize, subjects, subSize);
           break;
@@ -581,7 +566,7 @@ int main() {
                   cin.clear();
                 // clear the input buffer
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
-              } while (tutorID < 0);
+              } while (tutorID <= 0);
               cout << "-------------------------------------" << endl;
               searchTutorID(tutors, size, tutorID, tuitions, tcSize, subjects, subSize);
               break;
@@ -715,14 +700,10 @@ int main() {
             };
 
             // display tuition centres
-          case 4:
+          default:
             cout << "Display Tuition Centres" << endl;
             cout << "----------------------------" << endl;
             displayTCList(tuitions, tcSize);
-            break;
-
-          default:
-            // do nothing
             break;
         };
         break;
@@ -815,14 +796,10 @@ int main() {
             };
 
             // display subjects
-          case 4:
+          default:
             cout << "Display Subjects" << endl;
             cout << "----------------------------" << endl;
             displaySubList(subjects, subSize);
-            break;
-
-          default:
-            // do nothing
             break;
         };
         break;
@@ -1111,7 +1088,7 @@ void deleteTutor(Tutor *&tutors, int &size, int tutorID, TuitionCentre *tuitions
       localtime_s(&tmTerminated, &dateTerminated);
 
       // add 6 months to terminated date
-      if (tmTerminated.tm_mon > 6) {
+      if (tmTerminated.tm_mon >= 6) {
         tmTerminated.tm_mon -= 6;
         tmTerminated.tm_year += 1;
       } else {
@@ -1138,7 +1115,7 @@ void deleteTutor(Tutor *&tutors, int &size, int tutorID, TuitionCentre *tuitions
               bool deleted = false;
 
               // allocate memory
-              Tutor *tempTutors = new Tutor[size + 1];
+              Tutor *tempTutors = new Tutor[size - 1];
 
               // copy to temporary tutor array
               for (int x = 0; x < size - 1; x++) {
@@ -1339,7 +1316,7 @@ void displayRecordsDetailed(Tutor *tutors, int size, TuitionCentre *tuitions, in
               cin.clear();
             // clear the input buffer
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-          } while (tutorID < 0);
+          } while (tutorID <= 0);
 
           // linear search through the array
           for (index = 0; index < size; index++)
@@ -1480,7 +1457,7 @@ void sortRating(Tutor *tutors, int size, TuitionCentre *tuitions, int tcSize, Su
 void sortPayRate(Tutor *tutors, int size, TuitionCentre *tuitions, int tcSize, Subject *subjects, int subSize) {
   if (size > 0) {
     // initialise
-    Tutor *tempTutors = nullptr, *output = nullptr;
+    Tutor *tempTutors = nullptr;
     int count[10]{0};
 
     // lsd radix sort
@@ -1500,36 +1477,14 @@ void sortPayRate(Tutor *tutors, int size, TuitionCentre *tuitions, int tcSize, S
     };
 
     // sort the temporary tutor array by hourly pay rate
-    for (double place = 0.01; place <= 1; place *= 10)
+    for (double place = 0.01; place <= 10; place *= 10)
       countingSortPayRate(tempTutors, size, place);
 
-    // allocate memory
-    output = new Tutor[size];
-    for (int i = 0; i < 10; i++)
-      count[i] = 0;
-
-    // count of each digit
-    for (int i = 0; i < size; i++)
-      count[((int) (tempTutors[i].getHourlyPayRate() / 10)) % 10]++;
-
-    // calculate cumulative sum
-    for (int i = 1; i < 10; i++)
-      count[i] += count[i - 1];
-
-    // arrange elements into the correct positions
-    for (int i = size - 1; i >= 0; i--) {
-      output[count[((int) (tempTutors[i].getHourlyPayRate() / 10)) % 10] - 1] = tempTutors[i];
-      count[((int) (tempTutors[i].getHourlyPayRate() / 10)) % 10]--;
-    };
+    // display sorted array
+    displayRecordsList(tempTutors, size, 0, tuitions, tcSize, subjects, subSize);
 
     // deallocate memory
     delete[] tempTutors;
-
-    // display sorted array
-    displayRecordsList(output, size, 0, tuitions, tcSize, subjects, subSize);
-
-    // deallocate memory
-    delete[] output;
   } else {
     // if no results
     cout << "No results found" << endl << endl;
@@ -1662,17 +1617,23 @@ void searchTuitionName(Tutor *tutors, int size, string tcName, TuitionCentre *tu
 
 // tuition centres
 bool validateTuitionCentre(int tcCode, TuitionCentre *tuitions, int lastTCCode, int tcSize) {
-  // guess which end is faster
-  if (tcCode < lastTCCode / 2) {
-    // linear search from beginning
-    for (int i = 0; i < tcSize - 1; i++)
-      if (tuitions[i].getTuitionCentreCode() == tcCode)
-        return true;
-  } else {
-    // linear search from end
-    for (int i = tcSize - 1; i >= 0; i--)
-      if (tuitions[i].getTuitionCentreCode() == tcCode)
-        return true;
+  // binary search
+  int low = 0, mid, up = tcSize - 1, comp = 0;
+  while (up >= low) {
+    // get mid point
+     mid = (up - low) / 2 + low;
+    // compare
+    int comp = tuitions[mid].getTuitionCentreCode();
+    if (comp == tcCode) {
+      // found searched code
+      return true;
+    } else if (comp < tcCode) {
+      // if existing code is before searched code
+      low = mid + 1;
+    } else if (comp > tcCode) {
+      // if existing code is after searched code
+      up = mid - 1;
+    };
   };
   return false;
 };
@@ -1859,7 +1820,7 @@ void deleteTuitionCentre(Tutor *tutors, int size, TuitionCentre *&tuitions, int 
             bool deleted = false;
 
             // allocate memory
-            TuitionCentre *tempTuitions = new TuitionCentre[tcSize + 1];
+            TuitionCentre *tempTuitions = new TuitionCentre[tcSize - 1];
 
             // copy to temporary tuition array
             for (int x = 0; x < tcSize - 1; x++) {
@@ -2002,16 +1963,24 @@ void displayTCList(TuitionCentre *tuitions, int tcSize) {
 
 // subjects
 bool validateSubject(int subCode, Subject *subjects, int lastSubCode, int subSize) {
-  if (subCode < lastSubCode / 2) {
-    // linear search from beginning
-    for (int i = 0; i < subSize - 1; i++)
-      if (subjects[i].getSubjectCode() == subCode)
-        return true;
-  } else {
-    // linear search from end
-    for (int i = subSize - 1; i >= 0; i--)
-      if (subjects[i].getSubjectCode() == subCode)
-        return true;
+  // initialise
+  int low = 0, mid = 0, up = subSize - 1;
+  // binary search through the array
+  while (up >= low) {
+    // get mid point
+    mid = (up - low) / 2 + low;
+    // compare
+    int comp = subjects[mid].getSubjectCode();
+    if (comp == subCode) {
+      // found searched code
+      return true;
+    } else if (comp < subCode) {
+      // if existing code is before searched code
+      low = mid + 1;
+    } else if (comp > subCode) {
+      // if existing code is after searched code
+      up = mid - 1;
+    };
   };
   return false;
 };
@@ -2198,7 +2167,7 @@ void deleteSubject(Tutor *tutors, int size, Subject *&subjects, int &subSize, in
             bool deleted = false;
 
             // allocate memory
-            Subject *tempSubjects = new Subject[subSize + 1];
+            Subject *tempSubjects = new Subject[subSize - 1];
 
             // copy to temporary subject array
             for (int x = 0; x < subSize - 1; x++) {
