@@ -175,22 +175,21 @@ class Tutor {
     TuitionCentre *current = nullptr;
     // guess which end is faster
     if (tuitionCentreCode < lastTCCode / 2) {
-      // linear search from beginning
       current = tcHead;
+      // linear search from beginning to find tuition
       for (int i = 0; i < tcSize - 1 && current; i++, current = current->getNext())
+        // find tuition with tuition code
         if (current->getTuitionCentreCode() == tuitionCentreCode)
-          break;
+          return current->getTuitionCentreName();
     } else {
-      // linear search from end
       current = tcTail;
+      // linear search from end to find tuition
       for (int i = tcSize - 1; i >= 0 && current; i--, current = current->getPrevious())
+        // find tuition with tuition code
         if (current->getTuitionCentreCode() == tuitionCentreCode)
-          break;
+          return current->getTuitionCentreName();
     };
-    if (current)
-      return current->getTuitionCentreName();
-    else
-      return "Record missing";
+    return "Record missing";
   };
   int getSubjectCode() {
     return subjectCode;
@@ -200,22 +199,21 @@ class Tutor {
     Subject *current = nullptr;
     // guess which end is faster
     if (subjectCode < lastSubCode / 2) {
-      // linear search from beginning
       current = subHead;
+      // linear search from beginning to find subject
       for (int i = 0; i < subSize - 1 && current; i++, current = current->getNext())
+        // find subject with subject code
         if (current->getSubjectCode() == subjectCode)
-          break;
+          return current->getSubjectName();
     } else {
-      // linear search from end
       current = subTail;
+      // linear search from end to find subject
       for (int i = subSize - 1; i >= 0 && current; i--, current = current->getPrevious())
+        // find subject with subject code
         if (current->getSubjectCode() == subjectCode)
-          break;
+          return current->getSubjectName();
     };
-    if (current)
-      return current->getSubjectName();
-    else
-      return "Record missing";
+    return "Record missing";
   };
   int getRating() {
     return rating;
@@ -285,19 +283,19 @@ void displaySubList(Subject *subHead, int subSize);
 void deleteList(Tutor *head);
 
 // mergesort
-void split(Tutor *head, Tutor *&list1, Tutor *&list2);
+void split(Tutor *head, Tutor *&listHead1, Tutor *&listHead2);
 
 void mergesortID(Tutor *&head);
-Tutor *mergeID(Tutor *list1, Tutor *list2);
+Tutor *mergeID(Tutor *listHead1, Tutor *listHead2);
 
 void mergesortRating(Tutor *&head);
-Tutor *mergeRating(Tutor *list1, Tutor *list2);
+Tutor *mergeRating(Tutor *listHead1, Tutor *listHead2);
 
 void mergesortPayRate(Tutor *&head);
-Tutor *mergePayRate(Tutor *list1, Tutor *list2);
+Tutor *mergePayRate(Tutor *listHead1, Tutor *listHead2);
 
 void mergesortTCName(Tutor *&head, string tcName, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize);
-Tutor *mergeTCName(Tutor *list1, Tutor *list2, string tcName, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize);
+Tutor *mergeTCName(Tutor *listHead1, Tutor *listHead2, string tcName, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize);
 
 
 int main() {
@@ -319,7 +317,7 @@ int main() {
   // menu
   do {
     cout << "-------------------------------------------" << endl;
-    cout << "Tutor Management System (Linked List 2.2.3)" << endl;
+    cout << "Tutor Management System (Linked List 2.2.4)" << endl;
     cout << "-------------------------------------------" << endl;
     cout << " (1) Add Tutor" << endl;
     cout << " (2) Modify Tutor" << endl;
@@ -699,6 +697,7 @@ int main() {
               // initialise
               string tcName = "";
 
+              // get user input
               do {
                 cout << "Tuition Centre Name: ";
                 getline(cin, tcName);
@@ -707,7 +706,6 @@ int main() {
               addTuitionCentre(tcHead, tcTail, lastTCCode, tcSize, tcName);
               break;
             };
-
 
             // modify tuition centre
           case 2:
@@ -795,6 +793,7 @@ int main() {
               // initialise
               string subName = "";
 
+              // get user input
               do {
                 cout << "Subject Name: ";
                 getline(cin, subName);
@@ -803,7 +802,6 @@ int main() {
               addSubject(subHead, subTail, lastSubCode, subSize, subName);
               break;
             };
-
 
             // modify subject
           case 2:
@@ -928,7 +926,7 @@ void addTutor(Tutor *&head, Tutor *&tail, int &lastID, int &size, string name, i
 
   Tutor *newTutor = new Tutor(tutorID, name, day, month, year, 0, 0, 0, hourlyPayRate, phone, address, tcCode, subCode, rating);
 
-  // insertion sort
+  // insertion sort to insert new tutor
   if (head) {
     if (compareInsensitive(name, head->getName()) < 0) {
       // new tutor is before existing tutors
@@ -942,13 +940,13 @@ void addTutor(Tutor *&head, Tutor *&tail, int &lastID, int &size, string name, i
       // initialise
       Tutor *current = head;
 
-      while (current->getNext()) {
+      // linear search to identify the insertion point of the new tutor 
+      for (; current->getNext(); current = current->getNext())
         if (compareInsensitive(name, current->getNext()->getName()) < 0)
           // new tutor is before next existing tutor, stop iteration
           break;
-        current = current->getNext();
-      };
 
+      // check if current is not last tutor
       if (current->getNext()) {
         // link new tutor to next tutor
         newTutor->setNext(current->getNext());
@@ -982,22 +980,17 @@ void modifyTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCentre 
   // initialise
   int input = 0;
   string phone = "", address = "";
-  bool found = false;
   Tutor *current = head;
 
-  // linear search through the list
-  while (current) {
+  // linear search through the list to find the tutor to modify
+  for (; current; current = current->getNext())
     // find tutor with searched id
-    if (current->getTutorID() == tutorID) {
-      // set as found
-      found = true;
+    if (current->getTutorID() == tutorID)
       // stop iteration
       break;
-    };
-    current = current->getNext();
-  };
 
-  if (found) {
+  // check if the tutor is found
+  if (current) {
     // display record
     displayRecord(*current, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
 
@@ -1020,6 +1013,7 @@ void modifyTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCentre 
 
     // modify phone
     if (input == 1 || input == 3) {
+      // get user input
       do {
         cout << "New Phone: ";
         getline(cin, phone);
@@ -1030,6 +1024,7 @@ void modifyTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCentre 
 
     // modify address
     if (input == 2 || input == 3) {
+      // get user input
       do {
         cout << "New Address: ";
         getline(cin, address);
@@ -1051,27 +1046,23 @@ void terminateTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCent
   int day = 0, month = 0, year = 0;
   time_t dateTerminated = time(0);
   char sp = ' ', cinput = ' ';
-  bool found = false;
   Tutor *current = head;
 
-  // linear search through the list
-  while (current) {
+  // linear search through the list to find the tutor to terminate
+  for (; current; current = current->getNext())
     // find tutor with searched id
-    if (current->getTutorID() == tutorID) {
-      // set as found
-      found = true;
+    if (current->getTutorID() == tutorID)
       // stop iteration
       break;
-    };
-    current = current->getNext();
-  };
 
-  if (found) {
+  // check if tutor is found
+  if (current) {
     // display record
     displayRecord(*current, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
 
     // check if tutor is terminated
     if (current->getDateTerminated() != -1) {
+      // get user input
       do {
         cout << "Tutor is already terminated. Modify termination date? (Y/N): ";
         cin >> cinput;
@@ -1082,7 +1073,7 @@ void terminateTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCent
       cinput = 'y';
     };
 
-    // cancel termination
+    // check if terminate the tutor
     if (cinput == 'y' || cinput == 'Y') {
       // get user input
       do {
@@ -1102,8 +1093,9 @@ void terminateTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCent
 
       // ask for confirmation
       do {
+        // check if the termination date is not set
         if (current->getDateTerminated() == -1)
-          cout << "Terminate user? (Y/N): ";
+          cout << "Terminate tutor? (Y/N): ";
         else
           cout << "Modify terminated date? (Y/N): ";
         cin >> cinput;
@@ -1139,22 +1131,17 @@ void terminateTutor(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCent
 void deleteTutor(Tutor *&head, Tutor *&tail, int &size, int tutorID, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
   // initialise
   char cinput = ' ';
-  bool found = false;
   Tutor *current = head;
 
-  // linear search through the list
-  while (current) {
+  // linear search through the list to find the tutor to delete
+  for (; current; current = current->getNext())
     // find tutor with searched id
-    if (current->getTutorID() == tutorID) {
-      // set as found
-      found = true;
+    if (current->getTutorID() == tutorID)
       // stop iteration
       break;
-    };
-    current = current->getNext();
-  };
 
-  if (found) {
+  // check if the tutor is found
+  if (current) {
     // display record
     displayRecord(*current, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
 
@@ -1167,13 +1154,14 @@ void deleteTutor(Tutor *&head, Tutor *&tail, int &size, int tutorID, TuitionCent
 
       // add 6 months to terminated date
       if (tmTerminated.tm_mon >= 6) {
+        // if it is past July, add 1 year and minus 6 months
         tmTerminated.tm_mon -= 6;
         tmTerminated.tm_year += 1;
       } else {
         tmTerminated.tm_mon += 6;
       };
 
-      // compare terminated date plus 6 months to current date
+      // check if terminated date plus 6 months before current date
       if (difftime(mktime(&tmTerminated), time(0)) <= 0) {
         // ask for confirmation
         do {
@@ -1188,6 +1176,7 @@ void deleteTutor(Tutor *&head, Tutor *&tail, int &size, int tutorID, TuitionCent
           // delete tutor
           case 'y':
           case 'Y':
+            // check if current is not last tutor
             if (current->getNext())
               // link next tutor to previous tutor
               current->getNext()->setPrevious(current->getPrevious());
@@ -1195,6 +1184,7 @@ void deleteTutor(Tutor *&head, Tutor *&tail, int &size, int tutorID, TuitionCent
               // tail is previous tutor
               tail = current->getPrevious();
 
+            // check if current is not first tutor
             if (current->getPrevious())
               // link previous tutor to next tutor
               current->getPrevious()->setNext(current->getNext());
@@ -1232,6 +1222,7 @@ void deleteTutor(Tutor *&head, Tutor *&tail, int &size, int tutorID, TuitionCent
 };
 
 void displayRecord(Tutor tutor, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
+  // display a tutor record
   cout << "ID                 : " << tutor.getTutorID() << endl;
   cout << "Name               : " << tutor.getName() << endl;
   tm tmJoined;
@@ -1239,6 +1230,7 @@ void displayRecord(Tutor tutor, TuitionCentre *tcHead, TuitionCentre *tcTail, in
   localtime_s(&tmJoined, &dateJoined);
   cout << "Date Joined        : " << tmJoined.tm_mday << "/" << tmJoined.tm_mon + 1 << "/" << tmJoined.tm_year + 1900 << endl;
   cout << "Date Terminated    : ";
+  // check if the tutor is terminated
   if (tutor.getDateTerminated() != -1) {
     // display date as it is set
     tm tmTerminated;
@@ -1259,20 +1251,26 @@ void displayRecord(Tutor tutor, TuitionCentre *tcHead, TuitionCentre *tcTail, in
   cout << "Rating             : " << tutor.getRating() << endl << endl;
 };
 void displayRecordsList(Tutor *head, int size, int index, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
-  if (size > 0) {
+  // check if there is tutor
+  if (head) {
     // initialise
     int page = 1, input = 0, i = 0;
     Tutor *current = head;
 
+    // identify the page of the selected tutor
     for (; index >= 10; index -= 10) {
+      // transverse 10 nodes
       for (int i = 0; i < 10; i++)
         current = current->getNext();
+      // increment the page
       page++;
     };
 
     // calculate total page numbers
     int total = size / 10;
+    // check if there are remainders
     if (size % 10 > 0)
+      // increment total pages
       total++;
 
     // display page
@@ -1291,6 +1289,7 @@ void displayRecordsList(Tutor *head, int size, int index, TuitionCentre *tcHead,
         cout << truncate(current->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), 20) << "  ";
         cout << current->getRating() << endl;
 
+        // check if current is not last tutor
         if (current->getNext())
           current = current->getNext();
         else
@@ -1301,16 +1300,24 @@ void displayRecordsList(Tutor *head, int size, int index, TuitionCentre *tcHead,
       cout << endl << "Page " << page << endl << endl;
 
       cout << "(1) Detailed view" << endl;
+      
       cout << "(2) Jump to page";
+      // disable if there is only 1 page
       if (total == 1)
         cout << " (disabled)";
+      
       cout << endl << "(3) Next page";
+      // disable if there is no next page
       if (page >= total)
         cout << " (disabled)";
+      
       cout << endl << "(4) Previous page";
+      // disable if there is no previous page
       if (page <= 1)
         cout << " (disabled)";
+      
       cout << endl << "(5) Exit" << endl;
+      
       // get user input
       do {
         cout << "Select function (1-5): ";
@@ -1322,53 +1329,57 @@ void displayRecordsList(Tutor *head, int size, int index, TuitionCentre *tcHead,
           cin.clear();
         // clear the input buffer
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-      } while (input < 1 || input > 5 || (total == 1 && input == 2) || (page >= total && input == 3) || (page <= 1 && input == 4));
+      } while (input < 1 || input > 5 || (input == 2 && total == 1) || (input == 3 && page >= total) || (input == 4 && page <= 1));
 
       // determine outcome
       switch (input) {
         // jump to page
         case 2:
-          {
+          if (total > 1) {
             int oldPage = page;
 
-            if (total > 1) {
-              do {
-                cout << "Page (1-" << total << "): ";
-                // ignore enter key
-                if (cin.peek() != '\n')
-                  cin >> page;
-                // clear error state
-                if (!cin)
-                  cin.clear();
-                // clear the input buffer
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-              } while (page < 1 || page > total);
-              if (oldPage >= page) {
-                // go to previous tutors
-                for (int x = 0; x < 10 * (oldPage - page + 1) - (10 - i); x++)
-                  current = current->getPrevious();
-              } else {
-                // go to next tutors
-                for (int x = 0; x < 10 * (page - oldPage - 1); x++)
-                  current = current->getNext();
-              };
+            // get user input
+            do {
+              cout << "Page (1-" << total << "): ";
+              // ignore enter key
+              if (cin.peek() != '\n')
+                cin >> page;
+              // clear error state
+              if (!cin)
+                cin.clear();
+              // clear the input buffer
+              cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            } while (page < 1 || page > total);
+
+            // check if page is before or equal to new page
+            if (oldPage >= page) {
+              // go to previous tutors
+              for (int x = 0; x < 10 * (oldPage - page + 1) - (10 - i); x++)
+                current = current->getPrevious();
+            } else {
+              // go to next tutors
+              for (int x = 0; x < 10 * (page - oldPage - 1); x++)
+                current = current->getNext();
             };
-            break;
           };
+          break;
 
           // next page
         case 3:
           if (page < total)
+            // increment page
             page++;
           break;
 
           // previous page
         case 4:
-          if (page > 1)
+          if (page > 1) {
+            // go to previous tutors
+            for (int x = 0; x < 10 + i; x++)
+              current = current->getPrevious();
+            // decrement page
             page--;
-          // go to previous tutors
-          for (int x = 0; x < 10 + i; x++)
-            current = current->getPrevious();
+          };
           break;
 
           // do nothing
@@ -1389,15 +1400,15 @@ void displayRecordsList(Tutor *head, int size, int index, TuitionCentre *tcHead,
   };
 };
 void displayRecordsDetailed(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
-  if (size > 0) {
+  // check if there is tutor
+  if (head) {
     // initialise
     Tutor *current = nullptr;
     int input = 2, tutorID = 0, index = 0;
-    bool found = false;
 
     do {
+      // jump to record
       if (input == 2) {
-        found = false;
         // get user input
         do {
           do {
@@ -1412,19 +1423,15 @@ void displayRecordsDetailed(Tutor *head, int size, TuitionCentre *tcHead, Tuitio
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
           } while (tutorID <= 0);
 
-          // linear search through the array
-          current = head;
-          for (index = 0; current; index++) {
+          // linear search through the list to find the tutor to display
+          for (current = head, index = 0; current; index++, current = current->getNext())
             // find tutor with searched id
-            if (current->getTutorID() == tutorID) {
-              // set as found
-              found = true;
+            if (current->getTutorID() == tutorID)
               // stop iteration
               break;
-            };
-            current = current->getNext();
-          };
-        } while (!found);
+
+          // check if the tutor is found
+        } while (!current);
       };
 
       // display result
@@ -1432,16 +1439,24 @@ void displayRecordsDetailed(Tutor *head, int size, TuitionCentre *tcHead, Tuitio
       displayRecord(*current, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
 
       cout << "(1) List view" << endl;
+
       cout << "(2) Jump to record";
+      // disable if there is only 1 tutor
       if (size == 1)
         cout << " (disabled)";
+      
       cout << endl << "(3) Next record";
-      if (index >= size - 1)
+      // disable if there is no next tutor
+      if (!current->getNext())
         cout << " (disabled)";
+      
       cout << endl << "(4) Previous record";
-      if (index <= 0)
+      // disable if there is no previous tutor
+      if (!current->getPrevious())
         cout << " (disabled)";
+      
       cout << endl << "(5) Exit" << endl;
+      
       // get user input
       do {
         cout << "Select function (1-5): ";
@@ -1453,22 +1468,26 @@ void displayRecordsDetailed(Tutor *head, int size, TuitionCentre *tcHead, Tuitio
           cin.clear();
         // clear the input buffer
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-      } while (input < 1 || input > 5 || (size == 1 && input == 2) || (index >= size - 1 && input == 3) || (index <= 0 && input == 4));
+      } while (input < 1 || input > 5 || (input == 2 && size == 1) || (input == 3 && !current->getNext()) || (input == 4 && !current->getPrevious()));
 
       // determine outcome
       switch (input) {
         // next record
         case 3:
-          if (index < size - 1) {
+          if (current->getNext()) {
+            // go to next record
             current = current->getNext();
+            // increment index
             index++;
           };
           break;
 
           // previous record
         case 4:
-          if (index > 0) {
+          if (current->getPrevious()) {
+            // go to previous record
             current = current->getPrevious();
+            // decrement index
             index--;
           };
           break;
@@ -1492,15 +1511,14 @@ void displayRecordsDetailed(Tutor *head, int size, TuitionCentre *tcHead, Tuitio
 };
 
 void sortTutorID(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
-  if (size > 0) {
+  // check if there is tutor
+  if (head) {
     // initialise
-    Tutor *current = head, *tempHead = nullptr, *tempTail = nullptr;
+    Tutor *tempHead = nullptr, *tempTail = nullptr;
 
     // copy all elements into temporary tutor list
-    while (current) {
+    for (Tutor *current = head; current; current = current->getNext())
       insertTutorToEnd(tempHead, tempTail, *current);
-      current = current->getNext();
-    };
 
     // sort the temporary tutor list by id
     mergesortID(tempHead);
@@ -1516,15 +1534,14 @@ void sortTutorID(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tc
   };
 };
 void sortRating(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
-  if (size > 0) {
+  // check if there is tutor
+  if (head) {
     // initialise
-    Tutor *current = head, *tempHead = nullptr, *tempTail = nullptr;
+    Tutor *tempHead = nullptr, *tempTail = nullptr;
 
     // copy all elements into temporary tutor list
-    while (current) {
+    for (Tutor *current = head; current; current = current->getNext())
       insertTutorToEnd(tempHead, tempTail, *current);
-      current = current->getNext();
-    };
 
     // sort the temporary tutor list by rating
     mergesortRating(tempHead);
@@ -1540,15 +1557,14 @@ void sortRating(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tcT
   };
 };
 void sortPayRate(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
-  if (size > 0) {
+  // check if there is tutor
+  if (head) {
     // initialise
-    Tutor *current = head, *tempHead = nullptr, *tempTail = nullptr;
+    Tutor *tempHead = nullptr, *tempTail = nullptr;
 
     // copy all elements into temporary tutor list
-    while (current) {
+    for (Tutor *current = head; current; current = current->getNext())
       insertTutorToEnd(tempHead, tempTail, *current);
-      current = current->getNext();
-    };
 
     // sort the temporary tutor list by id
     mergesortPayRate(tempHead);
@@ -1567,25 +1583,20 @@ void sortPayRate(Tutor *head, int size, TuitionCentre *tcHead, TuitionCentre *tc
 void searchTutorID(Tutor *head, int tutorID, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize, Subject *subHead, Subject *subTail, int lastSubCode, int subSize) {
   // initialise
   Tutor *current = head;
-  bool found = false;
 
-  // linear seaarch through the list
-  while (current) {
+  // linear seaarch through the list to find the tutor
+  for (; current; current = current->getNext())
     // find tutor with searched id
-    if (current->getTutorID() == tutorID) {
-      // set as found
-      found = true;
+    if (current->getTutorID() == tutorID)
       // stop iteration
       break;
-    };
-    current = current->getNext();
-  };
 
-  // if no results
-  if (found)
+  // check if the tutor is found
+  if (current)
     // display result
     displayRecord(*current, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
   else
+    // if no results
     cout << "No results found" << endl << endl;
   current = nullptr;
 };
@@ -1594,18 +1605,17 @@ void searchRating(Tutor *head, int rating, TuitionCentre *tcHead, TuitionCentre 
   int tempSize = 0;
   Tutor *current = head, *tempHead = nullptr, *tempTail = nullptr;
 
-  // linear search through the list
-  while (current) {
+  // linear search through the list to find the tutor with the rating
+  for (; current; current = current->getNext())
     // find tutors with searched rating
     if (current->getRating() == rating) {
-      // insert to the temporary list
+      // insert tutor to the end of the temporary tutor list
       insertTutorToEnd(tempHead, tempTail, *current);
       // increase temporary list size
       tempSize++;
     };
-    current = current->getNext();
-  };
 
+  // check if the tutor is found
   if (tempHead) {
     // display all records
     displayRecordsList(tempHead, tempSize, 0, tcHead, tcTail, lastTCCode, tcSize, subHead, subTail, lastSubCode, subSize);
@@ -1623,34 +1633,38 @@ void searchTuitionName(Tutor *head, int size, string tcName, TuitionCentre *tcHe
   int tempSize = 0, input = 0;
 
   // copy all elements into temporary tutor list
-  while (current) {
+  for (; current; current = current->getNext())
     insertTutorToEnd(tempHead, tempTail, *current);
-    current = current->getNext();
-  };
 
-  // sort the temporary tutor list by tuition name
+  // sort the temporary tutor list by tuition name and find tuition with searched tuition name
   mergesortTCName(tempHead, tcName, tcHead, tcTail, lastTCCode, tcSize);
 
-  // linear search through the list
-  current = tempHead;
-  while (current) {
+  // linear search through the list to create a temporary tuition list
+  for (current = tempHead; current; current = current->getNext())
+    // check if the temporary tuition list is empty
     if (tempTCHead) {
       bool exist = false;
       tempTuitions = tempTCHead;
-      // linear search through the list
+
+      // linear search through the temporary tuition list to find the tuition
       while (tempTuitions) {
+        // find tuition with tuition code
         if (current->getTuitionCentreCode() == tempTuitions->getTuitionCentreCode()) {
           // tuition name exists
           exist = true;
           // stop iteration
           break;
         };
+
+        // check if current is not last tuition in the temporary tuition list
         if (tempTuitions->getNext())
           tempTuitions = tempTuitions->getNext();
         else
           // break when last element
           break;
       };
+
+      // check if the tuition from the temporary tutor list exists in the temporary tuition list
       if (!exist)
         // link tuition name to new tuition name
         tempTuitions->setNext(new TuitionCentre(current->getTuitionCentreCode(), current->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize)));
@@ -1658,16 +1672,17 @@ void searchTuitionName(Tutor *head, int size, string tcName, TuitionCentre *tcHe
       // insert new tuition name as there are no existing tuition names
       tempTCHead = new TuitionCentre(current->getTuitionCentreCode(), current->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize));
     };
-    current = current->getNext();
-  };
 
-  // get user input
+  // check if there is tuition
   if (tempTCHead) {
+    // check if there is more than 1 tuition
     if (tempTCHead->getNext()) {
       tempTuitions = tempTCHead;
       int i = 0;
+      // display list of tuitions
       for (; tempTuitions; i++, tempTuitions = tempTuitions->getNext())
         cout << "(" << i + 1 << ") " << tempTuitions->getTuitionCentreName() << endl;
+      // get user input
       do {
         cout << "Please input (1-" << i << "): ";
         // ignore enter key
@@ -1683,28 +1698,29 @@ void searchTuitionName(Tutor *head, int size, string tcName, TuitionCentre *tcHe
       input = 1;
     };
     
-    // get tuition code
+    // get tuition code from the temporary tuition list
     tempTuitions = tempTCHead;
     for (int i = 0; i < input - 1; i++)
       tempTuitions = tempTuitions->getNext();
 
-    // deallocate non-searched results
     current = tempHead;
+    // deallocate non-searched results
     while (current && current->getTuitionCentreCode() != tempTuitions->getTuitionCentreCode()) {
       current = current->getNext();
       // deallocate memory
       delete tempHead;
       tempHead = current;
     };
-    while (current && current->getTuitionCentreCode() == tempTuitions->getTuitionCentreCode()) {
+    
+    // count total number of tutors
+    for (; current && current->getTuitionCentreCode() == tempTuitions->getTuitionCentreCode(); current = current->getNext())
       // increase temporary list size
       tempSize++;
-      current = current->getNext();
-    };
+
+    // check if current is not last tutor
     if (current) {
       // unlink list from to be deleted list
       current->getPrevious()->setNext(nullptr);
-      
       // deallocate memory
       deleteList(current);
     };
@@ -1728,15 +1744,17 @@ bool validateTuitionCentre(int tcCode, TuitionCentre *tcHead, TuitionCentre *tcT
   TuitionCentre *current = nullptr;
   // guess which end is faster
   if (tcCode < lastTCCode / 2) {
-    // linear search from beginning
     current = tcHead;
+    // linear search from beginning to find tuition
     for (int i = 0; i < tcSize - 1; i++, current = current->getNext())
+      // find tuitions with tuition code
       if (current->getTuitionCentreCode() == tcCode)
         return true;
   } else {
-    // linear search from end
     current = tcTail;
+    // linear search from end to find tuition
     for (int i = tcSize; i > 0; i--, current = current->getPrevious())
+      // find tuitions with tuition code
       if (current->getTuitionCentreCode() == tcCode)
         return true;
   };
@@ -1749,29 +1767,17 @@ void addTuitionCentre(TuitionCentre *&tcHead, TuitionCentre *&tcTail, int &lastT
 
   TuitionCentre *current = tcHead;
 
-  // linear search through the list
-  while (current) {
+  // linear search through the list to find the tuition
+  for (; current; current = current->getNext())
+    // find tuitions with new tuition name
     if (compareInsensitive(current->getTuitionCentreName(), tcName) == 0)
       // stop iteration
       break;
-    current = current->getNext();
-  };
 
+  // check if tuition name exists
   if (!current) {
-    TuitionCentre *newTuition = new TuitionCentre(tcCode, tcName);
-
-    if (tcHead) {
-      // link new tuition to tail tuition
-      newTuition->setPrevious(tcTail);
-      // link tail tuition to new tuition
-      tcTail->setNext(newTuition);
-      // tail is new tuition
-      tcTail = newTuition;
-    } else {
-      // insert new tuition as there are no existing tuitions
-      tcHead = newTuition;
-      tcTail = newTuition;
-    };
+    // insert tuition to the end of the list
+    insertTCToEnd(tcHead, tcTail, tcCode, tcName);
     // display success message
     cout << "Added Successfully" << endl << endl;
     // increase tuition size
@@ -1794,25 +1800,30 @@ void modifyTuitionCentre(TuitionCentre *tcHead, TuitionCentre *tcTail, int lastT
 
   // guess which end is faster
   if (tcCode < lastTCCode / 2) {
-    // linear search from beginning
     current = tcHead;
+    // linear search from beginning to find the tuition
     for (int i = 0; i < tcSize - 1 && current; i++, current = current->getNext())
+      // find tuitions with tuition code
       if (current->getTuitionCentreCode() == tcCode)
         // stop iteration
         break;
   } else {
-    // linear search from end
     current = tcTail;
+    // linear search from end to find the tuition
     for (int i = tcSize - 1; i >= 0 && current; i--, current = current->getPrevious())
+      // find tuitions with tuition code
       if (current->getTuitionCentreCode() == tcCode)
         // stop iteration
         break;
   };
 
+  // check if the tuition is found
   if (current) {
     // display record
     displayTC(*current);
 
+    // modify tuition name
+    // get user input
     do {
       cout << "New Tuition Name: ";
       getline(cin, tcName);
@@ -1821,14 +1832,14 @@ void modifyTuitionCentre(TuitionCentre *tcHead, TuitionCentre *tcTail, int lastT
 
     TuitionCentre *temp = tcHead;
 
-    // linear search through the list
-    while (temp) {
+    // linear search through the list to find tuition
+    for (; temp; temp = temp->getNext())
+      // find tuition with new tuition name
       if (compareInsensitive(temp->getTuitionCentreName(), tcName) == 0)
         // stop iteration
         break;
-      temp = temp->getNext();
-    };
 
+    // check if tuition name exists or if the existing tuition is same as current tuition
     if (!temp || temp->getTuitionCentreCode() == current->getTuitionCentreCode()) {
       current->setTuitionCentreName(tcName);
       // display success message
@@ -1854,35 +1865,37 @@ void deleteTuitionCentre(Tutor *head, TuitionCentre *&tcHead, TuitionCentre *&tc
 
   // guess which end is faster
   if (tcCode < lastTCCode / 2) {
-    // linear search from beginning
     current = tcHead;
+    // linear search from beginning to find tuition
     for (int i = 0; i < tcSize - 1 && current; i++, current = current->getNext())
+      // find tuition with tuition code
       if (current->getTuitionCentreCode() == tcCode)
         // stop iteration
         break;
   } else {
-    // linear search from end
     current = tcTail;
+    // linear search from end to find tuition
     for (int i = tcSize - 1; i >= 0 && current; i--, current = current->getPrevious())
+      // find tuition with tuition code
       if (current->getTuitionCentreCode() == tcCode)
         // stop iteration
         break;
   };
 
+  // check if the tuition is found
   if (current) {
     // display record
     displayTC(*current);
 
     Tutor *temp = head;
-
-    // check if record is in use
-    while (temp) {
+    // linear search through the list to find the tutor
+    for (; temp; temp = temp->getNext())
+      // find tutor with tuition code
       if (temp->getTuitionCentreCode() == tcCode)
         // stop iteration
         break;
-      temp = temp->getNext();
-    };
 
+    // check if record is in use
     if (!temp) {
       // ask for confirmation
       do {
@@ -1897,6 +1910,7 @@ void deleteTuitionCentre(Tutor *head, TuitionCentre *&tcHead, TuitionCentre *&tc
         // delete tutor
         case 'y':
         case 'Y':
+          // check if current is not last tuition
           if (current->getNext())
             // link next tuition to previous tuition
             current->getNext()->setPrevious(current->getPrevious());
@@ -1904,6 +1918,7 @@ void deleteTuitionCentre(Tutor *head, TuitionCentre *&tcHead, TuitionCentre *&tc
             // tail is previous tuition
             tcTail = current->getPrevious();
 
+          // check if current is not first tuition
           if (current->getPrevious())
             // link previous tuition to next tuition
             current->getPrevious()->setNext(current->getNext());
@@ -1938,18 +1953,22 @@ void deleteTuitionCentre(Tutor *head, TuitionCentre *&tcHead, TuitionCentre *&tc
 };
 
 void displayTC(TuitionCentre tuition) {
+  // display a tuition record
   cout << "Tuition Centre Code: " << tuition.getTuitionCentreCode() << endl;
   cout << "Tuition Centre Name: " << tuition.getTuitionCentreName() << endl;
 };
 void displayTCList(TuitionCentre *tcHead, int tcSize) {
-  if (tcSize > 0) {
+  // check if there is tuition
+  if (tcHead) {
     // initialise
     int page = 1, input = 0, i = 0;
     TuitionCentre *current = tcHead;
 
     // calculate total page numbers
     int total = tcSize / 10;
+    // check if there are remainders
     if (tcSize % 10 > 0)
+      // increment total pages
       total++;
 
     // display page
@@ -1963,6 +1982,7 @@ void displayTCList(TuitionCentre *tcHead, int tcSize) {
         cout.width(30);
         cout << left << truncate(current->getTuitionCentreName(), 30) << endl;
         
+        // check if current is not last tutor
         if (current->getNext())
           current = current->getNext();
         else
@@ -1973,15 +1993,22 @@ void displayTCList(TuitionCentre *tcHead, int tcSize) {
       cout << endl << "Page " << page << endl << endl;
 
       cout << "(1) Jump to page";
+      // disable if there is only 1 page
       if (total == 1)
         cout << " (disabled)";
+      
       cout << endl << "(2) Next page";
+      // disable if there is no next page
       if (page >= total)
         cout << " (disabled)";
+      
       cout << endl << "(3) Previous page";
+      // disable if there is no previous page
       if (page <= 1)
         cout << " (disabled)";
+      
       cout << endl << "(4) Exit" << endl;
+      
       // get user input
       do {
         cout << "Select function (1-4): ";
@@ -1993,53 +2020,57 @@ void displayTCList(TuitionCentre *tcHead, int tcSize) {
           cin.clear();
         // clear the input buffer
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-      } while (input < 1 || input > 4 || (total == 1 && input == 1) || (page >= total && input == 2) || (page <= 1 && input == 3));
+      } while (input < 1 || input > 4 || (input == 1 && total == 1) || (input == 2 && page >= total) || (input == 3 && page <= 1));
 
       // determine outcome
       switch (input) {
         // jump to page
         case 1:
-          {
+          if (total > 1) {
             int oldPage = page;
 
-            if (total > 1) {
-              do {
-                cout << "Page (1-" << total << "): ";
-                // ignore enter key
-                if (cin.peek() != '\n')
-                  cin >> page;
-                // clear error state
-                if (!cin)
-                  cin.clear();
-                // clear the input buffer
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-              } while (page < 1 || page > total);
-              if (oldPage >= page) {
-                // go to previous tuitions
-                for (int x = 0; x < 10 * (oldPage - page + 1) - (10 - i); x++)
-                  current = current->getPrevious();
-              } else {
-                // go to next tuitions
-                for (int x = 0; x < 10 * (page - oldPage - 1); x++)
-                  current = current->getNext();
-              };
+            // get user input
+            do {
+              cout << "Page (1-" << total << "): ";
+              // ignore enter key
+              if (cin.peek() != '\n')
+                cin >> page;
+              // clear error state
+              if (!cin)
+                cin.clear();
+              // clear the input buffer
+              cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            } while (page < 1 || page > total);
+
+            // check if page is before or equal to new page
+            if (oldPage >= page) {
+              // go to previous tuitions
+              for (int x = 0; x < 10 * (oldPage - page + 1) - (10 - i); x++)
+                current = current->getPrevious();
+            } else {
+              // go to next tuitions
+              for (int x = 0; x < 10 * (page - oldPage - 1); x++)
+                current = current->getNext();
             };
-            break;
           };
+          break;
 
           // next page
         case 2:
           if (page < total)
+            // increment page
             page++;
           break;
 
           // previous page
         case 3:
-          if (page > 1)
+          if (page > 1) {
+            // go to previous tuitions
+            for (int x = 0; x < 10 + i; x++)
+              current = current->getPrevious();
+            // decrement page
             page--;
-          // go to previous tuitions
-          for (int x = 0; x < 10 + i; x++)
-            current = current->getPrevious();
+          };
           break;
 
           // do nothing
@@ -2048,7 +2079,6 @@ void displayTCList(TuitionCentre *tcHead, int tcSize) {
       };
       cout << endl;
     } while (input > 0 && input < 4);
-
     current = nullptr;
   } else {
     // if no results
@@ -2062,15 +2092,17 @@ bool validateSubject(int subCode, Subject *subHead, Subject *subTail, int lastSu
   Subject *current = nullptr;
   // guess which end is faster
   if (subCode < lastSubCode / 2) {
-    // linear search from beginning
     current = subHead;
+    // linear search from beginning to find subject
     for (int i = 0; i < subSize - 1; i++, current = current->getNext())
+      // find subject with subject code
       if (current->getSubjectCode() == subCode)
         return true;
   } else {
-    // linear search from end
     current = subTail;
+    // linear search from end to find subject
     for (int i = subSize; i > 0; i--, current = current->getPrevious())
+      // find subject with subject code
       if (current->getSubjectCode() == subCode)
         return true;
   };
@@ -2084,28 +2116,15 @@ void addSubject(Subject *&subHead, Subject *&subTail, int &lastSubCode, int &sub
   Subject *current = subHead;
 
   // linear search through the list
-  while (current) {
+  for (; current; current = current->getNext())
     if (compareInsensitive(current->getSubjectName(), subName) == 0)
       // stop iteration
       break;
-    current = current->getNext();
-  };
 
+  // check if the subject is found
   if (!current) {
-    Subject *newSubject = new Subject(subCode, subName);
-    
-    if (subHead) {
-      // link new subject to tail subject
-      newSubject->setPrevious(subTail);
-      // link tail subject to new subject
-      subTail->setNext(newSubject);
-      // tail is new subject
-      subTail = newSubject;
-    } else {
-      // insert new subject as there are no existing subjects
-      subHead = newSubject;
-      subTail = newSubject;
-    };
+    // insert subject to the end of the list
+    insertSubToEnd(subHead, subTail, subCode, subName);
     // display success message
     cout << "Added Successfully" << endl << endl;
     // increase subject size
@@ -2128,25 +2147,30 @@ void modifySubject(Subject *subHead, Subject *subTail, int lastSubCode, int subS
 
   // guess which end is faster
   if (subCode < lastSubCode / 2) {
-    // linear search from beginning
     current = subHead;
+    // linear search from beginning to find subject
     for (int i = 0; i < subSize - 1 && current; i++, current = current->getNext())
+      // find subject with subject code
       if (current->getSubjectCode() == subCode)
         // stop iteration
         break;
   } else {
-    // linear search from end
     current = subTail;
+    // linear search from end to find subject
     for (int i = subSize - 1; i >= 0 && current; i--, current = current->getPrevious())
+      // find subject with subject code
       if (current->getSubjectCode() == subCode)
         // stop iteration
         break;
   };
 
+  // check if the subject is found
   if (current) {
     // display record
     displaySub(*current);
 
+    // modify subject name
+    // get user input
     do {
       cout << "New Subject Name: ";
       getline(cin, subName);
@@ -2155,14 +2179,14 @@ void modifySubject(Subject *subHead, Subject *subTail, int lastSubCode, int subS
 
     Subject *temp = subHead;
 
-    // linear search through the list
-    while (temp) {
+    // linear search through the list to find subject
+    for (; temp; temp = temp->getNext())
+      // find subject with new subject name
       if (compareInsensitive(temp->getSubjectName(), subName) == 0)
         // stop iteration
         break;
-      temp = temp->getNext();
-    };
 
+    // check if subject name exists or if the existing subject is same as current subject
     if (!temp || temp->getSubjectCode() == current->getSubjectCode()) {
       current->setSubjectName(subName);
       // display success message
@@ -2188,35 +2212,37 @@ void deleteSubject(Tutor *head, Subject *&subHead, Subject *&subTail, int &lastS
 
   // guess which end is faster
   if (subCode < lastSubCode / 2) {
-    // linear search from beginning
     current = subHead;
+    // linear search from beginning to find subject
     for (int i = 0; i < subSize - 1 && current; i++, current = current->getNext())
+      // find subject with subject code
       if (current->getSubjectCode() == subCode)
         // stop iteration
         break;
   } else {
-    // linear search from end
     current = subTail;
+    // linear search from end to find subject
     for (int i = subSize - 1; i >= 0 && current; i--, current = current->getPrevious())
+      // find subject with subject code
       if (current->getSubjectCode() == subCode)
         // stop iteration
         break;
   };
 
+  // check if the subject is found
   if (current) {
     // display record
     displaySub(*current);
 
     Tutor *temp = head;
-
-    // check if record is in use
-    while (temp) {
+    // linear search through the list to find the subject
+    for (; temp; temp = temp->getNext())
+      // find the subject with subject code
       if (temp->getSubjectCode() == subCode)
         // stop iteration
         break;
-      temp = temp->getNext();
-    };
 
+    // check if record is in use
     if (!temp) {
       // ask for confirmation
       do {
@@ -2231,6 +2257,7 @@ void deleteSubject(Tutor *head, Subject *&subHead, Subject *&subTail, int &lastS
         // delete tutor
         case 'y':
         case 'Y':
+          // check if current is not last subject
           if (current->getNext())
             // link next subject to previous subject
             current->getNext()->setPrevious(current->getPrevious());
@@ -2238,6 +2265,7 @@ void deleteSubject(Tutor *head, Subject *&subHead, Subject *&subTail, int &lastS
             // tail is previous subject
             subTail = current->getPrevious();
 
+          // check if current is not first subject
           if (current->getPrevious())
             // link previous subject to next subject
             current->getPrevious()->setNext(current->getNext());
@@ -2272,18 +2300,22 @@ void deleteSubject(Tutor *head, Subject *&subHead, Subject *&subTail, int &lastS
 };
 
 void displaySub(Subject subject) {
+  // display a subject record
   cout << "Subject Code: " << subject.getSubjectCode() << endl;
   cout << "Subject Name: " << subject.getSubjectName() << endl;
 };
 void displaySubList(Subject *subHead, int subSize) {
-  if (subSize > 0) {
+  // check if there is subject
+  if (subHead) {
     // initialise
     int page = 1, input = 0, i = 0;
     Subject *current = subHead;
 
     // calculate total page numbers
     int total = subSize / 10;
+    // check if there are remainders
     if (subSize % 10 > 0)
+      // increment toal pages
       total++;
 
     // display page
@@ -2297,6 +2329,7 @@ void displaySubList(Subject *subHead, int subSize) {
         cout.width(30);
         cout << left << truncate(current->getSubjectName(), 30) << endl;
 
+        // check if current is not last tutor
         if (current->getNext())
           current = current->getNext();
         else
@@ -2307,15 +2340,22 @@ void displaySubList(Subject *subHead, int subSize) {
       cout << endl << "Page " << page << endl << endl;
 
       cout << "(1) Jump to page";
+      // disable if there is only 1 page
       if (total == 1)
         cout << " (disabled)";
+
       cout << endl << "(2) Next page";
+      // disable if there is no next page
       if (page >= total)
         cout << " (disabled)";
+
       cout << endl << "(3) Previous page";
+      // disable if there is no previous page
       if (page <= 1)
         cout << " (disabled)";
+
       cout << endl << "(4) Exit" << endl;
+
       // get user input
       do {
         cout << "Select function (1-4): ";
@@ -2327,53 +2367,57 @@ void displaySubList(Subject *subHead, int subSize) {
           cin.clear();
         // clear the input buffer
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-      } while (input < 1 || input > 4 || (total == 1 && input == 1) || (page >= total && input == 2) || (page <= 1 && input == 3));
+      } while (input < 1 || input > 4 || (input == 1 && total == 1) || (input == 2 && page >= total) || (input == 3 && page <= 1));
 
       // determine outcome
       switch (input) {
         // jump to page
         case 1:
-          {
+          if (total > 1) {
             int oldPage = page;
 
-            if (total > 1) {
-              do {
-                cout << "Page (1-" << total << "): ";
-                // ignore enter key
-                if (cin.peek() != '\n')
-                  cin >> page;
-                // clear error state
-                if (!cin)
-                  cin.clear();
-                // clear the input buffer
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-              } while (page < 1 || page > total);
-              if (oldPage >= page) {
-                // go to previous subjects
-                for (int x = 0; x < 10 * (oldPage - page + 1) - (10 - i); x++)
-                  current = current->getPrevious();
-              } else {
-                // go to next subjects
-                for (int x = 0; x < 10 * (page - oldPage - 1); x++)
-                  current = current->getNext();
-              };
+            // get user input
+            do {
+              cout << "Page (1-" << total << "): ";
+              // ignore enter key
+              if (cin.peek() != '\n')
+                cin >> page;
+              // clear error state
+              if (!cin)
+                cin.clear();
+              // clear the input buffer
+              cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            } while (page < 1 || page > total);
+
+            // check if page is before or equal to new page
+            if (oldPage >= page) {
+              // go to previous subjects
+              for (int x = 0; x < 10 * (oldPage - page + 1) - (10 - i); x++)
+                current = current->getPrevious();
+            } else {
+              // go to next subjects
+              for (int x = 0; x < 10 * (page - oldPage - 1); x++)
+                current = current->getNext();
             };
-            break;
           };
+          break;
 
           // next page
         case 2:
           if (page < total)
+            // increment page
             page++;
           break;
 
           // previous page
         case 3:
-          if (page > 1)
+          if (page > 1) {
+            // go to previous subjects
+            for (int x = 0; x < 10 + i; x++)
+              current = current->getPrevious();
+            // decrement page
             page--;
-          // go to previous subjects
-          for (int x = 0; x < 10 + i; x++)
-            current = current->getPrevious();
+          };          
           break;
 
           // do nothing
@@ -2382,7 +2426,6 @@ void displaySubList(Subject *subHead, int subSize) {
       };
       cout << endl;
     } while (input > 0 && input < 4);
-
     current = nullptr;
   } else {
     // if no results
@@ -2474,11 +2517,11 @@ void deleteList(Tutor *head) {
 };
 
 // mergesort
-void split(Tutor *head, Tutor *&list1, Tutor *&list2) {
+void split(Tutor *head, Tutor *&listHead1, Tutor *&listHead2) {
   // initialise
   Tutor *fast = head->getNext(), *slow = head;
 
-  // split list alternatively
+  // split list into half
   while (fast) {
     fast = fast->getNext();
     if (fast) {
@@ -2488,204 +2531,204 @@ void split(Tutor *head, Tutor *&list1, Tutor *&list2) {
   };
 
   // return the addresses of the sublists
-  list1 = head;
-  list2 = slow->getNext();
+  listHead1 = head;
+  listHead2 = slow->getNext();
   // split sublist 2 from sublist 1
   slow->setNext(nullptr);
 };
 
 void mergesortID(Tutor *&head) {
   // initialise
-  Tutor *current = head, *list1 = nullptr, *list2 = nullptr;
+  Tutor *current = head, *listHead1 = nullptr, *listHead2 = nullptr;
 
   if (current && current->getNext()) {
-    split(current, list1, list2);
+    split(current, listHead1, listHead2);
     // sort sublist 1
-    mergesortID(list1);
+    mergesortID(listHead1);
     // sort sublist 2
-    mergesortID(list2);
+    mergesortID(listHead2);
     // merge sublists
-    head = mergeID(list1, list2);
+    head = mergeID(listHead1, listHead2);
   };
   current = nullptr;
 };
-Tutor *mergeID(Tutor *list1, Tutor *list2) {
-  if (!list1)
+Tutor *mergeID(Tutor *listHead1, Tutor *listHead2) {
+  if (!listHead1)
     // return address of sublist 2 as sublist 1 is empty
-    return list2;
+    return listHead2;
 
-  if (!list2)
+  if (!listHead2)
     // return address of sublist 1 as sublist 2 is empty
-    return list1;
+    return listHead1;
 
-  if (list1->getTutorID() < list2->getTutorID()) {
+  if (listHead1->getTutorID() < listHead2->getTutorID()) {
     // link sublist 1 to sublist 2
-    list1->setNext(mergeID(list1->getNext(), list2));
+    listHead1->setNext(mergeID(listHead1->getNext(), listHead2));
     // link sublist 2 to sublist 1
-    list1->getNext()->setPrevious(list1);
-    list1->setPrevious(nullptr);
+    listHead1->getNext()->setPrevious(listHead1);
+    listHead1->setPrevious(nullptr);
     // return address of sublist 1
-    return list1;
+    return listHead1;
   } else {
     // link sublist 2 to sublist 1
-    list2->setNext(mergeID(list1, list2->getNext()));
+    listHead2->setNext(mergeID(listHead1, listHead2->getNext()));
     // link sublist 1 to sublist 2
-    list2->getNext()->setPrevious(list2);
-    list2->setPrevious(nullptr);
+    listHead2->getNext()->setPrevious(listHead2);
+    listHead2->setPrevious(nullptr);
     // return address of sublist 2
-    return list2;
+    return listHead2;
   };
 };
 
 void mergesortRating(Tutor *&head) {
   // initialise
-  Tutor *current = head, *list1 = nullptr, *list2 = nullptr;
+  Tutor *current = head, *listHead1 = nullptr, *listHead2 = nullptr;
 
   if (current && current->getNext()) {
-    split(current, list1, list2);
+    split(current, listHead1, listHead2);
     // sort sublist 1
-    mergesortRating(list1);
+    mergesortRating(listHead1);
     // sort sublist 2
-    mergesortRating(list2);
+    mergesortRating(listHead2);
     // merge sublists
-    head = mergeRating(list1, list2);
+    head = mergeRating(listHead1, listHead2);
   };
   current = nullptr;
 };
-Tutor *mergeRating(Tutor *list1, Tutor *list2) {
-  if (!list1)
+Tutor *mergeRating(Tutor *listHead1, Tutor *listHead2) {
+  if (!listHead1)
     // return address of sublist 2 as sublist 1 is empty
-    return list2;
+    return listHead2;
 
-  if (!list2)
+  if (!listHead2)
     // return address of sublist 1 as sublist 2 is empty
-    return list1;
+    return listHead1;
 
-  if (list1->getRating() <= list2->getRating()) {
+  if (listHead1->getRating() <= listHead2->getRating()) {
     // link sublist 1 to sublist 2
-    list1->setNext(mergeRating(list1->getNext(), list2));
+    listHead1->setNext(mergeRating(listHead1->getNext(), listHead2));
     // link sublist 2 to sublist 1
-    list1->getNext()->setPrevious(list1);
-    list1->setPrevious(nullptr);
+    listHead1->getNext()->setPrevious(listHead1);
+    listHead1->setPrevious(nullptr);
     // return address of sublist 1
-    return list1;
+    return listHead1;
   } else {
     // link sublist 2 to sublist 1
-    list2->setNext(mergeRating(list1, list2->getNext()));
+    listHead2->setNext(mergeRating(listHead1, listHead2->getNext()));
     // link sublist 1 to sublist 2
-    list2->getNext()->setPrevious(list2);
-    list2->setPrevious(nullptr);
+    listHead2->getNext()->setPrevious(listHead2);
+    listHead2->setPrevious(nullptr);
     // return address of sublist 2
-    return list2;
+    return listHead2;
   };
 };
 
 void mergesortPayRate(Tutor *&head) {
   // initialise
-  Tutor *current = head, *list1 = nullptr, *list2 = nullptr;
+  Tutor *current = head, *listHead1 = nullptr, *listHead2 = nullptr;
 
   if (current && current->getNext()) {
-    split(current, list1, list2);
+    split(current, listHead1, listHead2);
     // sort sublist 1
-    mergesortPayRate(list1);
+    mergesortPayRate(listHead1);
     // sort sublist 2
-    mergesortPayRate(list2);
+    mergesortPayRate(listHead2);
     // merge sublists
-    head = mergePayRate(list1, list2);
+    head = mergePayRate(listHead1, listHead2);
   };
   current = nullptr;
 };
-Tutor *mergePayRate(Tutor *list1, Tutor *list2) {
-  if (!list1)
+Tutor *mergePayRate(Tutor *listHead1, Tutor *listHead2) {
+  if (!listHead1)
     // return address of sublist 2 as sublist 1 is empty
-    return list2;
+    return listHead2;
 
-  if (!list2)
+  if (!listHead2)
     // return address of sublist 1 as sublist 2 is empty
-    return list1;
+    return listHead1;
 
-  if (list1->getHourlyPayRate() <= list2->getHourlyPayRate()) {
+  if (listHead1->getHourlyPayRate() <= listHead2->getHourlyPayRate()) {
     // link sublist 1 to sublist 2
-    list1->setNext(mergePayRate(list1->getNext(), list2));
+    listHead1->setNext(mergePayRate(listHead1->getNext(), listHead2));
     // link sublist 2 to sublist 1
-    list1->getNext()->setPrevious(list1);
-    list1->setPrevious(nullptr);
+    listHead1->getNext()->setPrevious(listHead1);
+    listHead1->setPrevious(nullptr);
     // return address of sublist 1
-    return list1;
+    return listHead1;
   } else {
     // link sublist 2 to sublist 1
-    list2->setNext(mergePayRate(list1, list2->getNext()));
+    listHead2->setNext(mergePayRate(listHead1, listHead2->getNext()));
     // link sublist 1 to sublist 2
-    list2->getNext()->setPrevious(list2);
-    list2->setPrevious(nullptr);
+    listHead2->getNext()->setPrevious(listHead2);
+    listHead2->setPrevious(nullptr);
     // return address of sublist 2
-    return list2;
+    return listHead2;
   };
 };
 
 void mergesortTCName(Tutor *&head, string tcName, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize) {
   // initialise
-  Tutor *current = head, *list1 = nullptr, *list2 = nullptr;
+  Tutor *current = head, *listHead1 = nullptr, *listHead2 = nullptr;
 
   if (current && current->getNext()) {
-    split(current, list1, list2);
+    split(current, listHead1, listHead2);
     // sort sublist 1
-    mergesortTCName(list1, tcName, tcHead, tcTail, lastTCCode, tcSize);
+    mergesortTCName(listHead1, tcName, tcHead, tcTail, lastTCCode, tcSize);
     // sort sublist 2
-    mergesortTCName(list2, tcName, tcHead, tcTail, lastTCCode, tcSize);
+    mergesortTCName(listHead2, tcName, tcHead, tcTail, lastTCCode, tcSize);
     // merge sublists
-    head = mergeTCName(list1, list2, tcName, tcHead, tcTail, lastTCCode, tcSize);
+    head = mergeTCName(listHead1, listHead2, tcName, tcHead, tcTail, lastTCCode, tcSize);
   };
   current = nullptr;
 };
-Tutor *mergeTCName(Tutor *list1, Tutor *list2, string tcName, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize) {
-  if (list1) {
+Tutor *mergeTCName(Tutor *listHead1, Tutor *listHead2, string tcName, TuitionCentre *tcHead, TuitionCentre *tcTail, int lastTCCode, int tcSize) {
+  if (listHead1) {
     // find tutors with searched tuition name
-    if (findInsensitive(list1->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), tcName) == string::npos) {
+    if (findInsensitive(listHead1->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), tcName) == string::npos) {
       // deallocate memory
-      deleteList(list1);
-      if (list2 && findInsensitive(list2->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), tcName) == string::npos) {
-        deleteList(list2);
-        list2 = nullptr;
+      deleteList(listHead1);
+      if (listHead2 && findInsensitive(listHead2->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), tcName) == string::npos) {
+        deleteList(listHead2);
+        listHead2 = nullptr;
       };
-      return list2;
+      return listHead2;
     };
   } else {
     // return address of sublist 2 as sublist 1 is empty
-    return list2;
+    return listHead2;
   };
 
-  if (list2) {
+  if (listHead2) {
     // find tutors with searched tuition name
-    if (findInsensitive(list2->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), tcName) == string::npos) {
+    if (findInsensitive(listHead2->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), tcName) == string::npos) {
       // deallocate memory
-      deleteList(list2);
-      if (list1 && findInsensitive(list1->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), tcName) == string::npos) {
-        deleteList(list1);
-        list1 = nullptr;
+      deleteList(listHead2);
+      if (listHead1 && findInsensitive(listHead1->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), tcName) == string::npos) {
+        deleteList(listHead1);
+        listHead1 = nullptr;
       };
-      return list1;
+      return listHead1;
     };
   } else {
     // return address of sublist 1 as sublist 2 is empty
-    return list1;
+    return listHead1;
   };
 
-  if (compareInsensitive(list1->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), list2->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize)) <= 0) {
+  if (compareInsensitive(listHead1->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize), listHead2->getTuitionCentreName(tcHead, tcTail, lastTCCode, tcSize)) <= 0) {
     // link sublist 1 to sublist 2
-    list1->setNext(mergeTCName(list1->getNext(), list2, tcName, tcHead, tcTail, lastTCCode, tcSize));
+    listHead1->setNext(mergeTCName(listHead1->getNext(), listHead2, tcName, tcHead, tcTail, lastTCCode, tcSize));
     // link sublist 2 to sublist 1
-    list1->getNext()->setPrevious(list1);
-    list1->setPrevious(nullptr);
+    listHead1->getNext()->setPrevious(listHead1);
+    listHead1->setPrevious(nullptr);
     // return address of sublist 1
-    return list1;
+    return listHead1;
   } else {
     // link sublist 2 to sublist 1
-    list2->setNext(mergeTCName(list1, list2->getNext(), tcName, tcHead, tcTail, lastTCCode, tcSize));
+    listHead2->setNext(mergeTCName(listHead1, listHead2->getNext(), tcName, tcHead, tcTail, lastTCCode, tcSize));
     // link sublist 1 to sublist 2
-    list2->getNext()->setPrevious(list2);
-    list2->setPrevious(nullptr);
+    listHead2->getNext()->setPrevious(listHead2);
+    listHead2->setPrevious(nullptr);
     // return address of sublist 2
-    return list2;
+    return listHead2;
   };
 };

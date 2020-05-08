@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.2.4] - 8/5/2020
+### Changed
+- Added more comments for better clarity
+
+### Fixed
+- Minor bugfixes and optimisations
+
+## [2.2.3] - 7/5/2020
+### Fixed
+- Minor bugfixes and optimisations
+
 ## [2.2.2] - 5/5/2020
 ### Fixed
 - [#39](../../issues/39) Prevent modification of tuitions and subjects to same names
